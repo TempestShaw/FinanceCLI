@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+venv/
+.DS_Store
+
+# Local FinanceQA dogfooding artifacts
+finance_cli/eval_financeqa/context.txt
+finance_cli/eval_financeqa/agentic_trial/
+finance_cli/eval_financeqa/cli_outputs/
+finance_cli/eval_financeqa/cli_text/
+finance_cli/eval_financeqa/retrieval_probe/
+finance_cli/eval_financeqa/qa_probe_round2/recovery/
+finance_cli/eval_financeqa/qa_probe_round2/*.json
