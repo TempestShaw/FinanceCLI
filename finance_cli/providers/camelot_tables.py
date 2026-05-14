@@ -31,7 +31,7 @@ class CamelotTableProvider:
         camelot = quiet_call(
             require_dependency,
             "camelot",
-            "Install or repair Finance CLI with: python -m pip install -U finance-cli",
+            "Install or repair Finance CLI with: python -m pip install -U finresearch-cli",
         )
         local_path, cleanup = self._local_path(source)
         try:

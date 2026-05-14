@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/finance-cli/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-finance--cli-blue"></a>
+  <a href="https://pypi.org/project/finresearch-cli/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-finresearch--cli-blue"></a>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-111827">
 </p>
@@ -32,7 +32,7 @@ Use it when you want to:
 ## Install
 
 ```bash
-python -m pip install -U finance-cli
+python -m pip install -U finresearch-cli
 ```
 
 From a local checkout:

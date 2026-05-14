@@ -79,7 +79,7 @@ def html_to_text(raw: str) -> str:
     beautiful_soup = quiet_call(
         require_dependency,
         "bs4",
-        "Install or repair Finance CLI with: python -m pip install -U finance-cli",
+        "Install or repair Finance CLI with: python -m pip install -U finresearch-cli",
     )
     soup = beautiful_soup.BeautifulSoup(raw, "html.parser")
     _remove_non_readable_tags(soup)
