@@ -27,4 +27,21 @@ A live run returned NVIDIA's company profile with CIK `0001045810` and source at
 finance symbol.snapshot NVDA
 ```
 
-`symbol.snapshot` is the broader one-command overview. Use it when an application needs a starter bundle before deciding which deeper namespace to call next.
+Tested `symbol.snapshot` result:
+
+```json
+{
+  "symbol": "NVDA",
+  "company_name": "NVIDIA Corporation",
+  "sector": "Technology",
+  "industry": "Semiconductors",
+  "last_price": 225.83,
+  "market_cap": 5469721067520,
+  "currency": "USD",
+  "cik": "0001045810",
+  "sources": ["yfinance", "sec_edgar"],
+  "website": "https://www.nvidia.com"
+}
+```
+
+`symbol.snapshot` is the broader one-command overview. Use it when an application needs a starter bundle before deciding which deeper namespace to call next. Price and market-cap fields are live values.

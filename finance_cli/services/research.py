@@ -25,7 +25,7 @@ def research_plan(symbol: str, *, style: str = "fundamental") -> dict[str, Any]:
         "count": len(steps),
         "notes": [
             "This is a navigation checklist, not an investment conclusion.",
-            "The agent should read returned evidence and choose assumptions before valuation.",
+            "Read returned evidence and choose assumptions before valuation.",
         ],
     }
 
@@ -98,7 +98,7 @@ def _fundamental_steps(symbol: str) -> list[dict[str, Any]]:
         {
             "id": "open_gaps",
             "status": "partially_supported",
-            "objective": "Note remaining workflow gaps that require human or agent judgment.",
+            "objective": "Note remaining workflow gaps that require judgment outside the CLI.",
             "commands": [],
             "missing": [
                 "Investor Day deck retrieval",

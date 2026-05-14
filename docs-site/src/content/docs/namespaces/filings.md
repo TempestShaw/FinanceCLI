@@ -41,10 +41,57 @@ In a live Apple 10-K run, `filings.sections` found `business`, `risk_factors`, `
 ```bash
 finance filings.statement COST statement=balance query="Common Stock" max_rows=5
 finance filings.reports COST form=10-K query=lease
-finance filings.report COST name="Leases, Supplemental Balance Sheet Information"
+finance filings.report COST name="Leases, Supplemental Balance Sheet Information" query="operating lease liabilities"
 ```
 
 A Costco balance-sheet query returned the `us-gaap_CommonStockValue` row with 2025 and 2024 values. Use `query=` to narrow large statements before sending results to another step.
+
+Tested `filings.reports` result:
+
+```json
+{
+  "filing": {
+    "company": "COSTCO WHOLESALE CORP /NEW",
+    "form": "10-K",
+    "filing_date": "2025-10-08",
+    "accession_no": "0000909832-25-000101"
+  },
+  "reports": [
+    {
+      "short_name": "Leases, Supplemental Balance Sheet Information (Details)",
+      "category": "Details",
+      "file_name": "R52.htm"
+    }
+  ],
+  "count": 7,
+  "query": "lease",
+  "source": "edgartools"
+}
+```
+
+Tested `filings.report` result:
+
+```json
+{
+  "report": {
+    "short_name": "Leases, Supplemental Balance Sheet Information (Details)",
+    "category": "Details"
+  },
+  "rows": [
+    {
+      "label": "Current operating lease liabilities",
+      "concept": "us-gaap_OperatingLeaseLiabilityCurrent",
+      "values": [
+        { "column": "Aug. 31, 2025", "text": "208", "number": 208 },
+        { "column": "Sep. 01, 2024", "text": "179", "number": 179 }
+      ]
+    }
+  ],
+  "row_count": 8,
+  "rows_truncated": false,
+  "source": "edgartools"
+}
+```
 
 ## When To Use document.*
 

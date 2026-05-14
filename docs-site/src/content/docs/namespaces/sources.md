@@ -10,8 +10,25 @@ Use `sources.*` before a workflow when you want to know which providers are inst
 ```bash
 finance sources.list
 finance sources.status
-finance sources.test yahoo symbol=AAPL
+finance sources.test yfinance symbol=AAPL
 finance sources.test sec symbol=AAPL
+```
+
+Tested `sources.list` result shape:
+
+```json
+{
+  "sources": [
+    {
+      "name": "yfinance",
+      "capabilities": ["quote", "ohlcv", "fundamentals"],
+      "package": "yfinance",
+      "package_installed": true,
+      "notes": "Public market data via yfinance."
+    }
+  ],
+  "count": 11
+}
 ```
 
 `sources.list` is a static inventory. It does not make network calls.
@@ -31,6 +48,30 @@ A local status run reported installed document, table, OCR, SEC, transcript, and
       "configured": 8,
       "missing_config": 3
     }
+  }
+}
+```
+
+Tested `sources.test yfinance` and `sources.test sec` result shape:
+
+```json
+{
+  "symbol": "AAPL",
+  "results": [
+    {
+      "name": "yfinance",
+      "configured": true,
+      "ok": true,
+      "status": "ok",
+      "latency_ms": 1225.17,
+      "capabilities": ["quote", "ohlcv", "fundamentals"]
+    }
+  ],
+  "summary": {
+    "configured": 1,
+    "ok": 1,
+    "failed": 0,
+    "missing_config": 0
   }
 }
 ```

@@ -28,7 +28,28 @@ Empty discovery results are valid. They mean no candidate matched the conservati
 ## Read A Deck
 
 ```bash
-finance ir.read url=https://example.com/deck.pdf ocr=auto max_chars=4000
+finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=800
+```
+
+Tested `ir.read` result:
+
+```json
+{
+  "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+  "format": "html",
+  "char_count": 98063,
+  "returned_chars": 800,
+  "truncated": true,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 98063,
+      "returned_chars": 800,
+      "truncated": true
+    }
+  ],
+  "warnings": []
+}
 ```
 
 `ir.read` first attempts native extraction. With `ocr=auto`, it uses OCR only when native extraction is missing or too short.

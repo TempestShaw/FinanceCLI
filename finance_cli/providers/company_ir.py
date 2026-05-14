@@ -20,7 +20,7 @@ class CompanyIRProvider:
     """Best-effort public company IR website crawler with tight guardrails."""
 
     name = "company_ir"
-    USER_AGENT = os.getenv("FINANCE_USER_AGENT", "FinanceCLI/0.1 contact@example.com")
+    USER_AGENT = os.getenv("FINANCE_USER_AGENT", "FinanceCLI/0.1 (+https://github.com/TempestShaw/FinanceCLI)")
 
     def __init__(self, *, timeout: float = 15.0, max_pages: int = 12) -> None:
         self.timeout = timeout

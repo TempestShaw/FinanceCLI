@@ -50,4 +50,18 @@ finance formula.roic nopat=7113 invested_capital=28077
 finance formula.working_capital operating_current_assets=28191 operating_current_liabilities=35035
 ```
 
+Tested result highlights:
+
+```json
+{
+  "formula.ebitda": { "ebitda": 11522.0, "method": "ebit + d_and_a" },
+  "formula.wacc": {
+    "wacc": 0.0945,
+    "weights": { "equity": 0.9090909090909091, "debt": 0.09090909090909091 }
+  },
+  "formula.roic": { "roic": 0.2533390319478577, "roic_pct": 25.33390319478577 },
+  "formula.working_capital": { "working_capital": -6844.0 }
+}
+```
+
 Run `finance help formula` for the complete calculator list.

@@ -79,6 +79,6 @@ def register_news_commands() -> None:
         notes=(
             "Use this only when you need trend, tone, context, geo, or raw DOC analysis.",
             "Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.",
-            "date/start_date/end_date are preferred for humans and agents; datetime inputs are optional precision controls.",
+            "date/start_date/end_date are preferred for routine use; datetime inputs provide precision controls.",
         ),
     ))

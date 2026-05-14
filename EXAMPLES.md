@@ -10,7 +10,7 @@ finance sources.status
 ```
 
 ```bash
-finance sources.test yahoo symbol=AAPL
+finance sources.test yfinance symbol=AAPL
 finance sources.test sec symbol=AAPL
 ```
 
@@ -51,7 +51,7 @@ Use `filings.statement` or `filings.report` when EDGAR/XBRL structure is availab
 
 ```bash
 finance document.read ./deck.pdf max_pages=3
-finance document.read url=https://example.com/deck.pdf max_chars=4000
+finance document.read ./deck.pdf max_chars=4000
 finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000
 
 finance document.scan ./report.pdf topics=risk,financial_reporting
@@ -98,7 +98,7 @@ finance kpi.history IOT metrics=arr,large_customers,emerging_products limit=4
 
 finance ir.presentations IOT limit=10 source=all
 finance ir.presentations NVDA limit=5 source=sec
-finance ir.read url=https://example.com/deck.pdf ocr=auto max_chars=4000
+finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=4000
 ```
 
 ## Valuation And Finance Math
@@ -157,7 +157,7 @@ finance backtest.factor.weights rsi_14 scores='{"AAPL":1.1,"MSFT":0.3,"NVDA":2.0
 
 ## Output Format
 
-The CLI defaults to JSON for agent-friendly use. Add `--output text` when reading manually:
+The CLI defaults to JSON for automation-friendly use. Add `--output text` when reading manually:
 
 ```bash
 finance --output text sources.status

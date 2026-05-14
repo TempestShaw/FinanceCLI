@@ -70,7 +70,7 @@ def register_ir_commands() -> None:
         examples=(
             "finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../iot_investorday.htm",
             "finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../deck.htm max_chars=20000",
-            "finance ir.read url=https://example.com/deck.pdf ocr=auto max_chars=4000",
+            "finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=4000",
         ),
         notes=(
             "HTML exhibits/pages are fetched and parsed to plain text.",

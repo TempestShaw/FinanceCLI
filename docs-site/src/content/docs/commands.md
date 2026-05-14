@@ -141,7 +141,7 @@ finance document.ocr SOURCE|source=PATH_OR_URL [max_chars=12000 max_pages=5]
 
 ```bash
 finance document.ocr ./deck.pdf max_pages=3
-finance document.ocr url=https://example.com/deck.pdf max_chars=4000
+finance document.ocr ./deck.pdf max_chars=4000
 ```
 
 **Notes**
@@ -164,14 +164,14 @@ finance document.read SOURCE|source=PATH_OR_URL [format=pdf|html max_chars=12000
 
 ```bash
 finance document.read ./deck.pdf max_pages=3
-finance document.read url=https://example.com/deck.pdf max_chars=4000
+finance document.read ./deck.pdf max_chars=4000
 finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000
 ```
 
 **Notes**
 
 - Lightweight first-pass parser for text-based PDFs and HTML filings; does not run OCR.
-- Returns page text plus positioned or offset-bearing blocks for downstream matching or agent analysis.
+- Returns page text plus positioned or offset-bearing blocks for downstream matching and analysis.
 
 ### `document.scan`
 
@@ -267,7 +267,7 @@ finance estimates.compare IOT revenue=2.2B consensus_revenue=2.0B eps=0.50 conse
 
 **Notes**
 
-- No network calls. Compares only values explicitly supplied by the user or agent.
+- No network calls. Compares only values explicitly supplied by the caller.
 
 ### `estimates.consensus`
 
@@ -311,7 +311,7 @@ finance filings.read url=https://www.sec.gov/Archives/edgar/data/1642896/0001628
 
 **Notes**
 
-- Uses edgartools for filing retrieval, then returns bounded text for CLI/agent consumption.
+- Uses edgartools for filing retrieval, then returns bounded text for downstream use.
 
 ### `filings.recent`
 
@@ -725,7 +725,7 @@ finance ir.read url=URL [max_chars=12000 ocr=off|auto|force]
 ```bash
 finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../iot_investorday.htm
 finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../deck.htm max_chars=20000
-finance ir.read url=https://example.com/deck.pdf ocr=auto max_chars=4000
+finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=4000
 ```
 
 **Notes**
@@ -875,7 +875,7 @@ finance news.analyze query=FOOD_SECURITY analysis=geo max_records=3 timespan=1h
 
 - Use this only when you need trend, tone, context, geo, or raw DOC analysis.
 - Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.
-- date/start_date/end_date are preferred for humans and agents; datetime inputs are optional precision controls.
+- date/start_date/end_date are preferred for routine use; datetime inputs provide precision controls.
 
 ### `news.search`
 
@@ -977,7 +977,7 @@ finance research.plan IOT style=fundamental
 **Notes**
 
 - This returns suggested commands only; it does not execute research or form conclusions.
-- Use this as a navigation layer for humans or LLM agents.
+- Use this as a navigation layer for repeatable research workflows.
 
 ## `sources.*`
 
@@ -1034,7 +1034,7 @@ finance sources.test [SOURCE|source=SOURCE] [symbol=AAPL timeout=30]
 **Examples**
 
 ```bash
-finance sources.test yahoo symbol=AAPL
+finance sources.test yfinance symbol=AAPL
 finance sources.test sec symbol=AAPL
 finance sources.test source=all symbol=AAPL timeout=30
 ```

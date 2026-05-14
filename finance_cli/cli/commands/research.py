@@ -23,6 +23,6 @@ def register_research_commands() -> None:
         examples=("finance research.plan IOT style=fundamental",),
         notes=(
             "This returns suggested commands only; it does not execute research or form conclusions.",
-            "Use this as a navigation layer for humans or LLM agents.",
+            "Use this as a navigation layer for repeatable research workflows.",
         ),
     ))

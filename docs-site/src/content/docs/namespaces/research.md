@@ -17,15 +17,21 @@ A tested run returned a navigation checklist with steps for profile, filings, tr
   "style": "fundamental",
   "steps": [
     {
-      "name": "profile",
+      "id": "profile",
+      "status": "supported",
       "commands": ["finance symbol.profile IOT"]
     },
     {
-      "name": "kpis",
+      "id": "kpis",
+      "status": "supported",
       "commands": ["finance kpi.extract IOT source=both metrics=arr,..."]
     }
   ],
-  "notes": ["This is a workflow checklist, not an investment conclusion."]
+  "count": 8,
+  "notes": [
+    "This is a navigation checklist, not an investment conclusion.",
+    "Read returned evidence and choose assumptions before valuation."
+  ]
 }
 ```
 

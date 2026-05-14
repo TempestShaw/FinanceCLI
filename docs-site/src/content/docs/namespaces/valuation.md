@@ -16,12 +16,27 @@ Tested NPV output:
 
 ```json
 {
+  "cashflows": [-100000000.0, 30000000.0, 40000000.0, 50000000.0],
+  "discount_rate": 0.1,
   "npv": -2103681.442524448,
-  "method": "First cash flow is treated as t=0; later cash flows are discounted by period."
+  "method": "sum(cashflow_t / (1 + discount_rate)^t), with first cash flow at t=0"
 }
 ```
 
-Tested DCF output returned enterprise value `1842975206.6115694` using the Gordon-growth terminal method.
+Tested DCF output:
+
+```json
+{
+  "cashflows": [100000000.0, 120000000.0, 140000000.0],
+  "discount_rate": 0.1,
+  "terminal_growth": 0.03,
+  "terminal_value": 2059999999.9999998,
+  "terminal_method": "gordon_growth",
+  "pv_cashflows": 295266716.75432,
+  "pv_terminal_value": 1547708489.8572495,
+  "enterprise_value": 1842975206.6115694
+}
+```
 
 ## Multiples And Scenario
 

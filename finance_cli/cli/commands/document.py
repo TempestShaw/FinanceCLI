@@ -114,12 +114,12 @@ def register_document_commands() -> None:
         usage="document.read SOURCE|source=PATH_OR_URL [format=pdf|html max_chars=12000 max_pages=5]",
         examples=(
             "finance document.read ./deck.pdf max_pages=3",
-            "finance document.read url=https://example.com/deck.pdf max_chars=4000",
+            "finance document.read ./deck.pdf max_chars=4000",
             "finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000",
         ),
         notes=(
             "Lightweight first-pass parser for text-based PDFs and HTML filings; does not run OCR.",
-            "Returns page text plus positioned or offset-bearing blocks for downstream matching or agent analysis.",
+            "Returns page text plus positioned or offset-bearing blocks for downstream matching and analysis.",
         ),
     ))
     register_command(FinanceCommand(
@@ -179,7 +179,7 @@ def register_document_commands() -> None:
         usage="document.ocr SOURCE|source=PATH_OR_URL [max_chars=12000 max_pages=5]",
         examples=(
             "finance document.ocr ./deck.pdf max_pages=3",
-            "finance document.ocr url=https://example.com/deck.pdf max_chars=4000",
+            "finance document.ocr ./deck.pdf max_chars=4000",
         ),
         notes=(
             "Prefer document.read or document.scan for text-based PDFs.",
