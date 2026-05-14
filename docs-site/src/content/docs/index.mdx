@@ -1,0 +1,43 @@
+---
+title: Finance CLI
+description: Public-company research from the terminal.
+template: splash
+hero:
+  tagline: Pull filings, parse documents, run finance math, fetch market context, and test VectorBT strategies from one CLI.
+  actions:
+    - text: Quick Start
+      link: /FinanceCLI/quickstart/
+      icon: right-arrow
+    - text: Command Reference
+      link: /FinanceCLI/commands/
+      icon: document
+---
+
+Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
+
+It is designed for repeatable public-company research: commands in, structured output out.
+
+## Why This Exists
+
+You can already combine notebooks, yfinance, SEC downloads, PDF parsers, spreadsheet formulas, and backtesting libraries by hand. That works until every company or question needs a slightly different glue script.
+
+Finance CLI packages those recurring research steps into terminal commands with consistent JSON output. The goal is not to hide the underlying sources. It is to make common research moves easy to repeat, inspect, diff, and automate.
+
+## Command Groups
+
+| Namespace | Use it for |
+| --- | --- |
+| `filings.*` | SEC filings, filing sections, XBRL statements, and filing reports. |
+| `document.*` | PDF/HTML reading, text search, windows, table extraction, and OCR. |
+| `market.*`, `price.*`, `news.*` | Quotes, OHLCV, market moves, regimes, sectors, and news context. |
+| `transcripts.*`, `kpi.*`, `ir.*` | Earnings transcripts, KPI evidence, and investor presentations. |
+| `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
+| `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
+
+## Install
+
+```bash
+python -m pip install -U finance-cli
+```
+
+The default install includes SEC filing access, PDF parsing, Camelot table extraction, PaddleOCR fallback, Yahoo market data, finance formulas, and VectorBT backtests.

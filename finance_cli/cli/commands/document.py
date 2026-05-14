@@ -153,7 +153,7 @@ def register_document_commands() -> None:
             "finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000",
         ),
         notes=(
-            "Designed for agentic continuation reading after document.scan.",
+            "Designed for follow-up reading after document.scan.",
             "Use direction=next or direction=previous to move through a table or section without re-scanning.",
         ),
     ))
