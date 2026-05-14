@@ -5,6 +5,20 @@ description: Company identity and public-company snapshot commands.
 
 Use `symbol.*` when a workflow needs company identity before pulling filings, transcripts, fundamentals, or market data.
 
+## Parameters
+
+### `symbol.profile`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker to resolve through market metadata and SEC ticker metadata. |
+
+### `symbol.snapshot`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Same implementation as `symbol.profile`; returns quote, company metadata, CIK, and source attribution. |
+
 ## Profile
 
 ```bash

@@ -5,6 +5,24 @@ description: Inspect provider inventory, configuration, and live connectivity.
 
 Use `sources.*` before a workflow when you want to know which providers are installed, which API keys are configured, and whether a live source can answer a minimal request.
 
+## Parameters
+
+### `sources.list`
+
+No parameters. Lists known providers, packages, capabilities, and static notes without network calls.
+
+### `sources.status`
+
+No parameters. Checks installed packages and configured environment variables without network calls.
+
+### `sources.test`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` | No | All sources when omitted | `yfinance`, `sec`, `gdelt`, `motley_fool`, `company_ir`, `fmp`, `pymupdf`, `camelot`, `paddleocr`, `alphavantage`, `alpaca`, `all` | Provider to probe. Positional `SOURCE` and `source=SOURCE` are equivalent. |
+| `symbol` | No | `AAPL` | Public ticker | Symbol used by probes that need a ticker. |
+| `timeout` | No | `30` | Seconds | Timeout passed to live provider probes. |
+
 ## Commands
 
 ```bash

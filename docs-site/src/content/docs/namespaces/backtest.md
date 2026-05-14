@@ -5,6 +5,97 @@ description: VectorBT strategy runs, tuning, and factor payload helpers.
 
 Use `backtest.*` to inspect built-in strategies, run historical strategy tests, tune parameters, or prepare factor weights.
 
+## Parameters
+
+### `backtest.strategies`
+
+No parameters. Lists built-in strategy presets and their declared parameters.
+
+### `backtest.describe`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `STRATEGY` | Yes | None | Built-in strategy name or `custom` | Strategy to describe. |
+
+### `backtest.run`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `STRATEGY` | Yes | None | Built-in strategy name or `custom` | Strategy to run. |
+| `SYMBOLS` | Yes | None | Ticker or comma-separated tickers | Backtest universe. |
+| `START_DATE` | Yes | None | `YYYY-MM-DD` | Backtest start date. |
+| `END_DATE` | Yes | None | `YYYY-MM-DD` | Backtest end date. |
+| `timeframe` | No | `1d` | Provider-supported timeframe | OHLCV bar interval. |
+| `initial_cash` | No | `100000.0` | Number | Starting portfolio cash. |
+| `fees` | No | `0.001` | Decimal | Percentage trading fee used by the VectorBT engine. |
+| `fixed_fees` | No | `0.0` | Number | Fixed fee per trade/order. |
+| `slippage` | No | `0.0` | Decimal | Slippage assumption. |
+| `provider` | No | `auto` | `auto`, provider name | OHLCV provider. |
+| `params` | No | `{}` | JSON object | Strategy parameters as one JSON object. |
+| `strategy_file` / `path` | No | None | Python file path | Custom strategy file. |
+| `plot_path` | No | None | File path | Optional plot output path. |
+| Other `key=value` args | No | None | Scalars | Any non-reserved key is passed as a strategy parameter. For `sma_cross`, use `fast=` and `slow=`. |
+
+### `backtest.tune`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `STRATEGY` | Yes | None | Built-in strategy name or `custom` | Strategy to tune. |
+| `SYMBOLS` | Yes | None | Ticker or comma-separated tickers | Backtest universe. |
+| `START_DATE` | Yes | None | `YYYY-MM-DD` | Backtest start date. |
+| `END_DATE` | Yes | None | `YYYY-MM-DD` | Backtest end date. |
+| `grid` | Yes | None | JSON object | Parameter grid, such as `{"fast":[5,10],"slow":[30]}`. |
+| `metric` | No | `sharpe_ratio` | Metric name | Ranking metric for best run. |
+| `max_runs` | No | `100` | Integer | Hard cap on grid evaluations. |
+| `timeframe` | No | `1d` | Provider-supported timeframe | OHLCV bar interval. |
+| `initial_cash` | No | `100000.0` | Number | Starting portfolio cash. |
+| `fees` | No | `0.001` | Decimal | Percentage trading fee. |
+| `fixed_fees` | No | `0.0` | Number | Fixed fee per trade/order. |
+| `slippage` | No | `0.0` | Decimal | Slippage assumption. |
+| `provider` | No | `auto` | `auto`, provider name | OHLCV provider. |
+| `strategy_file` / `path` | No | None | Python file path | Custom strategy file. |
+
+### `backtest.strategy.payload`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `STRATEGY_ID` | Yes | None | Text | Strategy identifier to place in the normalized payload. |
+| `START_DATE` | Yes | None | `YYYY-MM-DD` | Payload start date. |
+| `END_DATE` | Yes | None | `YYYY-MM-DD` | Payload end date. |
+| `initial_cash` | No | `100000.0` | Number | Starting cash. |
+| `parameters` | No | `{}` | JSON object | Strategy parameter payload. |
+| `fee_mode` | No | `mixed` | Text | Fee model label in payload. |
+| `fixed_fee` | No | `2.0` | Number | Fixed fee in payload. |
+| `fees_pct` | No | `0.001` | Decimal | Percentage fee in payload. |
+
+### `backtest.factor.payload`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `FACTOR_NAME` | Yes | None | Text | Factor identifier. |
+| `SYMBOLS` | Yes | None | Comma-separated tickers | Factor universe. |
+| `START_DATE` | Yes | None | `YYYY-MM-DD` | Payload start date. |
+| `END_DATE` | Yes | None | `YYYY-MM-DD` | Payload end date. |
+| `timeframe` | No | `1d` | Provider-supported timeframe | Bar interval. |
+| `initial_cash` | No | `100000.0` | Number | Starting cash. |
+| `direction` | No | `long_short` | `long_short` or strategy-supported value | Factor direction. |
+| `top_pct` | No | `0.2` | Decimal | Long basket quantile share. |
+| `bottom_pct` | No | `0.2` | Decimal | Short basket quantile share. |
+| `rebalance_freq` | No | `monthly` | Text | Rebalance frequency label. |
+| `fixed_fee` | No | `2.0` | Number | Fixed fee in payload. |
+| `fees_pct` | No | `0.001` | Decimal | Percentage fee in payload. |
+
+### `backtest.factor.weights`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `FACTOR_NAME` | Yes | None | Text | Factor identifier. |
+| `scores` | Yes | None | JSON object of `{symbol: score}` | Cross-sectional factor scores. |
+| `timestamp` | No | `preview` | Text | Timestamp label in preview output. |
+| `direction` | No | `long_short` | `long_short` or strategy-supported value | Weighting direction. |
+| `top_pct` | No | `0.2` | Decimal | Long basket quantile share. |
+| `bottom_pct` | No | `0.2` | Decimal | Short basket quantile share. |
+
 ## Strategy Inventory
 
 ```bash

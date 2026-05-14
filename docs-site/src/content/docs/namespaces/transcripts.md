@@ -5,6 +5,35 @@ description: Search, read, and extract Q&A from earnings-call transcripts.
 
 Use `transcripts.*` for public earnings-call transcript pages.
 
+## Parameters
+
+### `transcripts.search`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Symbol to search. |
+| `limit` | No | `4` | Integer | Maximum transcript search results. |
+| `debug` | No | `false` | Boolean | Includes provider debug details when `true`. |
+
+### `transcripts.read`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Required unless `url` is set | None | Public ticker | Symbol used to locate a transcript. |
+| `url` | Required unless `SYMBOL` is set | None | Transcript URL | Reads a specific transcript page. |
+| `quarter` | No | `latest` | `latest` or provider-recognized quarter label | Transcript quarter selection when using a symbol. |
+| `max_chars` | No | `12000` | Integer | Maximum transcript text returned. |
+| `include_turns` | No | `false` | Boolean | Includes parsed speaker turns when `true`. |
+
+### `transcripts.qa`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Required unless `url` is set | None | Public ticker | Symbol used to locate a transcript. |
+| `url` | Required unless `SYMBOL` is set | None | Transcript URL | Reads a specific transcript page. |
+| `quarter` | No | `latest` | `latest` or provider-recognized quarter label | Transcript quarter selection when using a symbol. |
+| `limit` | No | `10` | Integer | Maximum Q&A pairs returned. |
+
 ## Search And Read
 
 ```bash

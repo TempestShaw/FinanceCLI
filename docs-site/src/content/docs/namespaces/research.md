@@ -5,6 +5,15 @@ description: Generate a deterministic public-company research checklist.
 
 Use `research.plan` when you want the next commands for a company research workflow.
 
+## Parameters
+
+### `research.plan`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker to build the checklist around. |
+| `style` | No | `fundamental` | Style label | Research style passed into the returned plan. The current maintained flow is `fundamental`. |
+
 ```bash
 finance research.plan IOT style=fundamental
 ```

@@ -5,6 +5,16 @@ description: Pull company financial statements.
 
 Use `fundamentals.statement` for financial statement rows from the market-data provider.
 
+## Parameters
+
+### `fundamentals.statement`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker. |
+| `statement` | No | `income` | `income`, `balance`, `cashflow` | Statement family. |
+| `period` | No | `annual` | `annual`, `quarterly` | Reporting period frequency. |
+
 ## Income Statement
 
 ```bash

@@ -5,6 +5,41 @@ description: Quotes, OHLCV, market regime, and sector heat.
 
 Use `market.*` for market data and broad market context. Live values are time-sensitive; treat examples as output shape, not fixed numbers.
 
+## Parameters
+
+### `market.quote`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Symbol to quote. |
+
+### `market.ohlcv`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL[,SYMBOL...]` | Yes | None | One ticker or comma-separated tickers | Single-symbol calls return one OHLCV result; multi-symbol calls return batch output. |
+| `timeframe` | No | `1d` | Provider-supported timeframe | Bar interval. |
+| `start_date` | No | None | `YYYY-MM-DD` | Start date for historical bars. |
+| `end_date` | No | None | `YYYY-MM-DD` | End date for historical bars. |
+| `limit` | No | `200` | Integer | Maximum rows when date bounds are not enough. |
+| `provider` | No | `auto` | `auto`, provider name | Provider selection. |
+| `include_attempts` | No | `false` | Boolean | Includes provider-attempt diagnostics when `true`. |
+
+### `market.regime`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `MARKET` | No | `US` | Market code | Market universe for regime signals. |
+| `TIMEFRAME` | No | `swing` | Timeframe label | Regime horizon. |
+
+### `market.sector_heat`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `MARKET` | No | `US` | Market code | Market universe. |
+| `LOOKBACK_DAYS` | No | `20` | Integer | Ranking lookback window. |
+| `GROUP_BY` | No | `sector` | Grouping label | Grouping used for heat rankings. |
+
 ## Quote And OHLCV
 
 ```bash

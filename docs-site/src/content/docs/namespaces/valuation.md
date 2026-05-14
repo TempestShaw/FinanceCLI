@@ -5,6 +5,61 @@ description: Valuation math, multiples, DCF, NPV, IRR, WACC, and scenarios.
 
 Use `valuation.*` for valuation workflows that combine deterministic math with optional live market or fundamental inputs.
 
+## Number Conventions
+
+Large money inputs accept raw numbers or `K`, `M`, and `B` suffixes. Rate inputs accept decimals or percentages, for example `0.10` and `10%`.
+
+## Parameters
+
+### `valuation.multiples`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Symbol used to fetch market cap, enterprise value inputs, and revenue. |
+
+### `valuation.scenario`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Symbol used for current price/share context. |
+| `revenue` | Yes | None | Number with optional `K/M/B` suffix | Revenue assumption. |
+| `bear_multiple` | Yes | None | Number | Bear-case sales multiple. |
+| `base_multiple` | Yes | None | Number | Base-case sales multiple. |
+| `bull_multiple` | Yes | None | Number | Bull-case sales multiple. |
+| `shares` | No | Provider share count when available | Number with optional `K/M/B` suffix | Share count override. |
+
+### `valuation.npv`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `cashflows` | Yes | None | Comma-separated numbers with optional `K/M/B` suffix | Periodic cash flows. First value is treated as `t=0`. |
+| `discount_rate` | Yes | None | Decimal or percent | Discount rate. |
+
+### `valuation.irr`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `cashflows` | Yes | None | Comma-separated numbers with optional `K/M/B` suffix | Periodic cash flows. Must include a sign change for normal IRR solving. |
+
+### `valuation.wacc`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `equity_value` | Yes | None | Number with optional `K/M/B` suffix | Market value of equity. |
+| `debt_value` | Yes | None | Number with optional `K/M/B` suffix | Market/book value of debt. |
+| `cost_of_equity` | Yes | None | Decimal or percent | Cost of equity. |
+| `cost_of_debt` | Yes | None | Decimal or percent | Pre-tax cost of debt. |
+| `tax_rate` | No | `0` | Decimal or percent | Tax rate used for after-tax debt cost. |
+
+### `valuation.dcf`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `cashflows` | Yes | None | Comma-separated numbers with optional `K/M/B` suffix | Forecast free cash flows only; do not include a `t=0` investment. |
+| `discount_rate` | Yes | None | Decimal or percent | Discount rate. |
+| `terminal_growth` | Required unless `exit_multiple` is set | None | Decimal or percent | Gordon-growth terminal assumption. |
+| `exit_multiple` | Required unless `terminal_growth` is set | None | Number | Exit multiple terminal assumption. Use either this or `terminal_growth`, not both. |
+
 ## NPV And DCF
 
 ```bash

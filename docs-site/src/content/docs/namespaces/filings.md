@@ -5,6 +5,77 @@ description: Fetch SEC filings, sections, statements, and reports.
 
 Use `filings.*` for SEC EDGAR-backed workflows: finding filings, reading standard sections, and pulling XBRL statements or report tables.
 
+## Lookup Conventions
+
+Filing commands accept a ticker symbol, `symbol=`, `accession=` / `accession_no=`, or `url=` depending on the command. Use a symbol plus `form=` for latest-by-form lookup. Use `accession=` or `url=` when you need a specific filing.
+
+## Parameters
+
+### `filings.recent`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker. |
+| `forms` | No | Provider default | Comma-separated SEC forms, such as `10-K,10-Q,8-K` | Filters returned filings by form type. |
+| `limit` | No | `20` | Integer | Maximum filings returned. |
+| `classify` | No | `false` | Boolean | Adds event classification when `true`. |
+
+### `filings.sections`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` / `symbol` | Required unless `accession` or `url` is set | None | Public ticker | Company lookup key. |
+| `accession` / `accession_no` | No | None | SEC accession number | Reads a specific filing. |
+| `url` | No | None | SEC filing URL | Reads a specific filing URL. |
+| `form` | No | `10-K` | SEC form, such as `10-K`, `10-Q`, `8-K` | Latest form to inspect when using a symbol. |
+
+### `filings.read`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` / `symbol` | Required unless `accession` or `url` is set | None | Public ticker | Company lookup key. |
+| `accession` / `accession_no` | No | None | SEC accession number | Reads a specific filing. |
+| `url` | No | None | SEC filing URL | Reads a specific filing URL. |
+| `form` | No | `10-K` | SEC form | Latest form to read when using a symbol. |
+| `section` | No | `business` | `business`, `risk_factors`, `mda`, `financial_statements`, `segments` | Canonical section to extract. |
+| `max_chars` | No | `8000` | Integer | Maximum section text returned. |
+
+### `filings.statement`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` / `symbol` | Required unless `accession` or `url` is set | None | Public ticker | Company lookup key. |
+| `accession` / `accession_no` | No | None | SEC accession number | Reads a specific filing. |
+| `url` | No | None | SEC filing URL | Reads a specific filing URL. |
+| `form` | No | `10-K` | SEC form | Latest form to read when using a symbol. |
+| `statement` | No | `income` | `income`, `balance`, `cashflow` | XBRL statement family. |
+| `query` | No | None | Text | Filters rows by label/concept text. |
+| `include_abstract` | No | `false` | Boolean | Includes abstract/header rows when `true`. |
+| `max_rows` | No | `0` | Integer; `0` means unlimited | Maximum rows returned after filtering. |
+
+### `filings.reports`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` / `symbol` | Required unless `accession` or `url` is set | None | Public ticker | Company lookup key. |
+| `accession` / `accession_no` | No | None | SEC accession number | Reads a specific filing. |
+| `url` | No | None | SEC filing URL | Reads a specific filing URL. |
+| `form` | No | `10-K` | SEC form | Latest form to inspect when using a symbol. |
+| `query` | No | None | Text | Filters report names/categories. |
+
+### `filings.report`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` / `symbol` | Required unless `accession` or `url` is set | None | Public ticker | Company lookup key. |
+| `accession` / `accession_no` | No | None | SEC accession number | Reads a specific filing. |
+| `url` | No | None | SEC filing URL | Reads a specific filing URL. |
+| `name` / `report` | Yes | None | Report short/long name | Report to read. Use `filings.reports` to discover names. |
+| `form` | No | `10-K` | SEC form | Latest form to read when using a symbol. |
+| `query` | No | None | Text | Filters report rows by label/concept/text. |
+| `max_rows` | No | `25` | Integer; `0` means unlimited | Maximum structured rows returned. |
+| `max_chars` | No | `8000` | Integer | Maximum plain-text report content returned. |
+
 ## Recent Filings
 
 ```bash

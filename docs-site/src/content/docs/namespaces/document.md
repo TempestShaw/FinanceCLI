@@ -5,6 +5,69 @@ description: Read, scan, window, extract tables, and run OCR on PDF or HTML docu
 
 Use `document.*` when the input is a concrete document path or URL. It works for local PDFs, SEC HTML pages, investor decks, and document snippets produced by other commands.
 
+## Input Conventions
+
+All document commands accept the document as the first positional argument or as `source=`, `path=`, or `url=`.
+
+`format=` is available on text commands when auto-detection is not enough. Supported values are `pdf` and `html`. Leave it unset to infer from the path, URL, or response content.
+
+## Parameters
+
+### `document.read`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` / `path` / `url` | Yes | None | Local path or URL | Document to read. Positional source and keyed source forms are equivalent. |
+| `format` | No | Auto | `pdf`, `html` | Forces the parser. Use `html` for SEC filing pages and `pdf` for local or remote PDFs. |
+| `max_chars` | No | `12000` | Integer; `0` means no text truncation in current readers | Maximum text characters returned. Metadata still includes total `char_count`. |
+| `max_pages` | No | All pages | Integer; `0` means all pages | Limits page processing for PDFs/OCR-style readers. |
+
+### `document.scan`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` / `path` / `url` | Yes | None | Local path or URL | Document to scan. |
+| `query` | No | None | Text | Literal query. If present, it becomes the only scan topic. |
+| `topics` / `topic` | No | None | Comma-separated terms | Topic names or literal fuzzy queries. Known topics include `disclosure`, `risk`, `financial_reporting`, `portfolio`, and `guidance`; unknown values are treated as literal queries. |
+| `format` | No | Auto | `pdf`, `html` | Forces document parser. |
+| `match` | No | `fuzzy` | `fuzzy`, `all_terms` | `fuzzy` uses RapidFuzz scoring. `all_terms` requires all meaningful query terms to appear. |
+| `threshold` | No | `80.0` | Number | Minimum match score. Use `100` with `match=all_terms` for exact term coverage. |
+| `max_chars` | No | `12000` | Integer; `0` means scan full extracted text | Maximum extracted text considered. |
+| `max_pages` | No | All pages | Integer; `0` means all pages | Limits page processing. |
+| `limit` | No | `50` | Integer | Maximum matches returned. |
+| `window` | No | `0` | Integer | Adds surrounding text to each match when greater than zero. |
+| `start_char` | No | None | Integer | Restricts scanning to text starting at this character offset. |
+| `end_char` | No | None | Integer | Restricts scanning to text ending at this character offset. |
+
+### `document.window`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` / `path` / `url` | Yes | None | Local path or URL | Document to read from. |
+| `format` | No | Auto | `pdf`, `html` | Forces document parser. |
+| `start_char` / `start` | Required unless `match_id` is set | None | Integer | Character offset to anchor the window. |
+| `match_id` | Required unless `start_char` is set | None | `char_START_END` | Match ID returned by `document.scan`. |
+| `chars` | No | `4000` | Integer | Window size. |
+| `direction` | No | `around` | `around`, `next`, `previous` | Reads around the anchor, after the match/window, or before it. |
+
+### `document.tables`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` / `path` / `url` | Yes | None | Local path or URL | PDF to parse for tables. |
+| `pages` | No | `1-end` | Camelot page expression, such as `1`, `1-3`, `all` | Pages passed to Camelot. |
+| `flavor` | No | `stream` | `stream`, `lattice` | `stream` is for whitespace-separated tables. `lattice` is for ruled-line tables and may require Ghostscript. |
+| `max_tables` | No | `20` | Integer | Maximum tables returned. |
+| `max_rows` | No | `25` | Integer | Maximum preview rows per table. |
+
+### `document.ocr`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SOURCE` / `source` / `path` / `url` | Yes | None | Local path or URL | Document to OCR. |
+| `max_chars` | No | `12000` | Integer | Maximum OCR text characters returned. |
+| `max_pages` | No | All pages | Integer; `0` means all pages | Limits OCR page processing. |
+
 ## Read Text
 
 ```bash

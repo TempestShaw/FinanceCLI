@@ -5,6 +5,29 @@ description: Extract KPI evidence from filings and transcripts.
 
 Use `kpi.*` when you need evidence snippets for operating metrics such as ARR, large customers, NRR, RPO, margins, or product-specific metrics.
 
+## Parameters
+
+### `kpi.extract`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker. |
+| `source` | No | `transcripts` | `transcripts`, `filings`, `both` | Evidence source. |
+| `metrics` | No | Built-in metric set | Comma-separated metric names | Limits extraction to requested metrics. Examples: `arr`, `nrr`, `large_customers`, `rpo`, `revenue_growth`, `operating_margin`, `fcf_margin`. |
+| `limit` | No | `30` | Integer | Maximum evidence rows returned. |
+| `quarter` | No | `latest` | Transcript quarter label | Transcript selection when `source=transcripts` or `both`. |
+| `form` | No | `10-K` | SEC form | Filing form when `source=filings` or `both`. |
+
+### `kpi.history`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `SYMBOL` | Yes | None | Public ticker | Company ticker. |
+| `source` | No | `transcripts` | Currently transcript-oriented | Evidence source for history extraction. |
+| `metrics` | No | Built-in metric set | Comma-separated metric names | Limits extraction to requested metrics. |
+| `limit` | No | `4` | Integer | Maximum historical documents/periods. |
+| `per_document_limit` | No | `20` | Integer | Maximum KPI rows per document. |
+
 ## Extract
 
 ```bash
