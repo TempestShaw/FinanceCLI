@@ -9,6 +9,8 @@ This page is generated from the Finance CLI command registry.
 
 Run `python scripts/generate_cli_docs.py` after changing command metadata.
 
+Agent-facing schemas are available as [`tools.json`](/FinanceCLI/tools.json) and [`openapi.json`](/FinanceCLI/openapi.json).
+
 ## `backtest.*`
 
 ### `backtest.describe`

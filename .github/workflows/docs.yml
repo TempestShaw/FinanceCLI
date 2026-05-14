@@ -44,6 +44,21 @@ jobs:
       - name: Generate command reference
         run: python scripts/generate_cli_docs.py
 
+      - name: Check generated agent docs
+        run: |
+          git diff --exit-code -- \
+            docs-site/src/content/docs/commands.md \
+            llms.txt \
+            llms-full.txt \
+            tools.json \
+            openapi.json \
+            schemas/finance-cli-tools.schema.json \
+            docs-site/public/llms.txt \
+            docs-site/public/llms-full.txt \
+            docs-site/public/tools.json \
+            docs-site/public/openapi.json \
+            docs-site/public/schemas/finance-cli-tools.schema.json
+
       - name: Build docs site
         working-directory: docs-site
         run: npm run build

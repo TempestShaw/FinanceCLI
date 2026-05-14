@@ -9,8 +9,11 @@ except ModuleNotFoundError:
 import finance_cli
 from finance_cli.cli.commands import document as document_commands
 from finance_cli.cli.commands import filings as filings_commands
+from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.main import main
+from finance_cli.cli.registry import clear_commands, list_commands
 from finance_cli.providers.camelot_tables import _round_or_none
+from scripts.generate_cli_docs import build_command_specs, build_openapi_document, build_tools_document, build_tools_schema_document
 
 
 def test_package_version_matches_project_metadata():
@@ -35,6 +38,36 @@ def test_finance_cli_lists_commands(capsys):
     assert code == 0
     assert "formula.margin" in output
     assert "sources.status" in output
+
+
+def test_generated_agent_schema_covers_registered_commands():
+    clear_commands()
+    register_builtin_commands()
+    commands = sorted(list_commands(), key=lambda command: command.name)
+    specs = build_command_specs(commands)
+    tools_doc = build_tools_document(specs)
+    openapi_doc = build_openapi_document(specs)
+    tools_schema = build_tools_schema_document()
+
+    assert len(specs) == len(commands)
+    assert len(tools_doc["commands"]) == len(commands)
+    assert tools_doc["$schema"] == tools_schema["$id"]
+    assert "/commands/filings.statement" in openapi_doc["paths"]
+
+    filings_statement = next(spec for spec in specs if spec["name"] == "filings.statement")
+    assert filings_statement["side_effects"] == "network_read_only"
+    assert filings_statement["args"]["statement"]["enum"] == ["income", "balance", "cashflow"]
+    assert filings_statement["args"]["max_rows"]["default"] == 0
+    assert "accession_no" in filings_statement["citation_fields"]
+
+    document_scan = next(spec for spec in specs if spec["name"] == "document.scan")
+    assert document_scan["side_effects"] == "local_or_network_read"
+    assert document_scan["args"]["source"]["required"] is True
+    assert document_scan["args"]["match"]["enum"] == ["fuzzy", "all_terms"]
+
+    valuation_dcf = next(spec for spec in specs if spec["name"] == "valuation.dcf")
+    assert valuation_dcf["side_effects"] == "pure_calculation"
+    assert "investment advice" in valuation_dcf["agent"]["avoid_when"]
 
 
 def test_filings_report_preserves_lookup_aliases(monkeypatch):

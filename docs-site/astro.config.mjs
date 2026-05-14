@@ -21,6 +21,7 @@ export default defineConfig({
           items: [
             { label: "Home", slug: "" },
             { label: "Quick Start", slug: "quickstart" },
+            { label: "Agent Guide", slug: "agents" },
             { label: "Workflows", slug: "workflows" },
           ],
         },
@@ -28,6 +29,8 @@ export default defineConfig({
           label: "Reference",
           items: [
             { label: "Commands", slug: "commands" },
+            { label: "JSON Results", slug: "json-results" },
+            { label: "MCP And Plugins", slug: "mcp" },
             { label: "Data Sources", slug: "data-sources" },
             { label: "Trust", slug: "trust" },
             { label: "Disclaimer", slug: "disclaimer" },

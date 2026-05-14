@@ -1,0 +1,27 @@
+# Finance CLI
+
+> Public-company research CLI for SEC filings, documents, market data, finance math, and backtests. Commands return JSON envelopes: ok, data, error, warnings.
+
+## Agent Entry Points
+
+- Quick start: https://tempestshaw.github.io/FinanceCLI/quickstart/
+- Agent guide: https://tempestshaw.github.io/FinanceCLI/agents/
+- Agent playbooks: https://tempestshaw.github.io/FinanceCLI/workflows/
+- Trust and citation policy: https://tempestshaw.github.io/FinanceCLI/trust/
+- Human command reference: https://tempestshaw.github.io/FinanceCLI/commands/
+
+## Machine-Readable Schemas
+
+- Tools schema: https://tempestshaw.github.io/FinanceCLI/tools.json
+- OpenAPI-style adapter contract: https://tempestshaw.github.io/FinanceCLI/openapi.json
+- Full LLM context: https://tempestshaw.github.io/FinanceCLI/llms-full.txt
+- MCP/plugin notes: https://tempestshaw.github.io/FinanceCLI/mcp/
+
+## Routing Rules
+
+- Use filings.* for SEC filing discovery, sections, XBRL statement rows, and filing reports.
+- Use document.* for PDF/HTML text extraction, phrase/table discovery, char windows, tables, and OCR fallback.
+- Use formula.* only when numeric inputs are explicit and cited.
+- Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.
+- Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.
+- Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.
