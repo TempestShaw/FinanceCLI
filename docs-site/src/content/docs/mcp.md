@@ -14,6 +14,7 @@ Finance CLI is ready to be wrapped by an MCP server or plugin through its genera
 | [`openapi.json`](/FinanceCLI/openapi.json) | OpenAPI-style adapter contract for HTTP/tool runtimes. |
 | [`llms.txt`](/FinanceCLI/llms.txt) | Compact LLM entry point. |
 | [`llms-full.txt`](/FinanceCLI/llms-full.txt) | Full agent context with playbooks and command routing. |
+| [`finance-cli-skills.zip`](/FinanceCLI/skills/finance-cli-skills.zip) | Skill package for agents that support local skills. |
 
 ## Tool Contract
 
@@ -53,3 +54,5 @@ An MCP/plugin adapter should:
 | `local_or_network_read` | Reads either a local path or URL supplied by the caller. |
 
 Finance CLI commands are designed as read-only research tools. They do not place trades, send emails, mutate provider state, or write API keys.
+
+The local skill does not replace this schema contract. It points agents back to `tools.json` and the installed `finance` CLI.

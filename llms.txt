@@ -6,6 +6,7 @@
 
 - Quick start: https://tempestshaw.github.io/FinanceCLI/quickstart/
 - Agent guide: https://tempestshaw.github.io/FinanceCLI/agents/
+- AI integration and skill install: https://tempestshaw.github.io/FinanceCLI/ai/
 - Agent playbooks: https://tempestshaw.github.io/FinanceCLI/workflows/
 - Trust and citation policy: https://tempestshaw.github.io/FinanceCLI/trust/
 - Human command reference: https://tempestshaw.github.io/FinanceCLI/commands/
@@ -16,6 +17,7 @@
 - OpenAPI-style adapter contract: https://tempestshaw.github.io/FinanceCLI/openapi.json
 - Full LLM context: https://tempestshaw.github.io/FinanceCLI/llms-full.txt
 - MCP/plugin notes: https://tempestshaw.github.io/FinanceCLI/mcp/
+- Finance CLI skill zip: https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip
 
 ## Routing Rules
 

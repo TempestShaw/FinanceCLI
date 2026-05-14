@@ -1,0 +1,3 @@
+include scripts/generate_cli_docs.py
+include scripts/package_skills.py
+recursive-include skills/finance-cli *.md

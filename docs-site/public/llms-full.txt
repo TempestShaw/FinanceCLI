@@ -6,6 +6,8 @@ Finance CLI is a local command-line tool for repeatable public-company research.
 
 - `tools.json`: https://tempestshaw.github.io/FinanceCLI/tools.json
 - `openapi.json`: https://tempestshaw.github.io/FinanceCLI/openapi.json
+- AI integration and skill install: https://tempestshaw.github.io/FinanceCLI/ai/
+- Finance CLI skill zip: https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip
 - Human docs: https://tempestshaw.github.io/FinanceCLI/
 
 ## Result Envelope

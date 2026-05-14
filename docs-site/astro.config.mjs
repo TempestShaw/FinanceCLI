@@ -22,6 +22,7 @@ export default defineConfig({
             { label: "Home", slug: "" },
             { label: "Quick Start", slug: "quickstart" },
             { label: "Agent Guide", slug: "agents" },
+            { label: "AI Integration & Skills", slug: "ai" },
             { label: "Workflows", slug: "workflows" },
           ],
         },

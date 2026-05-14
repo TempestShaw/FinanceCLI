@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "python ../scripts/package_skills.py",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

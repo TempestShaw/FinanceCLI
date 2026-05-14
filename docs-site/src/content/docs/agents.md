@@ -8,9 +8,14 @@ Use this page when an agent needs to decide which command to call. Use [`tools.j
 ## Read Order
 
 1. [`llms.txt`](/FinanceCLI/llms.txt) for the compact entry point.
-2. [`tools.json`](/FinanceCLI/tools.json) for command schemas and side effects.
-3. The relevant namespace page for examples and result shape.
-4. [`trust`](/FinanceCLI/trust/) before summarizing evidence.
+2. [`AI Integration & Skills`](/FinanceCLI/ai/) when installing the local skill.
+3. [`tools.json`](/FinanceCLI/tools.json) for command schemas and side effects.
+4. The relevant namespace page for examples and result shape.
+5. [`trust`](/FinanceCLI/trust/) before summarizing evidence.
+
+## Local Skill
+
+Agents that support skills can install [`finance-cli-skills.zip`](/FinanceCLI/skills/finance-cli-skills.zip). The skill tells agents to call the installed `finance` executable with JSON output, read `tools.json` for schemas, and preserve source-aware citations.
 
 ## Routing Rules
 
