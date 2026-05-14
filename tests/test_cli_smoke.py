@@ -1,6 +1,10 @@
 import json
-import tomllib
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
 
 import finance_cli
 from finance_cli.cli.commands import document as document_commands

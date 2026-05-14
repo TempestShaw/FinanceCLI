@@ -1019,11 +1019,11 @@ finance sources.status
 
 **Notes**
 
-- No network calls; use sources.test for live provider probes.
+- No network calls; use sources.test for connectivity checks.
 
 ### `sources.test`
 
-Run small live probes against one or all data sources
+Run small connectivity checks against one or all data sources
 
 **Usage**
 
@@ -1041,7 +1041,7 @@ finance sources.test source=all symbol=AAPL timeout=30
 
 **Notes**
 
-- Makes real provider calls and returns pass/fail plus latency.
+- Returns pass/fail plus latency for configured providers.
 
 ## `symbol.*`
 

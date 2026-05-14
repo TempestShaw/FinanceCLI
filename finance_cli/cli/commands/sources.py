@@ -41,11 +41,11 @@ def register_sources_commands() -> None:
         _sources_status,
         usage="sources.status",
         examples=("finance sources.status",),
-        notes=("No network calls; use sources.test for live provider probes.",),
+        notes=("No network calls; use sources.test for connectivity checks.",),
     ))
     register_command(FinanceCommand(
         "sources.test",
-        "Run small live probes against one or all data sources",
+        "Run small connectivity checks against one or all data sources",
         _sources_test,
         usage="sources.test [SOURCE|source=SOURCE] [symbol=AAPL timeout=30]",
         examples=(
@@ -53,5 +53,5 @@ def register_sources_commands() -> None:
             "finance sources.test sec symbol=AAPL",
             "finance sources.test source=all symbol=AAPL timeout=30",
         ),
-        notes=("Makes real provider calls and returns pass/fail plus latency.",),
+        notes=("Returns pass/fail plus latency for configured providers.",),
     ))

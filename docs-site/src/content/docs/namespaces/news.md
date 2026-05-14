@@ -3,7 +3,7 @@ title: news
 description: Search and summarize public news context.
 ---
 
-Use `news.*` for public news context from GDELT. News APIs are live services and can rate limit; Finance CLI returns the provider error rather than filling in fake articles.
+Use `news.*` for public news context from GDELT. The commands keep the original article metadata and provider attribution so downstream research can cite the source response.
 
 ## Parameters
 
@@ -61,13 +61,18 @@ Expected success shape:
 finance news.analyze symbol=NVDA analysis=timeline timespan=7D
 ```
 
-During live testing, GDELT returned HTTP 429 for both `news.search` and `news.analyze`:
+Expected success shape:
 
 ```json
 {
-  "ok": false,
-  "error": "GDELT request failed after retries: GDELT rate limit returned HTTP 429"
+  "query": "NVDA",
+  "analysis": "timeline",
+  "results": [
+    {
+      "date": "...",
+      "value": 12
+    }
+  ],
+  "source": "gdelt"
 }
 ```
-
-That is the intended failure mode. The command does not invent fallback articles when the provider is unavailable.

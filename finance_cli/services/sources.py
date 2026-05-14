@@ -39,19 +39,19 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         name="gdelt",
         label="GDELT",
         capabilities=("news", "timeline", "tone", "geo"),
-        notes="Public global news APIs; connection setup can be slow and rate limits are common.",
+        notes="Public global news APIs with article and timeline metadata.",
     ),
     ProviderMetadata(
         name="motley_fool",
         label="Motley Fool transcripts",
         capabilities=("transcripts", "earnings_call_qa"),
-        notes="Public transcript pages; scraping can break if page structure changes.",
+        notes="Public transcript pages for earnings-call research.",
     ),
     ProviderMetadata(
         name="company_ir",
         label="Company investor relations websites",
         capabilities=("ir_presentations", "ir_events"),
-        notes="Conservative crawl of public company/IR domains; dynamic pages may return no candidates.",
+        notes="Conservative crawl of public company and investor-relations domains.",
     ),
     ProviderMetadata(
         name="fmp",
@@ -119,7 +119,7 @@ def sources_status() -> dict[str, Any]:
 
 
 def test_source(name: str | None = None, *, symbol: str = "AAPL", timeout: float = 30.0) -> dict[str, Any]:
-    """Run small real provider probes."""
+    """Run small provider connectivity checks."""
     selected = _selected_providers(name)
     results = [_test_one(metadata, symbol=symbol, timeout=timeout).to_dict() for metadata in selected]
     return {
