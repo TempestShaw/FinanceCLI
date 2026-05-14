@@ -61,7 +61,7 @@ finance document.scan url=https://www.sec.gov/.../filing.htm format=html match=a
 finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000
 ```
 
-Optional table and OCR commands:
+Table and OCR commands:
 
 ```bash
 finance document.tables ./report.pdf pages=10-12 flavor=stream
