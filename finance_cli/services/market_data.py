@@ -15,6 +15,12 @@ def fetch_quote(symbol: str, *, provider: YahooFinanceProvider | None = None) ->
     return client.quote(symbol)
 
 
+def fetch_market_status(market: str = "US", *, provider: YahooFinanceProvider | None = None) -> dict[str, Any]:
+    """Fetch market status and major index summary."""
+    client = provider or YahooFinanceProvider()
+    return client.market_status(market)
+
+
 def fetch_ohlcv(
     symbol: str,
     *,

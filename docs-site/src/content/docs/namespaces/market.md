@@ -25,6 +25,12 @@ Use `market.*` for market data and broad market context. Live values are time-se
 | `provider` | No | `auto` | `auto`, provider name | Provider selection. |
 | `include_attempts` | No | `false` | Boolean | Includes provider-attempt diagnostics when `true`. |
 
+### `market.status`
+
+| Parameter | Required | Default | Values | Description |
+| --- | --- | --- | --- | --- |
+| `MARKET` | No | `US` | Market code | Market universe for open/close status and index summary. |
+
 ### `market.regime`
 
 | Parameter | Required | Default | Values | Description |
@@ -72,3 +78,11 @@ finance market.sector_heat US 20 sector
 `market.regime` summarizes risk signals such as broad equity and volatility behavior. A tested run returned `risk_on` with confidence and a list of supporting signals.
 
 `market.sector_heat` ranks sector ETFs over a lookback window and returns leaders, laggards, and source attribution. Use it for market context, not as a standalone investment signal.
+
+## Market Status
+
+```bash
+finance market.status US
+```
+
+`market.status` returns Yahoo's market state summary for the requested market. The result includes `market_state`, `status`, and `summary` fields, with source attribution.

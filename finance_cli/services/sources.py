@@ -24,9 +24,9 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
     ProviderMetadata(
         name="yfinance",
         label="Yahoo Finance via yfinance",
-        capabilities=("quote", "ohlcv", "fundamentals"),
+        capabilities=("quote", "ohlcv", "fundamentals", "calendar", "sector", "industry", "screen"),
         package="yfinance",
-        notes="Public market data via yfinance.",
+        notes="Public market, company calendar, sector, industry, and screener data via yfinance.",
     ),
     ProviderMetadata(
         name="sec",
