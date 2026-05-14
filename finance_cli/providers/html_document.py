@@ -17,7 +17,7 @@ class HTMLDocumentProvider:
 
     def __init__(self, *, timeout: float = 60.0, user_agent: str | None = None) -> None:
         self.timeout = timeout
-        self.user_agent = user_agent or "FinanceCLI/0.1 contact@example.com"
+        self.user_agent = user_agent or "FinanceCLI/0.1 (+https://github.com/TempestShaw/FinanceCLI)"
 
     def read_document(
         self,

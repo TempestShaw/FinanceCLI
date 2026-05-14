@@ -140,7 +140,7 @@ def register_filings_commands() -> None:
             "finance filings.read accession=0001628280-26-018167 section=risk_factors max_chars=3000",
             "finance filings.read url=https://www.sec.gov/Archives/edgar/data/1642896/000162828026018167/iot-20260131.htm section=mda",
         ),
-        notes=("Uses edgartools for filing retrieval, then returns bounded text for CLI/agent consumption.",),
+        notes=("Uses edgartools for filing retrieval, then returns bounded text for downstream use.",),
     ))
     register_command(FinanceCommand(
         "filings.sections",

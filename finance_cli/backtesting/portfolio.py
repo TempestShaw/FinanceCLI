@@ -51,7 +51,7 @@ def build_quantile_weights(
 
 
 def build_rebalance_snapshot(timestamp: str, weights: dict[str, float]) -> dict[str, Any]:
-    """Build a UI/agent-friendly long-short basket snapshot."""
+    """Build a UI- and automation-friendly long-short basket snapshot."""
     longs = sorted(
         [{"symbol": symbol, "weight": float(weight)} for symbol, weight in weights.items() if weight > 0],
         key=lambda row: row["weight"],

@@ -10,7 +10,7 @@
   <img alt="License" src="https://img.shields.io/badge/license-MIT-111827">
 </p>
 
-Finance CLI helps analysts, quants, and research agents pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
+Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
 
 It is designed for repeatable public-company research: commands in, structured output out.
 
@@ -96,7 +96,7 @@ flowchart LR
     D --> G
     E --> G
     F --> G
-    G --> H["terminal, notebooks, scripts, agents"]
+    G --> H["terminal, notebooks, scripts, automation"]
 ```
 
 Commands are grouped by research job:
@@ -110,9 +110,9 @@ Commands are grouped by research job:
 | `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
 | `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
 
-## Agent-Native Workflows
+## Automation Workflows
 
-Finance CLI works well with Codex, Claude Code, OpenAI Agents, local scripts, and CI jobs because commands are small, explicit, and machine-readable.
+Finance CLI works well in local scripts, notebooks, CI jobs, and research automation because commands are small, explicit, and machine-readable.
 
 ```bash
 finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="operating lease costs" window=1200
@@ -121,7 +121,7 @@ finance filings.statement COST statement=balance query="Common Stock"
 finance formula.net_debt debt=11415 cash=11144 operating_cash=5089
 ```
 
-A typical agent workflow is:
+A typical automated research workflow is:
 
 1. discover the filing or presentation
 2. scan for the relevant section, metric, table, or phrase

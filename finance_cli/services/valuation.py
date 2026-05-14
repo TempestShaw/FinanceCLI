@@ -1,7 +1,7 @@
 """Valuation helper services.
 
 These functions intentionally perform simple deterministic math. They do not
-decide whether an assumption is reasonable; that judgment belongs to the agent
+decide whether an assumption is reasonable; that judgment belongs to the caller
 or human analyst using the CLI.
 """
 from __future__ import annotations

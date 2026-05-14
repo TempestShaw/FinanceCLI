@@ -8,6 +8,10 @@ __pycache__/
 htmlcov/
 build/
 dist/
+site/
+docs-site/dist/
+docs-site/.astro/
+docs-site/node_modules/
 .venv/
 venv/
 .DS_Store

@@ -26,7 +26,7 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         label="Yahoo Finance via yfinance",
         capabilities=("quote", "ohlcv", "fundamentals"),
         package="yfinance",
-        notes="Public market data via optional yfinance package.",
+        notes="Public market data via yfinance.",
     ),
     ProviderMetadata(
         name="sec",
@@ -58,7 +58,7 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         label="Financial Modeling Prep",
         capabilities=("analyst_estimates", "consensus_estimates"),
         required_env=("FMP_API_KEY",),
-        notes="Optional analyst estimate provider via FMP stable analyst-estimates endpoint.",
+        notes="Analyst estimate provider via FMP stable analyst-estimates endpoint.",
     ),
     ProviderMetadata(
         name="pymupdf",
@@ -72,14 +72,14 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         label="Camelot PDF table extraction",
         capabilities=("document_tables",),
         package="camelot",
-        notes="Optional table parser for text/vector PDFs. May require Ghostscript for some lattice workflows.",
+        notes="Table parser for text/vector PDFs. May require Ghostscript for some lattice workflows.",
     ),
     ProviderMetadata(
         name="paddleocr",
         label="PaddleOCR PP-StructureV3",
         capabilities=("document_ocr", "layout_parsing"),
         package="paddleocr",
-        notes="Optional OCR/layout parser. First real run may download PaddleX model files.",
+        notes="OCR/layout parser. First real run may download PaddleX model files.",
     ),
     ProviderMetadata(
         name="alphavantage",
@@ -87,7 +87,7 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         capabilities=("quote",),
         required_env=("ALPHAVANTAGE_API_KEY",),
         optional_env=("ALPHA_VANTAGE_API_KEY",),
-        notes="Optional realtime-ish quote fallback.",
+        notes="Realtime-ish quote fallback when an Alpha Vantage key is configured.",
     ),
     ProviderMetadata(
         name="alpaca",
@@ -95,7 +95,7 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         capabilities=("ohlcv",),
         required_env=("ALPACA_API_KEY", "ALPACA_API_SECRET"),
         optional_env=("APCA_API_KEY_ID", "APCA_API_SECRET_KEY", "ALPACA_DATA_FEED"),
-        notes="Optional OHLCV provider.",
+        notes="OHLCV provider when Alpaca market-data credentials are configured.",
     ),
 )
 

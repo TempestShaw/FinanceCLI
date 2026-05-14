@@ -50,5 +50,5 @@ def register_estimates_commands() -> None:
         _estimates_compare,
         usage="estimates.compare [SYMBOL] revenue=2.2B consensus_revenue=2.0B eps=0.50 consensus_eps=0.45 fiscal_year=2027",
         examples=("finance estimates.compare IOT revenue=2.2B consensus_revenue=2.0B eps=0.50 consensus_eps=0.45 fiscal_year=2027",),
-        notes=("No network calls. Compares only values explicitly supplied by the user or agent.",),
+        notes=("No network calls. Compares only values explicitly supplied by the caller.",),
     ))

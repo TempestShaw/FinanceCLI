@@ -49,7 +49,7 @@ def register_sources_commands() -> None:
         _sources_test,
         usage="sources.test [SOURCE|source=SOURCE] [symbol=AAPL timeout=30]",
         examples=(
-            "finance sources.test yahoo symbol=AAPL",
+            "finance sources.test yfinance symbol=AAPL",
             "finance sources.test sec symbol=AAPL",
             "finance sources.test source=all symbol=AAPL timeout=30",
         ),
