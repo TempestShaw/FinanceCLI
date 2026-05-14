@@ -8,6 +8,9 @@ hero:
     - text: Quick Start
       link: /FinanceCLI/quickstart/
       icon: right-arrow
+    - text: Agent Guide
+      link: /FinanceCLI/agents/
+      icon: document
     - text: Command Reference
       link: /FinanceCLI/commands/
       icon: document
@@ -16,6 +19,8 @@ hero:
 Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
 
 It is designed for repeatable public-company research: commands in, structured output out.
+
+Agents can start from [`llms.txt`](/FinanceCLI/llms.txt), [`tools.json`](/FinanceCLI/tools.json), or the [`Agent Guide`](/FinanceCLI/agents/).
 
 ## Why This Exists
 
@@ -33,6 +38,15 @@ Finance CLI packages those recurring research steps into terminal commands with 
 | `transcripts.*`, `kpi.*`, `ir.*` | Earnings transcripts, KPI evidence, and investor presentations. |
 | `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
 | `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
+
+## Machine-Readable Entry Points
+
+| File | Use it for |
+| --- | --- |
+| [`llms.txt`](/FinanceCLI/llms.txt) | Compact LLM entry point and read order. |
+| [`llms-full.txt`](/FinanceCLI/llms-full.txt) | Full command routing context and playbooks. |
+| [`tools.json`](/FinanceCLI/tools.json) | Command schemas, side effects, citation fields, and agent routing hints. |
+| [`openapi.json`](/FinanceCLI/openapi.json) | OpenAPI-style adapter contract for MCP/plugin wrappers. |
 
 ## Install
 

@@ -22,6 +22,71 @@ A typical automated research workflow is:
 4. calculate the metric with explicit inputs
 5. preserve the command and JSON output as audit trail
 
+## Agent Playbooks
+
+These playbooks are templates for agents. They are also included in [`tools.json`](/FinanceCLI/tools.json).
+
+### Extract A Metric From A 10-K
+
+```yaml
+task: extract_metric_from_10k
+steps:
+  - filings.recent
+  - filings.statement
+  - document.scan
+  - document.window
+  - formula.margin
+failure_modes:
+  - if no XBRL row matches, fall back to filings.reports then filings.report
+  - if the table is narrative or HTML-only, use document.scan with match=all_terms
+  - cite accession/url/report_name/section/start_char/end_char when available
+```
+
+### Explain A Dated Price Move
+
+```yaml
+task: explain_price_move
+steps:
+  - price.moves
+  - price.context
+  - news.search
+  - filings.recent
+  - transcripts.search
+failure_modes:
+  - if no evidence is found, say no direct evidence was found
+  - do not infer causality from price movement alone
+  - preserve source/provider/date/url fields
+```
+
+### Discover And Contextualize A Screen
+
+```yaml
+task: screen_and_contextualize_equities
+steps:
+  - screen.predefined
+  - screen.run
+  - symbol.snapshot
+  - market.quote
+  - filings.recent
+failure_modes:
+  - if a screen returns fewer rows than requested, keep the returned count
+  - do not describe screen membership as a recommendation
+```
+
+### Run A Reproducible Backtest
+
+```yaml
+task: run_reproducible_backtest
+steps:
+  - backtest.strategies
+  - backtest.describe
+  - backtest.run
+  - backtest.tune
+failure_modes:
+  - require explicit symbols and dates
+  - preserve strategy name, params, provider, and JSON output
+```
+
 ## Why Not Just A Notebook?
 
 | Research job | Notebook-first workflow | Finance CLI workflow |

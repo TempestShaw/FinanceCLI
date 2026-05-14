@@ -1,0 +1,613 @@
+# Finance CLI Full Agent Context
+
+Finance CLI is a local command-line tool for repeatable public-company research. Prefer the machine-readable schema over scraping prose docs.
+
+## Canonical Files
+
+- `tools.json`: https://tempestshaw.github.io/FinanceCLI/tools.json
+- `openapi.json`: https://tempestshaw.github.io/FinanceCLI/openapi.json
+- Human docs: https://tempestshaw.github.io/FinanceCLI/
+
+## Result Envelope
+
+Every command returns JSON shaped like:
+
+```json
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "warnings": []
+}
+```
+
+## Trust Rules
+
+- Cite accession, URL, report_name, section, page, start_char/end_char, source, provider, and timestamp when available.
+- Never claim live market data without provider/source and timestamp/date fields when available.
+- Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.
+- Formula and valuation commands are deterministic calculators, not investment advice.
+- If `ok=false`, surface the error clearly and do not fabricate data.
+
+## Agent Playbooks
+
+### extract_metric_from_10k
+Use when: The user asks for a metric or table value from a company's latest 10-K.
+Steps:
+- filings.recent
+- filings.statement
+- document.scan
+- document.window
+- formula.*
+Failure modes:
+- If no XBRL row matches, fall back to filings.reports then document.scan.
+- If document.scan finds multiple matches, use document.window around each candidate and cite offsets.
+
+### explain_price_move
+Use when: The user asks what happened around a dated price move.
+Steps:
+- price.moves
+- price.context
+- news.search
+- filings.recent
+- transcripts.search
+Failure modes:
+- If no dated evidence appears, say the CLI found no direct evidence rather than inferring causality.
+- Always cite provider, date, and URL/accession when available.
+
+### screen_and_contextualize_equities
+Use when: The user asks for market ideas from predefined Yahoo screens.
+Steps:
+- screen.predefined
+- screen.run
+- symbol.snapshot
+- market.quote
+- filings.recent
+Failure modes:
+- If a screen returns fewer rows than requested, keep the returned count and source.
+- Do not describe screen membership as a recommendation.
+
+### run_reproducible_backtest
+Use when: The user asks to test a strategy over explicit symbols and dates.
+Steps:
+- backtest.strategies
+- backtest.describe
+- backtest.run
+- backtest.tune
+Failure modes:
+- If provider data is unavailable, fail clearly with the provider error.
+- Preserve strategy name, symbols, dates, params, and JSON output.
+
+## Command Routing
+
+### backtest.describe
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: strategy:string required
+Usage: `finance backtest.describe STRATEGY`
+
+### backtest.factor.payload
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: factor_name:string required, symbols:string required, start_date:string required, end_date:string required, timeframe:string, top_pct:number, bottom_pct:number
+Usage: `finance backtest.factor.payload FACTOR_NAME SYMBOLS START_DATE END_DATE [timeframe=1d top_pct=0.2 bottom_pct=0.2]`
+
+### backtest.factor.weights
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: factor_name:string required, scores:string required, top_pct:number, bottom_pct:number
+Usage: `finance backtest.factor.weights FACTOR_NAME scores='{"AAPL":1.2,"MSFT":0.4}' [top_pct=0.2 bottom_pct=0.2]`
+
+### backtest.run
+Use when: Use when the user asks to run a named strategy over explicit symbols and dates.
+Avoid when: Do not use as proof a strategy will work live.
+Side effects: network_read_only
+Args: strategy:string required, symbols:string required, start_date:string required, end_date:string required, params:object, strategy_file:string
+Usage: `finance backtest.run STRATEGY SYMBOLS START_DATE END_DATE [params='{}' strategy_file=./rule.py]`
+
+### backtest.strategies
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: none
+Usage: `finance backtest.strategies`
+
+### backtest.strategy.payload
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: strategy_id:string required, start_date:string required, end_date:string required, initial_cash:integer, parameters:object
+Usage: `finance backtest.strategy.payload STRATEGY_ID START_DATE END_DATE [initial_cash=100000 parameters='{}']`
+
+### backtest.tune
+Use when: Use for repeatable strategy checks, payload construction, and VectorBT result summaries.
+Avoid when: Do not present backtests as live trading recommendations.
+Side effects: network_read_only
+Args: strategy:string required, symbols:string required, start_date:string required, end_date:string required, grid:object required, metric:string, max_runs:integer
+Usage: `finance backtest.tune STRATEGY SYMBOLS START_DATE END_DATE grid='{}' [metric=sharpe_ratio max_runs=100]`
+
+### calendar.company
+Use when: Use for company calendar fields and earnings-date rows.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required
+Usage: `finance calendar.company SYMBOL`
+
+### calendar.earnings
+Use when: Use for company calendar fields and earnings-date rows.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, limit:integer
+Usage: `finance calendar.earnings SYMBOL [limit=12]`
+
+### document.ocr
+Use when: Use as fallback for scanned or image-heavy PDFs after document.read/scan cannot extract text.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: local_or_network_read
+Args: source:string required, max_chars:integer, max_pages:integer
+Usage: `finance document.ocr SOURCE|source=PATH_OR_URL [max_chars=12000 max_pages=5]`
+
+### document.read
+Use when: Use for first-pass text extraction from a known PDF or SEC HTML URL.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: local_or_network_read
+Args: source:string required, format:string, max_chars:integer, max_pages:integer
+Usage: `finance document.read SOURCE|source=PATH_OR_URL [format=pdf|html max_chars=12000 max_pages=5]`
+
+### document.scan
+Use when: Use when the user needs phrase, table, or topic discovery inside a filing or document.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: local_or_network_read
+Args: source:string required, query:string, topics:array, format:string, match:string, threshold:number, max_chars:integer, max_pages:integer, limit:integer, window:integer, start_char:integer, end_char:integer
+Usage: `finance document.scan SOURCE|source=PATH_OR_URL [query=... topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]`
+
+### document.tables
+Use when: Use for table previews in text-based PDFs when text windows are not enough.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: local_or_network_read
+Args: source:string required, pages:string, flavor:string, max_tables:integer, max_rows:integer
+Usage: `finance document.tables SOURCE|source=PATH_OR_URL [pages=1-end flavor=stream|lattice max_tables=20 max_rows=25]`
+
+### document.window
+Use when: Use after document.scan to read around a stable char offset or match_id without re-scanning the full document.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: local_or_network_read
+Args: source:string required, format:string, start_char:integer, match_id:string, chars:integer, direction:string
+Usage: `finance document.window SOURCE|source=PATH_OR_URL [format=pdf|html start_char=0|match_id=char_START_END chars=4000 direction=around|next|previous]`
+
+### estimates.compare
+Use when: Use for explicit estimate comparison math and structured consensus result shaping.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: pure_calculation
+Args: symbol:string, revenue:string required, consensus_revenue:string required, eps:number required, consensus_eps:number required, fiscal_year:integer required
+Usage: `finance estimates.compare [SYMBOL] revenue=2.2B consensus_revenue=2.0B eps=0.50 consensus_eps=0.45 fiscal_year=2027`
+
+### estimates.consensus
+Use when: Use for explicit estimate comparison math and structured consensus result shaping.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: pure_calculation
+Args: symbol:string required, period:string, limit:integer, page:integer
+Usage: `finance estimates.consensus SYMBOL [period=annual|quarter limit=10 page=0]`
+
+### filings.read
+Use when: Use when the user asks for a canonical 10-K section such as business, risk factors, MD&A, or segments.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, accession:string, url:string, form:string, section:string, max_chars:integer
+Usage: `finance filings.read [SYMBOL] [accession=...|url=...] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]`
+
+### filings.recent
+Use when: Use first when the user names a ticker but not a filing URL or accession.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, forms:string, limit:integer, classify:boolean
+Usage: `finance filings.recent SYMBOL [forms=8-K,10-Q limit=20 classify=false]`
+
+### filings.report
+Use when: Use when the user already knows or discovered an edgartools report name and wants rows from that report.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, accession:string, url:string, name:string required, form:string, query:string, max_rows:integer, max_chars:integer
+Usage: `finance filings.report [SYMBOL] [accession=...|url=...] name='Report Short Name' [form=10-K query=... max_rows=25 (0=unlimited) max_chars=8000]`
+
+### filings.reports
+Use when: Use for SEC filing discovery, canonical section reads, XBRL statement rows, and filing summary reports.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, accession:string, url:string, form:string, query:string
+Usage: `finance filings.reports [SYMBOL] [accession=...|url=...] [form=10-K query=lease]`
+
+### filings.sections
+Use when: Use for SEC filing discovery, canonical section reads, XBRL statement rows, and filing summary reports.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, accession:string, url:string, form:string
+Usage: `finance filings.sections [SYMBOL] [accession=...|url=...] [form=10-K]`
+
+### filings.statement
+Use when: Use when the user asks for structured XBRL financial statement rows such as income, balance, or cashflow items.
+Avoid when: Do not use for narrative section text or non-XBRL table discovery.
+Side effects: network_read_only
+Args: symbol:string, accession:string, url:string, form:string, statement:string, query:string, max_rows:integer, include_abstract:boolean
+Usage: `finance filings.statement [SYMBOL] [accession=...|url=...] [form=10-K statement=income|balance|cashflow query=... max_rows=0]`
+
+### formula.adjusted_ebitda
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: ebit:number required, d_and_a:number required, addbacks:array
+Usage: `finance formula.adjusted_ebitda ebit=9285 d_and_a=2237 addbacks=284,163`
+
+### formula.cagr
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: start:number required, end:number required, periods:number required
+Usage: `finance formula.cagr start=100 end=150 periods=3`
+
+### formula.capm
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: risk_free:number required, beta:number required, market_return:number required
+Usage: `finance formula.capm risk_free=4.617% beta=0.79 market_return=11%`
+
+### formula.days
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: current:number required, prior:number required, denominator:number required, days:number
+Usage: `finance formula.days current=2721 prior=2285 denominator=254453 [days=365]`
+
+### formula.ebitda
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: ebit:number required, d_and_a:number required
+Usage: `finance formula.ebitda ebit=9285 d_and_a=2237`
+
+### formula.enterprise_value
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: market_equity:number required, debt:number, cash:number, operating_cash:number
+Usage: `finance formula.enterprise_value market_equity=418856 debt=11415 cash=11144 operating_cash=5089`
+
+### formula.lease_equivalent
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: base_liability:number required, variable_cost:number required, operating_cost:number required
+Usage: `finance formula.lease_equivalent base_liability=2554 variable_cost=163 operating_cost=284`
+
+### formula.margin
+Use when: Use for explicit numerator/denominator ratio math after cited inputs are known.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: numerator:number required, denominator:number required
+Usage: `finance formula.margin numerator=11969 denominator=254453`
+
+### formula.net_debt
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: debt:number required, cash:number required, operating_cash:number
+Usage: `finance formula.net_debt debt=11415 cash=11144 [operating_cash=5089]`
+
+### formula.operating_cash
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: revenue:number required, cash_like_assets:number required, percent_revenue:number
+Usage: `finance formula.operating_cash revenue=254453 cash_like_assets=11144 [percent_revenue=2%]`
+
+### formula.operating_current_assets
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: current_assets:number required, cash_like_assets:number, operating_cash:number
+Usage: `finance formula.operating_current_assets current_assets=34246 [cash_like_assets=11144 operating_cash=5089]`
+
+### formula.operating_current_liabilities
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: current_liabilities:number required, interest_bearing_current_debt:number
+Usage: `finance formula.operating_current_liabilities current_liabilities=35464 [interest_bearing_current_debt=103]`
+
+### formula.roic
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: nopat:number required, invested_capital:number required
+Usage: `finance formula.roic nopat=7113 invested_capital=28077`
+
+### formula.turnover
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: numerator:number required, current:number required, prior:number required
+Usage: `finance formula.turnover numerator=222358 current=18647 prior=16651`
+
+### formula.wacc
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: equity_value:number required, debt_value:number required, cost_of_equity:number required, cost_of_debt:number required, tax_rate:number, debt_tax:string
+Usage: `finance formula.wacc equity_value=418856 debt_value=11415 cost_of_equity=9.66% cost_of_debt=6% tax_rate=24% debt_tax=pretax|after_tax`
+
+### formula.working_capital
+Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
+Avoid when: Do not invent missing inputs. Ask for them or extract them first.
+Side effects: pure_calculation
+Args: operating_current_assets:number required, operating_current_liabilities:number required
+Usage: `finance formula.working_capital operating_current_assets=28191 operating_current_liabilities=35035`
+
+### fundamentals.statement
+Use when: Use for Yahoo financial statement tables outside SEC filing context.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, statement:string, period:string
+Usage: `finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly]`
+
+### industry.keys
+Use when: Use for Yahoo industry keys, overview data, top companies, and research-report tables.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: sector:string
+Usage: `finance industry.keys [sector=SECTOR_KEY]`
+
+### industry.overview
+Use when: Use for Yahoo industry keys, overview data, top companies, and research-report tables.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: key:string required
+Usage: `finance industry.overview KEY`
+
+### industry.table
+Use when: Use for Yahoo industry keys, overview data, top companies, and research-report tables.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: key:string required, table:string, limit:integer
+Usage: `finance industry.table KEY [table=top_companies|top_growth_companies|top_performing_companies|research_reports limit=25]`
+
+### ir.presentations
+Use when: Use to discover or read investor presentations from SEC exhibits and company IR pages.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, limit:integer, source:string
+Usage: `finance ir.presentations SYMBOL [limit=20 source=auto|sec|company_ir|all]`
+
+### ir.read
+Use when: Use to discover or read investor presentations from SEC exhibits and company IR pages.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: url:string required, max_chars:integer, ocr:string
+Usage: `finance ir.read url=URL [max_chars=12000 ocr=off|auto|force]`
+
+### kpi.extract
+Use when: Use to collect KPI evidence from transcripts and filings with source snippets.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, source:string, metrics:string, limit:integer, quarter:string, form:string
+Usage: `finance kpi.extract SYMBOL [source=transcripts|filings|both metrics=arr,nrr limit=30 quarter=latest form=10-K]`
+
+### kpi.history
+Use when: Use to collect KPI evidence from transcripts and filings with source snippets.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, source:string, metrics:string, limit:integer, per_document_limit:integer
+Usage: `finance kpi.history SYMBOL [source=transcripts metrics=arr,nrr limit=4 per_document_limit=20]`
+
+### market.ohlcv
+Use when: Use for historical bars needed by backtests, event windows, and price context.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: timeframe:string, start_date:string, end_date:string, limit:integer, provider:string, include_attempts:boolean, symbols:string required
+Usage: `finance market.ohlcv SYMBOL[,SYMBOL...] [timeframe=1d start_date=YYYY-MM-DD end_date=YYYY-MM-DD limit=200 provider=auto include_attempts=false]`
+
+### market.quote
+Use when: Use for a current provider quote or compact company market snapshot.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required
+Usage: `finance market.quote SYMBOL`
+
+### market.regime
+Use when: Use for quotes, OHLCV, market status, broad regime, and sector heat context.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: market:string, timeframe:string
+Usage: `finance market.regime [MARKET=US] [TIMEFRAME=swing]`
+
+### market.sector_heat
+Use when: Use for quotes, OHLCV, market status, broad regime, and sector heat context.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: market:string, lookback_days:integer, group_by:string
+Usage: `finance market.sector_heat [MARKET=US] [LOOKBACK_DAYS=20] [GROUP_BY=sector]`
+
+### market.status
+Use when: Use to check current market open/close state and major-index summary.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: market:string
+Usage: `finance market.status [MARKET=US]`
+
+### news.analyze
+Use when: Use for source-attributed news search and GDELT analysis windows.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: analysis:string required, query:string, symbol:string, sector:string, mode:string, max_records:integer, timespan:string, date:string, start_date:string, end_date:string, start_datetime:string, end_datetime:string
+Usage: `finance news.analyze analysis=timeline|tone|context|geo|doc [query=TEXT | symbol=SYMBOL | sector=SECTOR] [mode=MODE max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]`
+
+### news.search
+Use when: Use for source-attributed news search and GDELT analysis windows.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: query:string, symbol:string, sector:string, max_records:integer, timespan:string, date:string, start_date:string, end_date:string, start_datetime:string, end_datetime:string
+Usage: `finance news.search [query=TEXT | symbol=SYMBOL | sector=SECTOR] [max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]`
+
+### price.context
+Use when: Use when the user asks what filings, news, or transcripts were near a dated price move.
+Avoid when: Do not claim causality unless the evidence explicitly supports it.
+Side effects: network_read_only
+Args: symbol:string required, date:string required, lookback:string, news_limit:integer, filing_limit:integer, transcript_limit:integer
+Usage: `finance price.context SYMBOL date=YYYY-MM-DD [lookback=3D news_limit=5 filing_limit=80 transcript_limit=12]`
+
+### price.moves
+Use when: Use for price move discovery and evidence timelines around a date.
+Avoid when: Do not infer causality from price.context alone.
+Side effects: network_read_only
+Args: symbol:string required, window:string, years:integer, threshold:string, limit:integer, provider:string
+Usage: `finance price.moves SYMBOL [window=1d|3d|1w|1m years=3 threshold=8|8% limit=20 provider=auto]`
+
+### research.plan
+Use when: Use before executing a complex public-company research workflow.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: pure_calculation
+Args: symbol:string required, style:string
+Usage: `finance research.plan SYMBOL [style=fundamental]`
+
+### screen.predefined
+Use when: Use to list and run Yahoo predefined equity screens.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: none
+Usage: `finance screen.predefined`
+
+### screen.run
+Use when: Use after screen.predefined when the user asks for Yahoo predefined screen results.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: query:string required, count:integer, offset:integer, sort_field:string, sort_asc:boolean
+Usage: `finance screen.run QUERY [count=25 offset=0 sort_field=FIELD sort_asc=false]`
+
+### sector.industries
+Use when: Use for Yahoo sector keys, industries, overview data, ETFs, mutual funds, and top companies.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: key:string required
+Usage: `finance sector.industries KEY`
+
+### sector.keys
+Use when: Use for Yahoo sector keys, industries, overview data, ETFs, mutual funds, and top companies.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: none
+Usage: `finance sector.keys`
+
+### sector.overview
+Use when: Use for Yahoo sector keys, industries, overview data, ETFs, mutual funds, and top companies.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: key:string required
+Usage: `finance sector.overview KEY`
+
+### sector.table
+Use when: Use for Yahoo sector keys, industries, overview data, ETFs, mutual funds, and top companies.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: key:string required, table:string, limit:integer
+Usage: `finance sector.table KEY [table=top_companies|top_etfs|top_mutual_funds|research_reports limit=25]`
+
+### sources.list
+Use when: Use to inspect configured data sources and run provider health probes.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: none
+Usage: `finance sources.list`
+
+### sources.status
+Use when: Use to report which providers are configured locally without making provider-specific claims.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: none
+Usage: `finance sources.status`
+
+### sources.test
+Use when: Use for provider connectivity checks when debugging setup.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: source:string, symbol:string, timeout:integer
+Usage: `finance sources.test [SOURCE|source=SOURCE] [symbol=AAPL timeout=30]`
+
+### symbol.profile
+Use when: Use for a public-company profile or compact symbol snapshot.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required
+Usage: `finance symbol.profile SYMBOL`
+
+### symbol.snapshot
+Use when: Use for a public-company profile or compact symbol snapshot.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required
+Usage: `finance symbol.snapshot SYMBOL`
+
+### transcripts.qa
+Use when: Use for earnings-call transcript search, reading, and Q&A extraction.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, url:string, quarter:string, limit:integer
+Usage: `finance transcripts.qa [SYMBOL] [url=...] [quarter=latest limit=10]`
+
+### transcripts.read
+Use when: Use for earnings-call transcript search, reading, and Q&A extraction.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string, url:string, quarter:string, max_chars:integer, include_turns:boolean
+Usage: `finance transcripts.read [SYMBOL] [url=...] [quarter=latest max_chars=12000 include_turns=false]`
+
+### transcripts.search
+Use when: Use for earnings-call transcript search, reading, and Q&A extraction.
+Avoid when: No command-specific restriction beyond trust rules.
+Side effects: network_read_only
+Args: symbol:string required, limit:integer, debug:boolean
+Usage: `finance transcripts.search SYMBOL [limit=4 debug=false]`
+
+### valuation.dcf
+Use when: Use only for deterministic DCF math from explicit cash flows and discount assumptions.
+Avoid when: Do not use as investment advice or infer assumptions silently.
+Side effects: pure_calculation
+Args: cashflows:array required, discount_rate:number required, terminal_growth:number, exit_multiple:number
+Usage: `finance valuation.dcf cashflows=100M,120M,140M discount_rate=10% [terminal_growth=3%|exit_multiple=15]`
+
+### valuation.irr
+Use when: Use for deterministic valuation math once assumptions are explicit.
+Avoid when: Do not present valuation output as investment advice.
+Side effects: pure_calculation
+Args: cashflows:array required
+Usage: `finance valuation.irr cashflows=-100M,30M,40M,50M`
+
+### valuation.multiples
+Use when: Use for deterministic valuation math once assumptions are explicit.
+Avoid when: Do not present valuation output as investment advice.
+Side effects: pure_calculation
+Args: symbol:string required
+Usage: `finance valuation.multiples SYMBOL`
+
+### valuation.npv
+Use when: Use for deterministic valuation math once assumptions are explicit.
+Avoid when: Do not present valuation output as investment advice.
+Side effects: pure_calculation
+Args: cashflows:array required, discount_rate:number required
+Usage: `finance valuation.npv cashflows=-100M,30M,40M,50M discount_rate=10%`
+
+### valuation.scenario
+Use when: Use for deterministic valuation math once assumptions are explicit.
+Avoid when: Do not present valuation output as investment advice.
+Side effects: pure_calculation
+Args: symbol:string required, revenue:number required, bear_multiple:number required, base_multiple:number required, bull_multiple:number required, shares:number
+Usage: `finance valuation.scenario SYMBOL revenue=2.2B bear_multiple=7 base_multiple=10 bull_multiple=13 [shares=580M]`
+
+### valuation.wacc
+Use when: Use for deterministic valuation math once assumptions are explicit.
+Avoid when: Do not present valuation output as investment advice.
+Side effects: pure_calculation
+Args: equity_value:number required, debt_value:number required, cost_of_equity:string required, cost_of_debt:string required, tax_rate:number
+Usage: `finance valuation.wacc equity_value=10B debt_value=1B cost_of_equity=10% cost_of_debt=5% tax_rate=21%`

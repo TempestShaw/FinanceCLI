@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tempestshaw.github.io/FinanceCLI/schemas/finance-cli-tools.schema.json",
+  "title": "Finance CLI tools schema",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "result_envelope",
+    "side_effect_levels",
+    "commands"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "canonical_docs": {
+      "type": "string"
+    },
+    "result_envelope": {
+      "type": "object"
+    },
+    "side_effect_levels": {
+      "type": "object"
+    },
+    "trust_policy": {
+      "type": "object"
+    },
+    "playbooks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "namespace",
+          "description",
+          "usage",
+          "args",
+          "input_schema",
+          "output_schema",
+          "side_effects",
+          "auth_required",
+          "agent"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "usage": {
+            "type": "string"
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "args": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "type",
+                "required",
+                "description"
+              ],
+              "properties": {
+                "type": {},
+                "required": {
+                  "type": "boolean"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "default": {},
+                "enum": {
+                  "type": "array"
+                },
+                "format": {
+                  "type": "string"
+                },
+                "items": {
+                  "type": "object"
+                },
+                "aliases": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "input_schema": {
+            "type": "object"
+          },
+          "output_schema": {
+            "type": "object"
+          },
+          "side_effects": {
+            "enum": [
+              "local_file_read",
+              "local_or_network_read",
+              "network_read_only",
+              "pure_calculation"
+            ]
+          },
+          "side_effects_description": {
+            "type": "string"
+          },
+          "auth_required": {
+            "type": "string"
+          },
+          "rate_limit_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "citation_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "agent": {
+            "type": "object",
+            "required": [
+              "use_when",
+              "next_steps"
+            ],
+            "properties": {
+              "use_when": {
+                "type": "string"
+              },
+              "avoid_when": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "next_steps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
