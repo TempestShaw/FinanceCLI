@@ -129,6 +129,14 @@ def parse_date(value: Any) -> date | None:
     # Handle YYYYMMDD
     if len(text) == 8 and text.isdigit():
         candidates.append(f"{text[:4]}-{text[4:6]}-{text[6:8]}")
+    compact_datetime = re.fullmatch(
+        r"(\d{4})(\d{2})(\d{2})T(?:[01]\d|2[0-3])(?:[0-5]\d){2}(?:Z|[+-](?:[01]\d|2[0-3]):?[0-5]\d)?",
+        text,
+    )
+    if compact_datetime:
+        candidates.append(
+            f"{compact_datetime.group(1)}-{compact_datetime.group(2)}-{compact_datetime.group(3)}"
+        )
         
     for candidate in candidates:
         try:

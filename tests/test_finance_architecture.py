@@ -4,6 +4,7 @@ from pathlib import Path
 from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.main import main
 from finance_cli.cli.registry import clear_commands, get_command, list_commands
+from finance_cli.core.common import parse_date
 from finance_cli.core.market import get_market_regime, get_sector_heat
 from finance_cli.core.symbols import get_symbol_snapshot
 from finance_cli.backtesting.portfolio import build_quantile_weights
@@ -409,6 +410,12 @@ def test_price_context_returns_temporal_timeline_without_causality(monkeypatch):
     roles = {row["source_type"]: row["evidence_role"] for row in result["timeline"]}
     assert roles == {"news": "before_move", "filing": "same_day", "transcript": "after_move"}
     assert "caused_by" not in json.dumps(result)
+
+
+def test_parse_date_handles_compact_datetimes_on_python_310():
+    assert parse_date("20260102T120000Z").isoformat() == "2026-01-02"
+    assert parse_date("20260102T120000+0000").isoformat() == "2026-01-02"
+    assert parse_date("20260102T999999Z") is None
 
 
 def test_price_context_accepts_calendar_window_strings(monkeypatch):

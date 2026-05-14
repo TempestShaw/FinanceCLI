@@ -1,6 +1,6 @@
 ---
 title: sources
-description: Inspect provider inventory, configuration, and live connectivity.
+description: Inspect provider inventory, configuration, and connectivity.
 ---
 
 Use `sources.*` before a workflow when you want to know which providers are installed, which API keys are configured, and whether a live source can answer a minimal request.
@@ -21,7 +21,7 @@ No parameters. Checks installed packages and configured environment variables wi
 | --- | --- | --- | --- | --- |
 | `SOURCE` / `source` | No | All sources when omitted | `yfinance`, `sec`, `gdelt`, `motley_fool`, `company_ir`, `fmp`, `pymupdf`, `camelot`, `paddleocr`, `alphavantage`, `alpaca`, `all` | Provider to probe. Positional `SOURCE` and `source=SOURCE` are equivalent. |
 | `symbol` | No | `AAPL` | Public ticker | Symbol used by probes that need a ticker. |
-| `timeout` | No | `30` | Seconds | Timeout passed to live provider probes. |
+| `timeout` | No | `30` | Seconds | Timeout for connectivity checks. |
 
 ## Commands
 
@@ -55,7 +55,7 @@ Tested `sources.list` result shape:
 
 ## Example Result
 
-A local status run reported installed document, table, OCR, SEC, transcript, and market-data packages, while `FMP_API_KEY` was not configured. Commands that need FMP, such as `estimates.consensus`, fail clearly until the key is set.
+A local status run reports installed document, table, OCR, SEC, transcript, and market-data packages, plus the configured state for keyed services.
 
 ```json
 {
@@ -94,6 +94,6 @@ Tested `sources.test yfinance` and `sources.test sec` result shape:
 }
 ```
 
-## Failure Model
+## Configuration Model
 
-Missing packages, keys, or provider configuration are reported as source status, not silently replaced with synthetic data. Provider test commands may still fail later because remote services can rate limit, change HTML, or be temporarily unavailable.
+`sources.status` is the setup view; `sources.test` is the connectivity view. Together they make it easy to confirm which namespaces are ready before running a larger workflow.
