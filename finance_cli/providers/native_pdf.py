@@ -10,7 +10,7 @@ import httpx
 from finance_cli.providers.base import ProviderError, quiet_call, require_dependency
 
 
-DOCUMENTS_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip install -U finance-cli"
+DOCUMENTS_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip install -U finresearch-cli"
 
 
 class NativePDFProvider:

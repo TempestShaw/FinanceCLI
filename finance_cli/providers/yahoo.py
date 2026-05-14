@@ -7,7 +7,7 @@ from typing import Any
 from finance_cli.providers.base import ProviderError, quiet_call, require_dependency
 
 
-MARKET_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip install -U finance-cli"
+MARKET_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip install -U finresearch-cli"
 
 
 TIMEFRAME_CONFIGS = {

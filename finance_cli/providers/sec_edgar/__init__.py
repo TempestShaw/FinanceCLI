@@ -366,7 +366,7 @@ class SecEdgarProvider:
         try:
             pypdf = require_dependency(
                 "pypdf",
-                "Install or repair Finance CLI with: python -m pip install -U finance-cli",
+                "Install or repair Finance CLI with: python -m pip install -U finresearch-cli",
             )
             reader = pypdf.PdfReader(BytesIO(raw))
             raw_pages = [_common._clean_text(page.extract_text() or "") for page in reader.pages]
@@ -453,7 +453,7 @@ class SecEdgarProvider:
         edgar = quiet_call(
             require_dependency,
             "edgar",
-            "Install or repair Finance CLI with: python -m pip install -U finance-cli",
+            "Install or repair Finance CLI with: python -m pip install -U finresearch-cli",
         )
         if not self._edgar_identity_set and hasattr(edgar, "set_identity"):
             quiet_call(edgar.set_identity, self.user_agent)
