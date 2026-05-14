@@ -125,6 +125,40 @@ finance backtest.tune STRATEGY SYMBOLS START_DATE END_DATE grid='{}' [metric=sha
 finance backtest.tune sma_cross AAPL 2020-01-01 2024-12-31 grid='{"fast":[10,20],"slow":[50,100]}'
 ```
 
+## `calendar.*`
+
+### `calendar.company`
+
+Fetch company earnings/dividend calendar fields
+
+**Usage**
+
+```bash
+finance calendar.company SYMBOL
+```
+
+**Examples**
+
+```bash
+finance calendar.company AAPL
+```
+
+### `calendar.earnings`
+
+Fetch earnings-date rows for a company
+
+**Usage**
+
+```bash
+finance calendar.earnings SYMBOL [limit=12]
+```
+
+**Examples**
+
+```bash
+finance calendar.earnings AAPL limit=8
+```
+
 ## `document.*`
 
 ### `document.ocr`
@@ -680,6 +714,57 @@ finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=
 finance fundamentals.statement NVDA statement=income period=quarterly
 ```
 
+## `industry.*`
+
+### `industry.keys`
+
+List Yahoo industry keys, optionally filtered by sector
+
+**Usage**
+
+```bash
+finance industry.keys [sector=SECTOR_KEY]
+```
+
+**Examples**
+
+```bash
+finance industry.keys sector=technology
+```
+
+### `industry.overview`
+
+Fetch industry overview metadata
+
+**Usage**
+
+```bash
+finance industry.overview KEY
+```
+
+**Examples**
+
+```bash
+finance industry.overview software-infrastructure
+```
+
+### `industry.table`
+
+Fetch industry top companies or reports
+
+**Usage**
+
+```bash
+finance industry.table KEY [table=top_companies|top_growth_companies|top_performing_companies|research_reports limit=25]
+```
+
+**Examples**
+
+```bash
+finance industry.table software-infrastructure table=top_companies limit=10
+finance industry.table software-infrastructure table=top_growth_companies limit=10
+```
+
 ## `ir.*`
 
 ### `ir.presentations`
@@ -849,6 +934,22 @@ finance market.sector_heat [MARKET=US] [LOOKBACK_DAYS=20] [GROUP_BY=sector]
 finance market.sector_heat US 20 sector
 ```
 
+### `market.status`
+
+Show Yahoo market open/close status and index summary
+
+**Usage**
+
+```bash
+finance market.status [MARKET=US]
+```
+
+**Examples**
+
+```bash
+finance market.status US
+```
+
 ## `news.*`
 
 ### `news.analyze`
@@ -978,6 +1079,112 @@ finance research.plan IOT style=fundamental
 
 - This returns suggested commands only; it does not execute research or form conclusions.
 - Use this as a navigation layer for repeatable research workflows.
+
+## `screen.*`
+
+### `screen.predefined`
+
+List predefined Yahoo equity screens
+
+**Usage**
+
+```bash
+finance screen.predefined
+```
+
+**Examples**
+
+```bash
+finance screen.predefined
+```
+
+### `screen.run`
+
+Run a predefined Yahoo equity screen
+
+**Usage**
+
+```bash
+finance screen.run QUERY [count=25 offset=0 sort_field=FIELD sort_asc=false]
+```
+
+**Examples**
+
+```bash
+finance screen.run day_gainers count=10
+```
+
+**Notes**
+
+- Use screen.predefined to list available query keys.
+- count is the maximum number of quotes requested.
+
+## `sector.*`
+
+### `sector.industries`
+
+List industries in a sector
+
+**Usage**
+
+```bash
+finance sector.industries KEY
+```
+
+**Examples**
+
+```bash
+finance sector.industries technology
+```
+
+### `sector.keys`
+
+List Yahoo sector keys
+
+**Usage**
+
+```bash
+finance sector.keys
+```
+
+**Examples**
+
+```bash
+finance sector.keys
+```
+
+### `sector.overview`
+
+Fetch sector overview metadata
+
+**Usage**
+
+```bash
+finance sector.overview KEY
+```
+
+**Examples**
+
+```bash
+finance sector.overview technology
+```
+
+### `sector.table`
+
+Fetch sector top companies, funds, or reports
+
+**Usage**
+
+```bash
+finance sector.table KEY [table=top_companies|top_etfs|top_mutual_funds|research_reports limit=25]
+```
+
+**Examples**
+
+```bash
+finance sector.table technology table=top_companies limit=10
+finance sector.table technology table=top_etfs limit=5
+```
 
 ## `sources.*`
 

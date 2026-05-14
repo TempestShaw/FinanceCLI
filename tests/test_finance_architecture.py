@@ -10,6 +10,7 @@ from finance_cli.core.symbols import get_symbol_snapshot
 from finance_cli.backtesting.portfolio import build_quantile_weights
 from finance_cli.backtesting.result_shaping import shape_backtest_result
 from finance_cli.providers.alpaca import AlpacaMarketDataProvider
+from finance_cli.providers.base import ProviderError
 from finance_cli.providers.company_ir import CompanyIRProvider
 from finance_cli.providers.company_ir import _extract_date as _extract_company_ir_date
 from finance_cli.providers.company_ir import _registrable_domain as _company_ir_registrable_domain
@@ -32,6 +33,7 @@ from finance_cli.services.backtest import (
     tune_backtest,
     preview_factor_rebalance,
 )
+from finance_cli.services.calendar import fetch_company_calendar, fetch_earnings_dates
 from finance_cli.services.documents import extract_document_tables, ocr_document, read_document, scan_document, window_document
 from finance_cli.services.estimates import compare_estimates, consensus_estimates
 from finance_cli.services.formulas import (
@@ -46,10 +48,20 @@ from finance_cli.services.formulas import (
     formula_working_capital,
 )
 from finance_cli.services.kpi import extract_kpi_evidence
-from finance_cli.services.market_data import fetch_ohlcv
+from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv
 from finance_cli.services.news import news_geo, normalize_news_timespan
 from finance_cli.services.price import detect_price_moves, price_context
 from finance_cli.services.research import research_plan
+from finance_cli.services.screen import list_predefined_screens, run_predefined_screen
+from finance_cli.services.sectors import (
+    fetch_industry_overview,
+    fetch_industry_table,
+    fetch_sector_industries,
+    fetch_sector_overview,
+    fetch_sector_table,
+    list_industry_keys,
+    list_sector_keys,
+)
 from finance_cli.services.sources import list_sources, sources_status
 from finance_cli.services.valuation import valuation_dcf, valuation_irr, valuation_multiples, valuation_npv, valuation_scenario, valuation_wacc
 from finance_cli.tools import FINANCE_TOOL_SPECS
@@ -129,6 +141,7 @@ def test_cli_registry_registers_builtin_commands():
     assert "sources.status" in names
     assert "sources.test" in names
     assert "market.sector_heat" in names
+    assert "market.status" in names
     assert "symbol.snapshot" in names
     assert "symbol.profile" in names
     assert "news.search" in names
@@ -174,6 +187,17 @@ def test_cli_registry_registers_builtin_commands():
     assert "research.plan" in names
     assert "market.quote" in names
     assert "market.ohlcv" in names
+    assert "calendar.company" in names
+    assert "calendar.earnings" in names
+    assert "sector.keys" in names
+    assert "sector.overview" in names
+    assert "sector.industries" in names
+    assert "sector.table" in names
+    assert "industry.keys" in names
+    assert "industry.overview" in names
+    assert "industry.table" in names
+    assert "screen.predefined" in names
+    assert "screen.run" in names
     assert "backtest.strategy.payload" in names
     assert "backtest.factor.payload" in names
     assert "backtest.factor.weights" in names
@@ -198,6 +222,78 @@ def test_cli_main_runs_symbol_snapshot(capsys, monkeypatch):
     assert code == 0
     assert payload["ok"] is True
     assert payload["data"]["symbol"] == "NVDA"
+
+
+def test_yfinance_intel_services_delegate_to_provider():
+    class Provider:
+        def market_status(self, market):
+            return {"market": market, "status": {"status": "open"}}
+
+        def company_calendar(self, symbol):
+            return {"symbol": symbol, "calendar": {"Earnings Date": ["2026-07-30"]}}
+
+        def earnings_dates(self, symbol, *, limit):
+            return {"symbol": symbol, "rows": [{"date": "2026-07-30"}], "count": limit}
+
+        def sector_keys(self):
+            return {"sectors": [{"key": "technology"}]}
+
+        def sector_overview(self, key):
+            return {"key": key, "overview": {"companies_count": 943}}
+
+        def sector_industries(self, key):
+            return {"key": key, "industries": [{"key": "software-infrastructure"}]}
+
+        def sector_top_companies(self, key, *, limit):
+            return {"key": key, "table": "top_companies", "rows": [{"symbol": "MSFT"}], "count": limit}
+
+        def industry_keys(self, *, sector=None):
+            return {"industries": [{"key": "software-infrastructure", "sector_key": sector}]}
+
+        def industry_overview(self, key):
+            return {"key": key, "sector_key": "technology"}
+
+        def industry_top_companies(self, key, *, limit):
+            return {"key": key, "table": "top_companies", "rows": [{"symbol": "MSFT"}], "count": limit}
+
+        def predefined_screens(self):
+            return {"queries": [{"key": "day_gainers"}], "count": 1}
+
+        def run_screen(self, query, *, count, offset=None, sort_field=None, sort_asc=None):
+            return {"query": query, "quotes": [{"symbol": "NVDA"}], "count": count}
+
+    provider = Provider()
+
+    assert fetch_market_status("US", provider=provider)["status"]["status"] == "open"
+    assert fetch_company_calendar("AAPL", provider=provider)["symbol"] == "AAPL"
+    assert fetch_earnings_dates("AAPL", limit=3, provider=provider)["count"] == 3
+    assert list_sector_keys(provider=provider)["sectors"][0]["key"] == "technology"
+    assert fetch_sector_overview("technology", provider=provider)["overview"]["companies_count"] == 943
+    assert fetch_sector_industries("technology", provider=provider)["industries"][0]["key"] == "software-infrastructure"
+    assert fetch_sector_table("technology", limit=5, provider=provider)["count"] == 5
+    assert list_industry_keys(sector="technology", provider=provider)["industries"][0]["sector_key"] == "technology"
+    assert fetch_industry_overview("software-infrastructure", provider=provider)["sector_key"] == "technology"
+    assert fetch_industry_table("software-infrastructure", limit=4, provider=provider)["count"] == 4
+    assert list_predefined_screens(provider=provider)["queries"][0]["key"] == "day_gainers"
+    assert run_predefined_screen("day_gainers", count=2, provider=provider)["quotes"][0]["symbol"] == "NVDA"
+
+
+def test_yfinance_intel_validates_sector_and_industry_keys():
+    provider = YahooFinanceProvider()
+
+    try:
+        provider.sector_overview("not-a-sector")
+    except ProviderError as exc:
+        assert "unknown sector key" in str(exc)
+    else:
+        raise AssertionError("expected invalid sector key to fail")
+
+    try:
+        provider.industry_overview("not-an-industry")
+    except ProviderError as exc:
+        assert "unknown industry key" in str(exc)
+    else:
+        raise AssertionError("expected invalid industry key to fail")
 
 
 def test_cli_main_shows_command_help(capsys):
