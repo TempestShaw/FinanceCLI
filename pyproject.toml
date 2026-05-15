@@ -51,8 +51,11 @@ dev = [
 finance = "finance_cli.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/TempestShaw/FinanceCLI"
+Homepage = "https://tempestshaw.github.io/FinanceCLI/"
+Documentation = "https://tempestshaw.github.io/FinanceCLI/"
 Repository = "https://github.com/TempestShaw/FinanceCLI"
+Issues = "https://github.com/TempestShaw/FinanceCLI/issues"
+Changelog = "https://github.com/TempestShaw/FinanceCLI/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["finance_cli*"]
