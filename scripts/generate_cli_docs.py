@@ -336,6 +336,61 @@ COMMON_PARAM_OVERRIDES: dict[str, dict[str, Any]] = {
     "date": {"type": "string", "format": "date", "description": "Date."},
     "cashflows": {"type": "array", "items": {"type": "number"}, "description": "Cash-flow series. CLI accepts comma-separated K/M/B suffixed values."},
     "discount_rate": {"type": "number", "description": "Discount rate. CLI accepts decimal or percent."},
+    "bear_multiple": {"type": "number", "description": "Bear-case valuation multiple."},
+    "base_multiple": {"type": "number", "description": "Base-case valuation multiple."},
+    "bottom_pct": {"type": "number", "description": "Bottom-ranked percentage used for the short or underweight side."},
+    "consensus_eps": {"type": "number", "description": "Consensus EPS estimate used for comparison."},
+    "consensus_revenue": {"type": "number", "description": "Consensus revenue estimate used for comparison."},
+    "cost_of_debt": {"type": "number", "description": "Cost of debt. CLI accepts decimal or percent."},
+    "cost_of_equity": {"type": "number", "description": "Cost of equity. CLI accepts decimal or percent."},
+    "debt_value": {"type": "number", "description": "Debt value used in WACC or valuation math."},
+    "end_datetime": {"type": "string", "description": "Inclusive end timestamp for precise provider queries."},
+    "eps": {"type": "number", "description": "Reported or assumed EPS value used for comparison."},
+    "equity_value": {"type": "number", "description": "Equity market value used in WACC or valuation math."},
+    "factor_name": {"type": "string", "description": "Name assigned to the factor signal."},
+    "filing_limit": {"type": "integer", "description": "Maximum filing records to include."},
+    "fiscal_year": {"type": "integer", "description": "Fiscal year for the reported or estimated period."},
+    "flavor": {"type": "string", "description": "PDF table extraction flavor."},
+    "forms": {"type": "string", "description": "Comma-separated SEC form types to include."},
+    "grid": {"type": "object", "description": "Parameter grid where each key maps to candidate values."},
+    "group_by": {"type": "string", "description": "Aggregation grouping for analysis output."},
+    "initial_cash": {"type": "number", "description": "Starting cash balance for the simulation."},
+    "key": {"type": "string", "description": "Provider key returned by the corresponding list command."},
+    "lookback": {"type": "string", "description": "Lookback window around the requested date."},
+    "lookback_days": {"type": "integer", "description": "Lookback window in calendar days."},
+    "max_runs": {"type": "integer", "description": "Maximum parameter combinations to evaluate."},
+    "max_tables": {"type": "integer", "description": "Maximum extracted tables to return."},
+    "metric": {"type": "string", "description": "Metric used to rank tuning results."},
+    "metrics": {"type": "string", "description": "Comma-separated KPI or metric names to search for."},
+    "mode": {"type": "string", "description": "Analysis mode."},
+    "name": {"type": "string", "description": "Report, section, or table name selected by the caller."},
+    "news_limit": {"type": "integer", "description": "Maximum news records to include."},
+    "ocr": {"type": "string", "description": "OCR mode for presentation or document text extraction."},
+    "page": {"type": "integer", "description": "Page number to request from the provider."},
+    "pages": {"type": "string", "description": "PDF page selection passed to the table extractor."},
+    "parameters": {"type": "object", "description": "Strategy parameter object included in the payload."},
+    "params": {"type": "object", "description": "Strategy parameters supplied as JSON or key-value pairs."},
+    "per_document_limit": {"type": "integer", "description": "Maximum KPI evidence rows per source document."},
+    "period": {"type": "string", "description": "Financial statement period, such as annual or quarterly."},
+    "provider": {"type": "string", "description": "Provider selection."},
+    "quarter": {"type": "string", "description": "Fiscal quarter label, such as Q1 or Q4."},
+    "revenue": {"type": "number", "description": "Reported, assumed, or user-supplied revenue input."},
+    "scores": {"type": "object", "description": "Mapping of symbols to factor scores."},
+    "sector": {"type": "string", "description": "Sector key or sector name to query."},
+    "shares": {"type": "number", "description": "Share count used for per-share valuation output."},
+    "sort_field": {"type": "string", "description": "Field used to sort screen results."},
+    "start_datetime": {"type": "string", "description": "Inclusive start timestamp for precise provider queries."},
+    "strategy": {"type": "string", "description": "Built-in strategy key."},
+    "strategy_file": {"type": "string", "description": "Path to a custom strategy file."},
+    "strategy_id": {"type": "string", "description": "Built-in strategy key to describe, run, or package."},
+    "table": {"type": "string", "description": "Provider table name to return."},
+    "threshold": {"type": "string", "description": "Move threshold. CLI accepts decimal or percent notation."},
+    "timeout": {"type": "integer", "description": "Provider test timeout in seconds."},
+    "timespan": {"type": "string", "description": "Relative provider lookback window such as 24H, 7D, or 1M."},
+    "top_pct": {"type": "number", "description": "Top-ranked percentage used for the long or overweight side."},
+    "transcript_limit": {"type": "integer", "description": "Maximum transcript records to include."},
+    "window": {"type": "string", "description": "Trading or text window size, depending on the command."},
+    "years": {"type": "integer", "description": "Number of historical years to inspect."},
 }
 
 COMMAND_DATA_SCHEMAS: dict[str, dict[str, Any]] = {
@@ -489,7 +544,7 @@ def build_commands_markdown(commands: list[FinanceCommand]) -> str:
                 lines.extend(command.examples)
                 lines.extend(["```", ""])
             if command.notes:
-                lines.append("**Notes**")
+                lines.append("**Details**")
                 lines.append("")
                 lines.extend(f"- {note}" for note in command.notes)
                 lines.append("")
@@ -557,7 +612,7 @@ def build_tools_document(specs: list[dict[str, Any]]) -> dict[str, Any]:
         "side_effect_levels": SIDE_EFFECTS,
         "trust_policy": {
             "cite_when_available": ["accession", "accession_no", "url", "report_name", "section", "page", "start_char", "end_char", "source", "provider", "timestamp"],
-            "market_data": "Never claim live market data without provider/source and timestamp/date fields when available.",
+            "market_data": "Never present market data without provider/source and timestamp/date fields when available.",
             "source_truth": "Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.",
             "credentials": "API keys are read from environment variables at runtime and are not written by the CLI.",
         },
@@ -757,7 +812,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "## Trust Rules",
         "",
         "- Cite accession, URL, report_name, section, page, start_char/end_char, source, provider, and timestamp when available.",
-        "- Never claim live market data without provider/source and timestamp/date fields when available.",
+        "- Never present market data without provider/source and timestamp/date fields when available.",
         "- Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.",
         "- Formula and valuation commands are deterministic calculators, not investment advice.",
         "- If `ok=false`, surface the error clearly and do not fabricate data.",
@@ -785,7 +840,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         lines.extend([
             f"### {spec['name']}",
             f"Use when: {spec['agent']['use_when']}",
-            f"Avoid when: {spec['agent']['avoid_when'] or 'No command-specific restriction beyond trust rules.'}",
+            f"Avoid when: {spec['agent']['avoid_when'] or 'Use the standard trust rules for this command.'}",
             f"Side effects: {spec['side_effects']}",
             f"Args: {args}",
             f"Usage: `{spec['usage']}`",
@@ -871,7 +926,7 @@ def _parse_token(token: str, *, optional: bool) -> tuple[str, dict[str, Any]] | 
         meta["required"] = not optional
         if not optional:
             meta.pop("default", None)
-        if optional and raw_value not in {"...", "TEXT", "URL", "FIELD"} and "default" not in meta and "|" not in raw_value:
+        if optional and not _is_placeholder_value(raw_value) and "default" not in meta and "|" not in raw_value:
             meta["default"] = _coerce_default(raw_value)
         return name, meta
     name = _normalize_param_name(token)
@@ -891,6 +946,10 @@ def _normalize_param_name(name: str) -> str:
     name = name.replace("PATH_OR_URL", "source")
     name = re.sub(r"[^A-Za-z0-9_]+", "_", name).strip("_")
     return name.lower()
+
+
+def _is_placeholder_value(value: str) -> bool:
+    return value == "..." or bool(re.fullmatch(r"[A-Z][A-Z0-9_]*", value))
 
 
 def _infer_schema_from_value(raw_value: str) -> dict[str, Any]:
@@ -942,7 +1001,7 @@ def _apply_common_param_metadata(params: dict[str, dict[str, Any]]) -> dict[str,
         common = deepcopy(COMMON_PARAM_OVERRIDES.get(name, {}))
         common.update(meta)
         if "description" not in common:
-            common["description"] = f"{name.replace('_', ' ').title()} parameter."
+            common["description"] = f"Value supplied for `{name}`."
         enriched[name] = common
     return enriched
 
@@ -954,7 +1013,12 @@ def _mark_numeric_formula_params(params: dict[str, dict[str, Any]]) -> dict[str,
         if name == "addbacks":
             meta.update({"type": "array", "items": {"type": "number"}, "description": "Comma-separated addback values."})
             continue
-        meta.setdefault("description", f"Explicit numeric input for {name}.")
+        generic_description = f"{name.replace('_', ' ').title()} parameter"
+        description = str(meta.get("description", "")).rstrip(".")
+        if description == generic_description:
+            meta["description"] = f"Explicit numeric input for {name}."
+        else:
+            meta.setdefault("description", f"Explicit numeric input for {name}.")
         meta["type"] = "number"
     return params
 

@@ -7,9 +7,11 @@ description: Repeatable research workflows for filings, documents, formulas, and
 
 Finance CLI works well in local scripts, notebooks, CI jobs, and research automation because commands are small, explicit, and machine-readable.
 
+The document examples below assume you have already downloaded or saved the filing HTML as `./filing.html`. Use `filings.recent`, `filings.read`, or the SEC website to choose the filing first.
+
 ```bash
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="operating lease costs" window=1200
-finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000
+finance document.scan ./filing.html format=html query="operating lease costs" window=1200
+finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000
 finance filings.statement COST statement=balance query="Common Stock"
 finance formula.net_debt debt=11415 cash=11144 operating_cash=5089
 ```
@@ -93,7 +95,7 @@ failure_modes:
 | --- | --- | --- |
 | Pull a 10-K section | Write SEC lookup, filing selection, parser setup, and cleanup code. | `finance filings.read AAPL section=mda` |
 | Inspect a filing table | Search raw HTML or build one-off XBRL/table parsing. | `finance filings.statement COST statement=balance query="Common Stock"` |
-| Continue reading a long document | Copy text into cells and lose the original location. | `finance document.window ... match_id=char_52000_52200 direction=next` |
+| Continue reading a long document | Copy text into cells and lose the original location. | `finance document.window ./filing.html match_id=char_52000_52200 direction=next` |
 | Reuse finance formulas | Reimplement formulas and unit conventions in each notebook. | `finance formula.roic nopat=7113 invested_capital=28077` |
 | Run a quick strategy check | Build the data fetch, signals, portfolio, and metrics before testing the idea. | `finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31` |
 | Make research reproducible | Commit notebooks with hidden state and noisy diffs. | Commit commands, JSON outputs, and CI checks as plain text. |

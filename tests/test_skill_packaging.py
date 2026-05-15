@@ -11,7 +11,7 @@ SKILL_ROOT = ROOT / "skills" / "finance-cli"
 def test_finance_cli_skill_uses_public_cli_interface():
     skill_text = (SKILL_ROOT / "SKILL.md").read_text()
 
-    assert "finance ... --output json" in skill_text
+    assert "finance <command> [arguments] --output json" in skill_text
     assert "public interface" in skill_text
     assert "custom Python entrypoints" in skill_text
     assert not (SKILL_ROOT / "scripts").exists()

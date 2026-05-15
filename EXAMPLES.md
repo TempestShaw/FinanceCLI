@@ -49,16 +49,18 @@ Use `filings.statement` or `filings.report` when EDGAR/XBRL structure is availab
 
 ## Document Reading
 
+The HTML examples assume a filing or report has been saved locally as `./filing.html`.
+
 ```bash
 finance document.read ./deck.pdf max_pages=3
 finance document.read ./deck.pdf max_chars=4000
-finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000
+finance document.read ./filing.html format=html max_chars=4000
 
 finance document.scan ./report.pdf topics=risk,financial_reporting
 finance document.scan ./deck.pdf topics=guidance threshold=75 max_pages=10
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="Operating lease costs" max_chars=0 window=1200
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html match=all_terms threshold=100 query="Receivables net Total current assets" max_chars=0
-finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000
+finance document.scan ./filing.html format=html query="Operating lease costs" max_chars=0 window=1200
+finance document.scan ./filing.html format=html match=all_terms threshold=100 query="Receivables net Total current assets" max_chars=0
+finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000
 ```
 
 Table and OCR commands:

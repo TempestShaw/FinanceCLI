@@ -45,7 +45,7 @@ def _missing_filing_source(usage: str) -> FinanceCommandResult:
 def _filings_read(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     if not symbol and not accession_no and not url:
-        return _missing_filing_source("filings.read [SYMBOL] [accession=...|url=...] [form=10-K section=business max_chars=8000]")
+        return _missing_filing_source("filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business max_chars=8000]")
     data = read_filing_section(
         symbol=symbol,
         accession_no=accession_no,
@@ -60,7 +60,7 @@ def _filings_read(args: list[str]) -> FinanceCommandResult:
 def _filings_sections(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     if not symbol and not accession_no and not url:
-        return _missing_filing_source("filings.sections [SYMBOL] [accession=...|url=...] [form=10-K]")
+        return _missing_filing_source("filings.sections [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K]")
     data = list_filing_sections(
         symbol=symbol,
         accession_no=accession_no,
@@ -73,7 +73,7 @@ def _filings_sections(args: list[str]) -> FinanceCommandResult:
 def _filings_statement(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     if not symbol and not accession_no and not url:
-        return _missing_filing_source("filings.statement [SYMBOL] [accession=...|url=...] [form=10-K statement=income|balance|cashflow query=... max_rows=0]")
+        return _missing_filing_source("filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]")
     data = read_filing_statement(
         symbol=symbol,
         accession_no=accession_no,
@@ -90,7 +90,7 @@ def _filings_statement(args: list[str]) -> FinanceCommandResult:
 def _filings_reports(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     if not symbol and not accession_no and not url:
-        return _missing_filing_source("filings.reports [SYMBOL] [accession=...|url=...] [form=10-K query=lease]")
+        return _missing_filing_source("filings.reports [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K query=lease]")
     data = list_filing_reports(
         symbol=symbol,
         accession_no=accession_no,
@@ -105,7 +105,7 @@ def _filings_report(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     name = kv.str("name") or kv.str("report")
     if (not symbol and not accession_no and not url) or not name:
-        return _missing_filing_source("filings.report [SYMBOL] [accession=...|url=...] name='Consolidated Balance Sheets (Parenthetical)' [form=10-K query=... max_rows=25 (0=unlimited) max_chars=8000]")
+        return _missing_filing_source("filings.report [SYMBOL] [accession=ACCESSION|url=URL] name='Consolidated Balance Sheets (Parenthetical)' [form=10-K query=TEXT max_rows=25 (0=unlimited) max_chars=8000]")
     data = read_filing_report(
         symbol=symbol,
         accession_no=accession_no,
@@ -134,7 +134,7 @@ def register_filings_commands() -> None:
         "filings.read",
         "Read a canonical 10-K section with edgartools",
         _filings_read,
-        usage="filings.read [SYMBOL] [accession=...|url=...] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
+        usage="filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
         examples=(
             "finance filings.read IOT section=business max_chars=3000",
             "finance filings.read accession=0001628280-26-018167 section=risk_factors max_chars=3000",
@@ -146,7 +146,7 @@ def register_filings_commands() -> None:
         "filings.sections",
         "List supported and discovered filing sections",
         _filings_sections,
-        usage="filings.sections [SYMBOL] [accession=...|url=...] [form=10-K]",
+        usage="filings.sections [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K]",
         examples=(
             "finance filings.sections IOT form=10-K",
             "finance filings.sections accession=0001628280-26-018167",
@@ -156,7 +156,7 @@ def register_filings_commands() -> None:
         "filings.statement",
         "Read structured XBRL statement rows with edgartools",
         _filings_statement,
-        usage="filings.statement [SYMBOL] [accession=...|url=...] [form=10-K statement=income|balance|cashflow query=... max_rows=0]",
+        usage="filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]",
         examples=(
             "finance filings.statement COST statement=balance query='Common Stock'",
             "finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income max_rows=20",
@@ -167,7 +167,7 @@ def register_filings_commands() -> None:
         "filings.reports",
         "List edgartools filing summary reports",
         _filings_reports,
-        usage="filings.reports [SYMBOL] [accession=...|url=...] [form=10-K query=lease]",
+        usage="filings.reports [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K query=lease]",
         examples=(
             "finance filings.reports COST form=10-K",
             "finance filings.reports COST form=10-K query=lease",
@@ -178,7 +178,7 @@ def register_filings_commands() -> None:
         "filings.report",
         "Read an edgartools filing summary report",
         _filings_report,
-        usage="filings.report [SYMBOL] [accession=...|url=...] name='Report Short Name' [form=10-K query=... max_rows=25 (0=unlimited) max_chars=8000]",
+        usage="filings.report [SYMBOL] [accession=ACCESSION|url=URL] name='Report Short Name' [form=10-K query=TEXT max_rows=25 (0=unlimited) max_chars=8000]",
         examples=(
             "finance filings.report COST name='Consolidated Balance Sheets (Parenthetical)'",
             "finance filings.report COST name='Leases, Supplemental Balance Sheet Information' query='operating lease liabilities'",

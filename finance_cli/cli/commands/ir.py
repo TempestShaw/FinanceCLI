@@ -68,8 +68,7 @@ def register_ir_commands() -> None:
         handler=_cmd_ir_read,
         usage="ir.read url=URL [max_chars=12000 ocr=off|auto|force]",
         examples=(
-            "finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../iot_investorday.htm",
-            "finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../deck.htm max_chars=20000",
+            "finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
             "finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=4000",
         ),
         notes=(

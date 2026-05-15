@@ -180,7 +180,7 @@ finance document.ocr ./deck.pdf max_pages=3
 finance document.ocr ./deck.pdf max_chars=4000
 ```
 
-**Notes**
+**Details**
 
 - Prefer document.read or document.scan for text-based PDFs.
 - Uses the default Finance CLI OCR stack.
@@ -201,10 +201,10 @@ finance document.read SOURCE|source=PATH_OR_URL [format=pdf|html max_chars=12000
 ```bash
 finance document.read ./deck.pdf max_pages=3
 finance document.read ./deck.pdf max_chars=4000
-finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000
+finance document.read ./filing.html format=html max_chars=4000
 ```
 
-**Notes**
+**Details**
 
 - Lightweight first-pass parser for text-based PDFs and HTML filings; does not run OCR.
 - Returns page text plus positioned or offset-bearing blocks for downstream matching and analysis.
@@ -216,7 +216,7 @@ Scan document text/layout for configured topics or literal queries with RapidFuz
 **Usage**
 
 ```bash
-finance document.scan SOURCE|source=PATH_OR_URL [query=... topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]
+finance document.scan SOURCE|source=PATH_OR_URL [query=TEXT topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]
 ```
 
 **Examples**
@@ -224,12 +224,12 @@ finance document.scan SOURCE|source=PATH_OR_URL [query=... topics=risk,disclosur
 ```bash
 finance document.scan ./report.pdf topics=risk,financial_reporting
 finance document.scan ./deck.pdf topics=guidance threshold=75 max_pages=10
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html query='Operating lease costs' max_chars=0 window=1200
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html match=all_terms threshold=100 query='Receivables net Total current assets' max_chars=0
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html start_char=122000 query='Accounts payable'
+finance document.scan ./filing.html format=html query='Operating lease costs' max_chars=0 window=1200
+finance document.scan ./filing.html format=html match=all_terms threshold=100 query='Receivables net Total current assets' max_chars=0
+finance document.scan ./filing.html format=html start_char=122000 query='Accounts payable'
 ```
 
-**Notes**
+**Details**
 
 - Uses PyMuPDF for native PDF layout, BeautifulSoup for HTML text, and RapidFuzz for deterministic fuzzy matching.
 - Known topics include disclosure, risk, financial_reporting, portfolio, and guidance.
@@ -255,7 +255,7 @@ finance document.tables ./report.pdf pages=10-12 flavor=stream
 finance document.tables ./filing.pdf pages=all max_tables=5 max_rows=10
 ```
 
-**Notes**
+**Details**
 
 - Uses the default Finance CLI table extraction stack.
 - Use flavor=stream for whitespace-separated tables and flavor=lattice for ruled-line tables.
@@ -274,11 +274,11 @@ finance document.window SOURCE|source=PATH_OR_URL [format=pdf|html start_char=0|
 **Examples**
 
 ```bash
-finance document.window url=https://www.sec.gov/.../filing.htm format=html start_char=52000 chars=4000
-finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000
+finance document.window ./filing.html format=html start_char=52000 chars=4000
+finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000
 ```
 
-**Notes**
+**Details**
 
 - Designed for follow-up reading after document.scan.
 - Use direction=next or direction=previous to move through a table or section without re-scanning.
@@ -301,7 +301,7 @@ finance estimates.compare [SYMBOL] revenue=2.2B consensus_revenue=2.0B eps=0.50 
 finance estimates.compare IOT revenue=2.2B consensus_revenue=2.0B eps=0.50 consensus_eps=0.45 fiscal_year=2027
 ```
 
-**Notes**
+**Details**
 
 - No network calls. Compares only values explicitly supplied by the caller.
 
@@ -321,7 +321,7 @@ finance estimates.consensus SYMBOL [period=annual|quarter limit=10 page=0]
 finance estimates.consensus IOT period=annual limit=5
 ```
 
-**Notes**
+**Details**
 
 - Requires FMP_API_KEY. Makes one short FMP request and returns a structured configuration error when unconfigured.
 
@@ -334,7 +334,7 @@ Read a canonical 10-K section with edgartools
 **Usage**
 
 ```bash
-finance filings.read [SYMBOL] [accession=...|url=...] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
+finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
 ```
 
 **Examples**
@@ -345,7 +345,7 @@ finance filings.read accession=0001628280-26-018167 section=risk_factors max_cha
 finance filings.read url=https://www.sec.gov/Archives/edgar/data/1642896/000162828026018167/iot-20260131.htm section=mda
 ```
 
-**Notes**
+**Details**
 
 - Uses edgartools for filing retrieval, then returns bounded text for downstream use.
 
@@ -373,7 +373,7 @@ Read an edgartools filing summary report
 **Usage**
 
 ```bash
-finance filings.report [SYMBOL] [accession=...|url=...] name='Report Short Name' [form=10-K query=... max_rows=25 (0=unlimited) max_chars=8000]
+finance filings.report [SYMBOL] [accession=ACCESSION|url=URL] name='Report Short Name' [form=10-K query=TEXT max_rows=25 (0=unlimited) max_chars=8000]
 ```
 
 **Examples**
@@ -391,7 +391,7 @@ List edgartools filing summary reports
 **Usage**
 
 ```bash
-finance filings.reports [SYMBOL] [accession=...|url=...] [form=10-K query=lease]
+finance filings.reports [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K query=lease]
 ```
 
 **Examples**
@@ -409,7 +409,7 @@ List supported and discovered filing sections
 **Usage**
 
 ```bash
-finance filings.sections [SYMBOL] [accession=...|url=...] [form=10-K]
+finance filings.sections [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K]
 ```
 
 **Examples**
@@ -426,7 +426,7 @@ Read structured XBRL statement rows with edgartools
 **Usage**
 
 ```bash
-finance filings.statement [SYMBOL] [accession=...|url=...] [form=10-K statement=income|balance|cashflow query=... max_rows=0]
+finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]
 ```
 
 **Examples**
@@ -436,7 +436,7 @@ finance filings.statement COST statement=balance query='Common Stock'
 finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income max_rows=20
 ```
 
-**Notes**
+**Details**
 
 - Returns raw XBRL values plus reported values scaled by XBRL decimals.
 
@@ -787,7 +787,7 @@ finance ir.presentations IOT limit=10 source=all
 finance ir.presentations NVDA limit=5 source=sec
 ```
 
-**Notes**
+**Details**
 
 - Scans recent 8-K filings for Exhibit 99 files with presentation or slides keywords.
 - source=auto uses SEC first, then company IR fallback when SEC finds no candidates.
@@ -810,12 +810,11 @@ finance ir.read url=URL [max_chars=12000 ocr=off|auto|force]
 **Examples**
 
 ```bash
-finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../iot_investorday.htm
-finance ir.read url=https://www.sec.gov/Archives/edgar/data/.../deck.htm max_chars=20000
+finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm
 finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm ocr=off max_chars=4000
 ```
 
-**Notes**
+**Details**
 
 - HTML exhibits/pages are fetched and parsed to plain text.
 - PDF extraction uses pypdf and returns page-level text when possible.
@@ -841,7 +840,7 @@ finance kpi.extract IOT source=transcripts metrics=arr,net_new_arr,large_custome
 finance kpi.extract IOT source=both metrics=arr,emerging_products,rpo limit=20
 ```
 
-**Notes**
+**Details**
 
 - Returns evidence rows, not investment conclusions.
 
@@ -880,9 +879,9 @@ finance market.ohlcv NVDA timeframe=1d limit=20
 finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto
 ```
 
-**Notes**
+**Details**
 
-- Arguments use key=value for LLM-friendly calling.
+- Arguments use key=value syntax for script-friendly CLI calls.
 
 ### `market.quote`
 
@@ -900,7 +899,7 @@ finance market.quote SYMBOL
 finance market.quote NVDA
 ```
 
-**Notes**
+**Details**
 
 - Uses Alpha Vantage when configured, with Yahoo fallback.
 
@@ -974,7 +973,7 @@ finance news.analyze symbol=IOT analysis=timeline start_date=2026-03-03 end_date
 finance news.analyze query=FOOD_SECURITY analysis=geo max_records=3 timespan=1h
 ```
 
-**Notes**
+**Details**
 
 - Use this only when you need trend, tone, context, geo, or raw DOC analysis.
 - Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.
@@ -1001,7 +1000,7 @@ finance news.search symbol=IOT date=2026-03-06 max_records=5
 finance news.search symbol=IOT start_date=2026-03-03 end_date=2026-03-09 max_records=5
 ```
 
-**Notes**
+**Details**
 
 - Use date for one full day, or start_date/end_date for a full-day range.
 - Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.
@@ -1028,7 +1027,7 @@ finance price.context NVDA date=2025-01-27 lookback=2D news_limit=5
 finance price.context IOT date=2026-03-06 lookback=1W news_limit=5
 ```
 
-**Notes**
+**Details**
 
 - lookback is calendar time around date: 3D=3 calendar days before and after, 1W=7 calendar days, 1M=30 calendar days.
 - Timeline roles are temporal only: before_move, same_day, after_move.
@@ -1052,7 +1051,7 @@ finance price.moves NVDA window=3d years=2 threshold=12%
 finance price.moves NVDA window=1w years=2 threshold=15 limit=10
 ```
 
-**Notes**
+**Details**
 
 - window is a trading-day window: 1d=1 trading day, 1w=5 trading days, 1m=21 trading days.
 - threshold accepts decimal or percentage-point inputs: 0.08, 8, and 8% all mean 8%.
@@ -1077,7 +1076,7 @@ finance research.plan SYMBOL [style=fundamental]
 finance research.plan IOT style=fundamental
 ```
 
-**Notes**
+**Details**
 
 - This returns suggested commands only; it does not execute research or form conclusions.
 - Use this as a navigation layer for repeatable research workflows.
@@ -1116,7 +1115,7 @@ finance screen.run QUERY [count=25 offset=0 sort_field=FIELD sort_asc=false]
 finance screen.run day_gainers count=10
 ```
 
-**Notes**
+**Details**
 
 - Use screen.predefined to list available query keys.
 - count is the maximum number of quotes requested.
@@ -1206,7 +1205,7 @@ finance sources.list
 finance sources.list
 ```
 
-**Notes**
+**Details**
 
 - No network calls; reports known providers and capabilities.
 
@@ -1226,7 +1225,7 @@ finance sources.status
 finance sources.status
 ```
 
-**Notes**
+**Details**
 
 - No network calls; use sources.test for connectivity checks.
 
@@ -1248,7 +1247,7 @@ finance sources.test sec symbol=AAPL
 finance sources.test source=all symbol=AAPL timeout=30
 ```
 
-**Notes**
+**Details**
 
 - Returns pass/fail plus latency for configured providers.
 
@@ -1270,7 +1269,7 @@ finance symbol.profile SYMBOL
 finance symbol.profile IOT
 ```
 
-**Notes**
+**Details**
 
 - Uses yfinance for market metadata and SEC ticker metadata for CIK/company identity.
 
@@ -1299,7 +1298,7 @@ Extract analyst Q&A pairs from a transcript
 **Usage**
 
 ```bash
-finance transcripts.qa [SYMBOL] [url=...] [quarter=latest limit=10]
+finance transcripts.qa [SYMBOL] [url=URL] [quarter=latest limit=10]
 ```
 
 **Examples**
@@ -1315,7 +1314,7 @@ Read a transcript and split prepared remarks / Q&A
 **Usage**
 
 ```bash
-finance transcripts.read [SYMBOL] [url=...] [quarter=latest max_chars=12000 include_turns=false]
+finance transcripts.read [SYMBOL] [url=URL] [quarter=latest max_chars=12000 include_turns=false]
 ```
 
 **Examples**
@@ -1343,9 +1342,9 @@ finance transcripts.search IOT limit=4
 finance transcripts.search IOT debug=true
 ```
 
-**Notes**
+**Details**
 
-- First provider is public Motley Fool transcript pages.
+- Uses public Motley Fool transcript pages when available.
 
 ## `valuation.*`
 
@@ -1366,7 +1365,7 @@ finance valuation.dcf cashflows=100M,120M,140M discount_rate=10% terminal_growth
 finance valuation.dcf cashflows=100M,120M,140M discount_rate=10% exit_multiple=15
 ```
 
-**Notes**
+**Details**
 
 - Pass forecast FCF only; do not include an initial t=0 investment cash flow.
 - Forecast cash flows are discounted from t=1.
@@ -1388,7 +1387,7 @@ finance valuation.irr cashflows=-100M,30M,40M,50M
 finance valuation.irr cashflows=-100M,30M,40M,50M
 ```
 
-**Notes**
+**Details**
 
 - Cash flows are periodic; returns null with a warning when no IRR solution is bracketed.
 
@@ -1408,7 +1407,7 @@ finance valuation.multiples SYMBOL
 finance valuation.multiples IOT
 ```
 
-**Notes**
+**Details**
 
 - Deterministic math only; does not judge whether the multiple is fair.
 
@@ -1428,7 +1427,7 @@ finance valuation.npv cashflows=-100M,30M,40M,50M discount_rate=10%
 finance valuation.npv cashflows=-100M,30M,40M,50M discount_rate=10%
 ```
 
-**Notes**
+**Details**
 
 - First cash flow is treated as t=0. Use this for project-level NPV including initial investment.
 
@@ -1449,7 +1448,7 @@ finance valuation.scenario IOT revenue=2.2B bear_multiple=7 base_multiple=10 bul
 finance valuation.scenario IOT revenue=2200000000 bear_multiple=7 base_multiple=10 bull_multiple=13
 ```
 
-**Notes**
+**Details**
 
 - Uses current quote for price/share count when available; assumptions remain user-supplied.
 - Revenue and shares accept raw numbers or K/M/B suffixes.
@@ -1470,6 +1469,6 @@ finance valuation.wacc equity_value=10B debt_value=1B cost_of_equity=10% cost_of
 finance valuation.wacc equity_value=10B debt_value=1B cost_of_equity=10% cost_of_debt=5% tax_rate=21%
 ```
 
-**Notes**
+**Details**
 
 - Formula: E/(D+E)*Re + D/(D+E)*Rd*(1-tax). Inputs are user-supplied.

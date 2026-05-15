@@ -48,5 +48,5 @@ def register_market_data_commands() -> None:
             "finance market.ohlcv NVDA timeframe=1d limit=20",
             "finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto",
         ),
-        notes=("Arguments use key=value for LLM-friendly calling.",),
+        notes=("Arguments use key=value syntax for script-friendly CLI calls.",),
     ))

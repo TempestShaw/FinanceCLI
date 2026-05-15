@@ -14,7 +14,7 @@ Finance CLI commands return JSON with the same top-level envelope:
 }
 ```
 
-Use [`tools.json`](/FinanceCLI/tools.json) for command-specific input and output schemas. The examples below are representative result shapes; live values and provider text vary by source response.
+Use [`tools.json`](/FinanceCLI/tools.json) for command-specific input and output schemas. The examples below are representative result shapes; provider values and source text vary by response.
 
 ## Success
 
@@ -99,7 +99,7 @@ Prefer a fallback command when the workflow supports one, such as `document.ocr`
   "ok": true,
   "data": {
     "source": "report.pdf",
-    "text": "extracted text...",
+    "text": "extracted text excerpt",
     "char_count": 18420,
     "returned_chars": 12000,
     "truncated": true

@@ -2,7 +2,7 @@
 
 Use `finance --list` and `tools.json` as the source of truth for the installed command set. Prefer `tools.json` over prose when parameter names, defaults, enums, side effects, or output schemas matter.
 
-| User asks for | Prefer | Notes |
+| User asks for | Prefer | Details |
 | --- | --- | --- |
 | Latest SEC filing, accession, filing URL | `filings.recent` | Use before section/table reads when the user only gives a ticker. |
 | XBRL income, balance, or cashflow rows | `filings.statement` | Best for structured SEC statement rows. |

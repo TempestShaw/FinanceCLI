@@ -1,6 +1,6 @@
 ---
 name: finance-cli
-description: Use when Codex or another coding/research agent needs to use the installed Finance CLI for public-company research, SEC filings, document reading, document scanning/windowing/OCR, market data, finance formulas, valuation math, backtests, source checks, or provider setup. This skill routes work to `finance ... --output json`, uses Finance CLI docs and `tools.json` for command discovery, and keeps command output source-aware.
+description: Use when Codex or another coding/research agent needs to use the installed Finance CLI for public-company research, SEC filings, document reading, document scanning/windowing/OCR, market data, finance formulas, valuation math, backtests, source checks, or provider setup. This skill routes work to `finance <command> [arguments] --output json`, uses Finance CLI docs and `tools.json` for command discovery, and keeps command output source-aware.
 ---
 
 # Finance CLI
@@ -9,7 +9,7 @@ Finance CLI is an installed command-line tool for repeatable public-company rese
 
 ## Hard Rules
 
-- Use the installed CLI for supported operations: `finance ... --output json`.
+- Use the installed CLI for supported operations: `finance <command> [arguments] --output json`.
 - Treat the `finance` executable as the public interface for supported workflows.
 - Do not generate custom Python entrypoints to replace supported CLI commands.
 - Do not fabricate missing provider data. If a command returns `ok=false`, surface the error.

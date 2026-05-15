@@ -48,7 +48,7 @@ Agents that support skills can install [`finance-cli-skills.zip`](/FinanceCLI/sk
 
 - Cite `accession`, `url`, `report_name`, `section`, `page`, `start_char`, `end_char`, `match_id`, `source`, `provider`, and `timestamp` when available.
 - Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.
-- Never claim live market data without source/provider and date/timestamp fields when available.
+- Never present market data without source/provider and date/timestamp fields when available.
 - Preserve `warnings`; they are part of the result.
 
 ## Failure Handling

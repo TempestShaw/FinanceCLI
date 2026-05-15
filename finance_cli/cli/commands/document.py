@@ -115,7 +115,7 @@ def register_document_commands() -> None:
         examples=(
             "finance document.read ./deck.pdf max_pages=3",
             "finance document.read ./deck.pdf max_chars=4000",
-            "finance document.read url=https://www.sec.gov/.../filing.htm format=html max_chars=4000",
+            "finance document.read ./filing.html format=html max_chars=4000",
         ),
         notes=(
             "Lightweight first-pass parser for text-based PDFs and HTML filings; does not run OCR.",
@@ -126,13 +126,13 @@ def register_document_commands() -> None:
         name="document.scan",
         summary="Scan document text/layout for configured topics or literal queries with RapidFuzz",
         handler=_cmd_document_scan,
-        usage="document.scan SOURCE|source=PATH_OR_URL [query=... topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]",
+        usage="document.scan SOURCE|source=PATH_OR_URL [query=TEXT topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]",
         examples=(
             "finance document.scan ./report.pdf topics=risk,financial_reporting",
             "finance document.scan ./deck.pdf topics=guidance threshold=75 max_pages=10",
-            "finance document.scan url=https://www.sec.gov/.../filing.htm format=html query='Operating lease costs' max_chars=0 window=1200",
-            "finance document.scan url=https://www.sec.gov/.../filing.htm format=html match=all_terms threshold=100 query='Receivables net Total current assets' max_chars=0",
-            "finance document.scan url=https://www.sec.gov/.../filing.htm format=html start_char=122000 query='Accounts payable'",
+            "finance document.scan ./filing.html format=html query='Operating lease costs' max_chars=0 window=1200",
+            "finance document.scan ./filing.html format=html match=all_terms threshold=100 query='Receivables net Total current assets' max_chars=0",
+            "finance document.scan ./filing.html format=html start_char=122000 query='Accounts payable'",
         ),
         notes=(
             "Uses PyMuPDF for native PDF layout, BeautifulSoup for HTML text, and RapidFuzz for deterministic fuzzy matching.",
@@ -149,8 +149,8 @@ def register_document_commands() -> None:
         handler=_cmd_document_window,
         usage="document.window SOURCE|source=PATH_OR_URL [format=pdf|html start_char=0|match_id=char_START_END chars=4000 direction=around|next|previous]",
         examples=(
-            "finance document.window url=https://www.sec.gov/.../filing.htm format=html start_char=52000 chars=4000",
-            "finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000",
+            "finance document.window ./filing.html format=html start_char=52000 chars=4000",
+            "finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000",
         ),
         notes=(
             "Designed for follow-up reading after document.scan.",

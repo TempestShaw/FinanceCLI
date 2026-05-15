@@ -95,7 +95,7 @@ def format_command_help(command: FinanceCommand) -> str:
         lines.extend(f"  {example}" for example in command.examples)
     if command.notes:
         lines.append("")
-        lines.append("Notes:")
+        lines.append("Details:")
         lines.extend(f"  - {note}" for note in command.notes)
     return "\n".join(lines)
 

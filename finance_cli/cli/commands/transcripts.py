@@ -25,7 +25,7 @@ def _transcripts_read(args: list[str]) -> FinanceCommandResult:
     symbol, kv = _split_subject(args)
     url = kv.str("url")
     if not symbol and not url:
-        return FinanceCommandResult(ok=False, error="usage: transcripts.read [SYMBOL] [url=...] [quarter=latest max_chars=12000]")
+        return FinanceCommandResult(ok=False, error="usage: transcripts.read [SYMBOL] [url=URL] [quarter=latest max_chars=12000]")
     data = read_transcript(
         symbol,
         url=url,
@@ -40,7 +40,7 @@ def _transcripts_qa(args: list[str]) -> FinanceCommandResult:
     symbol, kv = _split_subject(args)
     url = kv.str("url")
     if not symbol and not url:
-        return FinanceCommandResult(ok=False, error="usage: transcripts.qa [SYMBOL] [url=...] [quarter=latest limit=10]")
+        return FinanceCommandResult(ok=False, error="usage: transcripts.qa [SYMBOL] [url=URL] [quarter=latest limit=10]")
     data = transcript_qa(
         symbol,
         url=url,
@@ -57,13 +57,13 @@ def register_transcript_commands() -> None:
         _transcripts_search,
         usage="transcripts.search SYMBOL [limit=4 debug=false]",
         examples=("finance transcripts.search IOT limit=4", "finance transcripts.search IOT debug=true"),
-        notes=("First provider is public Motley Fool transcript pages.",),
+        notes=("Uses public Motley Fool transcript pages when available.",),
     ))
     register_command(FinanceCommand(
         "transcripts.read",
         "Read a transcript and split prepared remarks / Q&A",
         _transcripts_read,
-        usage="transcripts.read [SYMBOL] [url=...] [quarter=latest max_chars=12000 include_turns=false]",
+        usage="transcripts.read [SYMBOL] [url=URL] [quarter=latest max_chars=12000 include_turns=false]",
         examples=(
             "finance transcripts.read IOT quarter=latest max_chars=4000",
             "finance transcripts.read IOT include_turns=true max_chars=2000",
@@ -74,6 +74,6 @@ def register_transcript_commands() -> None:
         "transcripts.qa",
         "Extract analyst Q&A pairs from a transcript",
         _transcripts_qa,
-        usage="transcripts.qa [SYMBOL] [url=...] [quarter=latest limit=10]",
+        usage="transcripts.qa [SYMBOL] [url=URL] [quarter=latest limit=10]",
         examples=("finance transcripts.qa IOT quarter=latest limit=5",),
     ))

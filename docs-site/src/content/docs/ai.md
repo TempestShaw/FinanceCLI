@@ -70,14 +70,14 @@ The skill is intentionally small:
 
 | File | Purpose |
 | --- | --- |
-| `SKILL.md` | Core routing rules for using `finance ... --output json` and the generated schema files. |
+| `SKILL.md` | Core routing rules for using `finance <command> [arguments] --output json` and the generated schema files. |
 | `docs/ROUTING.md` | Namespace and command-family routing hints. |
 | `docs/PLAYBOOKS.md` | Common multi-step workflows for filings, documents, market context, screens, and backtests. |
 | `docs/TRUST.md` | Result-envelope handling, citation policy, credentials, and calculator boundaries. |
 
 The command schema truth remains [`tools.json`](/FinanceCLI/tools.json). The skill links to schema files instead of duplicating them.
 
-## Usage Notes
+## Usage Details
 
 - Use `finance --list` to inspect commands in the installed version.
 - Use `finance sources.status --output json` before assuming provider availability.

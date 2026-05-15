@@ -47,7 +47,7 @@ Check the install:
 
 ```bash
 finance --list
-finance sources.status
+finance sources.status --output json
 ```
 
 The default install includes SEC filing access, PDF parsing, Camelot table extraction, PaddleOCR fallback, Yahoo market data, finance formulas, and VectorBT backtests.
@@ -57,8 +57,8 @@ The default install includes SEC filing access, PDF parsing, Camelot table extra
 ```bash
 finance filings.recent AAPL forms=10-K,10-Q limit=3
 finance filings.statement COST statement=balance query="Common Stock"
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="operating lease costs" window=1200
 finance formula.margin numerator=11969 denominator=254453
+finance market.quote AAPL
 finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31 fast=20 slow=100
 ```
 
@@ -114,9 +114,11 @@ Commands are grouped by research job:
 
 Finance CLI works well in local scripts, notebooks, CI jobs, and research automation because commands are small, explicit, and machine-readable.
 
+The document examples below assume a filing or report has been saved locally as `./filing.html`.
+
 ```bash
-finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="operating lease costs" window=1200
-finance document.window url=https://www.sec.gov/.../filing.htm format=html match_id=char_52000_52200 direction=next chars=4000
+finance document.scan ./filing.html format=html query="operating lease costs" window=1200
+finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000
 finance filings.statement COST statement=balance query="Common Stock"
 finance formula.net_debt debt=11415 cash=11144 operating_cash=5089
 ```
@@ -135,7 +137,7 @@ A typical automated research workflow is:
 | --- | --- |
 | Find recent filings | `finance filings.recent NVDA forms=10-Q,8-K limit=5` |
 | Read a 10-K section | `finance filings.read AAPL section=mda max_chars=4000` |
-| Search filing text | `finance document.scan url=https://www.sec.gov/.../filing.htm format=html query="lease liabilities"` |
+| Search filing text | `finance document.scan ./filing.html format=html query="lease liabilities"` |
 | Extract PDF tables | `finance document.tables ./report.pdf pages=10-12 flavor=stream` |
 | OCR a scanned deck | `finance document.ocr ./deck.pdf max_pages=3` |
 | Pull market data | `finance market.ohlcv NVDA timeframe=1d limit=20` |
@@ -153,7 +155,7 @@ Finance research needs traceable inputs. Finance CLI is built around a few pract
 - Scriptable results: commands return predictable JSON with `ok`, `data`, `error`, and `warnings` fields.
 - Local credentials: API keys are read from environment variables at runtime and are not written by the CLI.
 - No telemetry: the CLI does not track commands, symbols, queries, or usage.
-- Freshness: live data commands reflect the source response at runtime; there is no general stale-cache layer.
+- Freshness: provider-backed commands reflect the source response at runtime; there is no general stale-cache layer.
 
 ## Why Not Just A Notebook?
 
@@ -161,7 +163,7 @@ Finance research needs traceable inputs. Finance CLI is built around a few pract
 | --- | --- | --- |
 | Pull a 10-K section | Write SEC lookup, filing selection, parser setup, and cleanup code. | `finance filings.read AAPL section=mda` |
 | Inspect a filing table | Search raw HTML or build one-off XBRL/table parsing. | `finance filings.statement COST statement=balance query="Common Stock"` |
-| Continue reading a long document | Copy text into cells and lose the original location. | `finance document.window ... match_id=char_52000_52200 direction=next` |
+| Continue reading a long document | Copy text into cells and lose the original location. | `finance document.window ./filing.html match_id=char_52000_52200 direction=next` |
 | Reuse finance formulas | Reimplement formulas and unit conventions in each notebook. | `finance formula.roic nopat=7113 invested_capital=28077` |
 | Run a quick strategy check | Build the data fetch, signals, portfolio, and metrics before testing the idea. | `finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31` |
 | Make research reproducible | Commit notebooks with hidden state and noisy diffs. | Commit commands, JSON outputs, and CI checks as plain text. |
@@ -170,7 +172,7 @@ Notebooks are still useful for exploration and visualization. Finance CLI is for
 
 ## Data Sources And Keys
 
-Many commands work without a paid key. Some live data sources need environment variables:
+Many commands work without a paid key. Some provider-backed commands use environment variables:
 
 | Variable | Enables |
 | --- | --- |

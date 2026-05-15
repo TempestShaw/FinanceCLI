@@ -26,7 +26,7 @@
                 "properties": {
                   "strategy": {
                     "type": "string",
-                    "description": "Strategy parameter."
+                    "description": "Built-in strategy key."
                   }
                 },
                 "required": [
@@ -110,7 +110,7 @@
                 "properties": {
                   "factor_name": {
                     "type": "string",
-                    "description": "Factor Name parameter."
+                    "description": "Name assigned to the factor signal."
                   },
                   "symbols": {
                     "type": "string",
@@ -133,13 +133,13 @@
                   },
                   "top_pct": {
                     "type": "number",
-                    "default": 0.2,
-                    "description": "Top Pct parameter."
+                    "description": "Top-ranked percentage used for the long or overweight side.",
+                    "default": 0.2
                   },
                   "bottom_pct": {
                     "type": "number",
-                    "default": 0.2,
-                    "description": "Bottom Pct parameter."
+                    "description": "Bottom-ranked percentage used for the short or underweight side.",
+                    "default": 0.2
                   }
                 },
                 "required": [
@@ -226,21 +226,21 @@
                 "properties": {
                   "factor_name": {
                     "type": "string",
-                    "description": "Factor Name parameter."
+                    "description": "Name assigned to the factor signal."
                   },
                   "scores": {
                     "type": "string",
-                    "description": "Scores parameter."
+                    "description": "Mapping of symbols to factor scores."
                   },
                   "top_pct": {
                     "type": "number",
-                    "default": 0.2,
-                    "description": "Top Pct parameter."
+                    "description": "Top-ranked percentage used for the long or overweight side.",
+                    "default": 0.2
                   },
                   "bottom_pct": {
                     "type": "number",
-                    "default": 0.2,
-                    "description": "Bottom Pct parameter."
+                    "description": "Bottom-ranked percentage used for the short or underweight side.",
+                    "default": 0.2
                   }
                 },
                 "required": [
@@ -325,7 +325,7 @@
                 "properties": {
                   "strategy": {
                     "type": "string",
-                    "description": "Strategy parameter."
+                    "description": "Built-in strategy key."
                   },
                   "symbols": {
                     "type": "string",
@@ -343,13 +343,13 @@
                   },
                   "params": {
                     "type": "object",
-                    "default": "{}",
-                    "description": "Params parameter."
+                    "description": "Strategy parameters supplied as JSON or key-value pairs.",
+                    "default": "{}"
                   },
                   "strategy_file": {
                     "type": "string",
-                    "default": "./rule.py",
-                    "description": "Strategy File parameter."
+                    "description": "Path to a custom strategy file.",
+                    "default": "./rule.py"
                   }
                 },
                 "required": [
@@ -513,7 +513,7 @@
                 "properties": {
                   "strategy_id": {
                     "type": "string",
-                    "description": "Strategy Id parameter."
+                    "description": "Built-in strategy key to describe, run, or package."
                   },
                   "start_date": {
                     "type": "string",
@@ -527,13 +527,13 @@
                   },
                   "initial_cash": {
                     "type": "integer",
-                    "default": 100000,
-                    "description": "Initial Cash parameter."
+                    "description": "Starting cash balance for the simulation.",
+                    "default": 100000
                   },
                   "parameters": {
                     "type": "object",
-                    "default": "{}",
-                    "description": "Parameters parameter."
+                    "description": "Strategy parameter object included in the payload.",
+                    "default": "{}"
                   }
                 },
                 "required": [
@@ -619,7 +619,7 @@
                 "properties": {
                   "strategy": {
                     "type": "string",
-                    "description": "Strategy parameter."
+                    "description": "Built-in strategy key."
                   },
                   "symbols": {
                     "type": "string",
@@ -637,17 +637,17 @@
                   },
                   "grid": {
                     "type": "object",
-                    "description": "Grid parameter."
+                    "description": "Parameter grid where each key maps to candidate values."
                   },
                   "metric": {
                     "type": "string",
-                    "default": "sharpe_ratio",
-                    "description": "Metric parameter."
+                    "description": "Metric used to rank tuning results.",
+                    "default": "sharpe_ratio"
                   },
                   "max_runs": {
                     "type": "integer",
-                    "default": 100,
-                    "description": "Max Runs parameter."
+                    "description": "Maximum parameter combinations to evaluate.",
+                    "default": 100
                   }
                 },
                 "required": [
@@ -1018,7 +1018,7 @@
                       "pdf",
                       "html"
                     ],
-                    "description": "Format parameter."
+                    "description": "Value supplied for `format`."
                   },
                   "max_chars": {
                     "type": "integer",
@@ -1266,7 +1266,7 @@
         },
         "x-finance-cli": {
           "command": "document.scan",
-          "usage": "finance document.scan SOURCE|source=PATH_OR_URL [query=... topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]",
+          "usage": "finance document.scan SOURCE|source=PATH_OR_URL [query=TEXT topics=risk,disclosure format=pdf|html match=fuzzy|all_terms threshold=80 max_chars=12000 max_pages=5 limit=50 window=0 start_char=0 end_char=0]",
           "side_effects": "local_or_network_read",
           "auth_required": "none",
           "citation_fields": [
@@ -1299,21 +1299,21 @@
                   },
                   "pages": {
                     "type": "string",
-                    "default": "1-end",
-                    "description": "Pages parameter."
+                    "description": "PDF page selection passed to the table extractor.",
+                    "default": "1-end"
                   },
                   "flavor": {
                     "type": "string",
+                    "description": "PDF table extraction flavor.",
                     "enum": [
                       "stream",
                       "lattice"
-                    ],
-                    "description": "Flavor parameter."
+                    ]
                   },
                   "max_tables": {
                     "type": "integer",
-                    "default": 20,
-                    "description": "Max Tables parameter."
+                    "description": "Maximum extracted tables to return.",
+                    "default": 20
                   },
                   "max_rows": {
                     "type": "integer",
@@ -1537,23 +1537,23 @@
                   },
                   "revenue": {
                     "type": "string",
-                    "description": "Revenue parameter."
+                    "description": "Reported, assumed, or user-supplied revenue input."
                   },
                   "consensus_revenue": {
                     "type": "string",
-                    "description": "Consensus Revenue parameter."
+                    "description": "Consensus revenue estimate used for comparison."
                   },
                   "eps": {
                     "type": "number",
-                    "description": "Eps parameter."
+                    "description": "Reported or assumed EPS value used for comparison."
                   },
                   "consensus_eps": {
                     "type": "number",
-                    "description": "Consensus Eps parameter."
+                    "description": "Consensus EPS estimate used for comparison."
                   },
                   "fiscal_year": {
                     "type": "integer",
-                    "description": "Fiscal Year parameter."
+                    "description": "Fiscal year for the reported or estimated period."
                   }
                 },
                 "required": [
@@ -1645,11 +1645,11 @@
                   },
                   "period": {
                     "type": "string",
+                    "description": "Financial statement period, such as annual or quarterly.",
                     "enum": [
                       "annual",
                       "quarter"
-                    ],
-                    "description": "Period parameter."
+                    ]
                   },
                   "limit": {
                     "type": "integer",
@@ -1658,8 +1658,8 @@
                   },
                   "page": {
                     "type": "integer",
-                    "default": 0,
-                    "description": "Page parameter."
+                    "description": "Page number to request from the provider.",
+                    "default": 0
                   }
                 },
                 "required": [
@@ -1833,7 +1833,7 @@
         },
         "x-finance-cli": {
           "command": "filings.read",
-          "usage": "finance filings.read [SYMBOL] [accession=...|url=...] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
+          "usage": "finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -1866,8 +1866,8 @@
                   },
                   "forms": {
                     "type": "string",
-                    "default": "8-K,10-Q",
-                    "description": "Forms parameter."
+                    "description": "Comma-separated SEC form types to include.",
+                    "default": "8-K,10-Q"
                   },
                   "limit": {
                     "type": "integer",
@@ -1982,7 +1982,7 @@
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name parameter."
+                    "description": "Report, section, or table name selected by the caller."
                   },
                   "form": {
                     "type": "string",
@@ -2064,7 +2064,7 @@
         },
         "x-finance-cli": {
           "command": "filings.report",
-          "usage": "finance filings.report [SYMBOL] [accession=...|url=...] name='Report Short Name' [form=10-K query=... max_rows=25 (0=unlimited) max_chars=8000]",
+          "usage": "finance filings.report [SYMBOL] [accession=ACCESSION|url=URL] name='Report Short Name' [form=10-K query=TEXT max_rows=25 (0=unlimited) max_chars=8000]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -2173,7 +2173,7 @@
         },
         "x-finance-cli": {
           "command": "filings.reports",
-          "usage": "finance filings.reports [SYMBOL] [accession=...|url=...] [form=10-K query=lease]",
+          "usage": "finance filings.reports [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K query=lease]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -2277,7 +2277,7 @@
         },
         "x-finance-cli": {
           "command": "filings.sections",
-          "usage": "finance filings.sections [SYMBOL] [accession=...|url=...] [form=10-K]",
+          "usage": "finance filings.sections [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -2439,7 +2439,7 @@
         },
         "x-finance-cli": {
           "command": "filings.statement",
-          "usage": "finance filings.statement [SYMBOL] [accession=...|url=...] [form=10-K statement=income|balance|cashflow query=... max_rows=0]",
+          "usage": "finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -2468,11 +2468,11 @@
                 "properties": {
                   "ebit": {
                     "type": "number",
-                    "description": "Ebit parameter."
+                    "description": "Value supplied for `ebit`."
                   },
                   "d_and_a": {
                     "type": "number",
-                    "description": "D And A parameter."
+                    "description": "Value supplied for `d_and_a`."
                   },
                   "addbacks": {
                     "type": "array",
@@ -2565,15 +2565,15 @@
                 "properties": {
                   "start": {
                     "type": "number",
-                    "description": "Start parameter."
+                    "description": "Value supplied for `start`."
                   },
                   "end": {
                     "type": "number",
-                    "description": "End parameter."
+                    "description": "Value supplied for `end`."
                   },
                   "periods": {
                     "type": "number",
-                    "description": "Periods parameter."
+                    "description": "Value supplied for `periods`."
                   }
                 },
                 "required": [
@@ -2659,15 +2659,15 @@
                 "properties": {
                   "risk_free": {
                     "type": "number",
-                    "description": "Risk Free parameter."
+                    "description": "Value supplied for `risk_free`."
                   },
                   "beta": {
                     "type": "number",
-                    "description": "Beta parameter."
+                    "description": "Value supplied for `beta`."
                   },
                   "market_return": {
                     "type": "number",
-                    "description": "Market Return parameter."
+                    "description": "Value supplied for `market_return`."
                   }
                 },
                 "required": [
@@ -2753,20 +2753,20 @@
                 "properties": {
                   "current": {
                     "type": "number",
-                    "description": "Current parameter."
+                    "description": "Value supplied for `current`."
                   },
                   "prior": {
                     "type": "number",
-                    "description": "Prior parameter."
+                    "description": "Value supplied for `prior`."
                   },
                   "denominator": {
                     "type": "number",
-                    "description": "Denominator parameter."
+                    "description": "Value supplied for `denominator`."
                   },
                   "days": {
                     "type": "number",
                     "default": 365,
-                    "description": "Days parameter."
+                    "description": "Value supplied for `days`."
                   }
                 },
                 "required": [
@@ -2852,11 +2852,11 @@
                 "properties": {
                   "ebit": {
                     "type": "number",
-                    "description": "Ebit parameter."
+                    "description": "Value supplied for `ebit`."
                   },
                   "d_and_a": {
                     "type": "number",
-                    "description": "D And A parameter."
+                    "description": "Value supplied for `d_and_a`."
                   }
                 },
                 "required": [
@@ -2941,7 +2941,7 @@
                 "properties": {
                   "market_equity": {
                     "type": "number",
-                    "description": "Market Equity parameter."
+                    "description": "Value supplied for `market_equity`."
                   },
                   "debt": {
                     "type": "number",
@@ -3040,15 +3040,15 @@
                 "properties": {
                   "base_liability": {
                     "type": "number",
-                    "description": "Base Liability parameter."
+                    "description": "Value supplied for `base_liability`."
                   },
                   "variable_cost": {
                     "type": "number",
-                    "description": "Variable Cost parameter."
+                    "description": "Value supplied for `variable_cost`."
                   },
                   "operating_cost": {
                     "type": "number",
-                    "description": "Operating Cost parameter."
+                    "description": "Value supplied for `operating_cost`."
                   }
                 },
                 "required": [
@@ -3134,11 +3134,11 @@
                 "properties": {
                   "numerator": {
                     "type": "number",
-                    "description": "Numerator parameter."
+                    "description": "Value supplied for `numerator`."
                   },
                   "denominator": {
                     "type": "number",
-                    "description": "Denominator parameter."
+                    "description": "Value supplied for `denominator`."
                   }
                 },
                 "required": [
@@ -3223,16 +3223,16 @@
                 "properties": {
                   "debt": {
                     "type": "number",
-                    "description": "Debt parameter."
+                    "description": "Value supplied for `debt`."
                   },
                   "cash": {
                     "type": "number",
-                    "description": "Cash parameter."
+                    "description": "Value supplied for `cash`."
                   },
                   "operating_cash": {
                     "type": "number",
                     "default": 5089,
-                    "description": "Operating Cash parameter."
+                    "description": "Value supplied for `operating_cash`."
                   }
                 },
                 "required": [
@@ -3317,16 +3317,16 @@
                 "properties": {
                   "revenue": {
                     "type": "number",
-                    "description": "Revenue parameter."
+                    "description": "Reported, assumed, or user-supplied revenue input."
                   },
                   "cash_like_assets": {
                     "type": "number",
-                    "description": "Cash Like Assets parameter."
+                    "description": "Value supplied for `cash_like_assets`."
                   },
                   "percent_revenue": {
                     "type": "number",
                     "default": "2%",
-                    "description": "Percent Revenue parameter."
+                    "description": "Value supplied for `percent_revenue`."
                   }
                 },
                 "required": [
@@ -3411,17 +3411,17 @@
                 "properties": {
                   "current_assets": {
                     "type": "number",
-                    "description": "Current Assets parameter."
+                    "description": "Value supplied for `current_assets`."
                   },
                   "cash_like_assets": {
                     "type": "number",
                     "default": 11144,
-                    "description": "Cash Like Assets parameter."
+                    "description": "Value supplied for `cash_like_assets`."
                   },
                   "operating_cash": {
                     "type": "number",
                     "default": 5089,
-                    "description": "Operating Cash parameter."
+                    "description": "Value supplied for `operating_cash`."
                   }
                 },
                 "required": [
@@ -3505,12 +3505,12 @@
                 "properties": {
                   "current_liabilities": {
                     "type": "number",
-                    "description": "Current Liabilities parameter."
+                    "description": "Value supplied for `current_liabilities`."
                   },
                   "interest_bearing_current_debt": {
                     "type": "number",
                     "default": 103,
-                    "description": "Interest Bearing Current Debt parameter."
+                    "description": "Value supplied for `interest_bearing_current_debt`."
                   }
                 },
                 "required": [
@@ -3594,11 +3594,11 @@
                 "properties": {
                   "nopat": {
                     "type": "number",
-                    "description": "Nopat parameter."
+                    "description": "Value supplied for `nopat`."
                   },
                   "invested_capital": {
                     "type": "number",
-                    "description": "Invested Capital parameter."
+                    "description": "Value supplied for `invested_capital`."
                   }
                 },
                 "required": [
@@ -3683,15 +3683,15 @@
                 "properties": {
                   "numerator": {
                     "type": "number",
-                    "description": "Numerator parameter."
+                    "description": "Value supplied for `numerator`."
                   },
                   "current": {
                     "type": "number",
-                    "description": "Current parameter."
+                    "description": "Value supplied for `current`."
                   },
                   "prior": {
                     "type": "number",
-                    "description": "Prior parameter."
+                    "description": "Value supplied for `prior`."
                   }
                 },
                 "required": [
@@ -3777,19 +3777,19 @@
                 "properties": {
                   "equity_value": {
                     "type": "number",
-                    "description": "Equity Value parameter."
+                    "description": "Equity market value used in WACC or valuation math."
                   },
                   "debt_value": {
                     "type": "number",
-                    "description": "Debt Value parameter."
+                    "description": "Debt value used in WACC or valuation math."
                   },
                   "cost_of_equity": {
                     "type": "number",
-                    "description": "Cost Of Equity parameter."
+                    "description": "Cost of equity. CLI accepts decimal or percent."
                   },
                   "cost_of_debt": {
                     "type": "number",
-                    "description": "Cost Of Debt parameter."
+                    "description": "Cost of debt. CLI accepts decimal or percent."
                   },
                   "tax_rate": {
                     "type": "number",
@@ -3890,11 +3890,11 @@
                 "properties": {
                   "operating_current_assets": {
                     "type": "number",
-                    "description": "Operating Current Assets parameter."
+                    "description": "Value supplied for `operating_current_assets`."
                   },
                   "operating_current_liabilities": {
                     "type": "number",
-                    "description": "Operating Current Liabilities parameter."
+                    "description": "Value supplied for `operating_current_liabilities`."
                   }
                 },
                 "required": [
@@ -3992,11 +3992,11 @@
                   },
                   "period": {
                     "type": "string",
+                    "description": "Financial statement period, such as annual or quarterly.",
                     "enum": [
                       "annual",
                       "quarterly"
-                    ],
-                    "description": "Period parameter."
+                    ]
                   }
                 },
                 "required": [
@@ -4080,8 +4080,7 @@
                 "properties": {
                   "sector": {
                     "type": "string",
-                    "default": "SECTOR_KEY",
-                    "description": "Sector parameter."
+                    "description": "Sector key or sector name to query."
                   }
                 },
                 "required": [],
@@ -4163,7 +4162,7 @@
                 "properties": {
                   "key": {
                     "type": "string",
-                    "description": "Key parameter."
+                    "description": "Provider key returned by the corresponding list command."
                   }
                 },
                 "required": [
@@ -4247,17 +4246,17 @@
                 "properties": {
                   "key": {
                     "type": "string",
-                    "description": "Key parameter."
+                    "description": "Provider key returned by the corresponding list command."
                   },
                   "table": {
                     "type": "string",
+                    "description": "Provider table name to return.",
                     "enum": [
                       "top_companies",
                       "top_growth_companies",
                       "top_performing_companies",
                       "research_reports"
-                    ],
-                    "description": "Table parameter."
+                    ]
                   },
                   "limit": {
                     "type": "integer",
@@ -4461,12 +4460,12 @@
                   },
                   "ocr": {
                     "type": "string",
+                    "description": "OCR mode for presentation or document text extraction.",
                     "enum": [
                       "off",
                       "auto",
                       "force"
-                    ],
-                    "description": "Ocr parameter."
+                    ]
                   }
                 },
                 "required": [
@@ -4569,8 +4568,8 @@
                   },
                   "metrics": {
                     "type": "string",
-                    "default": "arr,nrr",
-                    "description": "Metrics parameter."
+                    "description": "Comma-separated KPI or metric names to search for.",
+                    "default": "arr,nrr"
                   },
                   "limit": {
                     "type": "integer",
@@ -4579,8 +4578,8 @@
                   },
                   "quarter": {
                     "type": "string",
-                    "default": "latest",
-                    "description": "Quarter parameter."
+                    "description": "Fiscal quarter label, such as Q1 or Q4.",
+                    "default": "latest"
                   },
                   "form": {
                     "type": "string",
@@ -4684,8 +4683,8 @@
                   },
                   "metrics": {
                     "type": "string",
-                    "default": "arr,nrr",
-                    "description": "Metrics parameter."
+                    "description": "Comma-separated KPI or metric names to search for.",
+                    "default": "arr,nrr"
                   },
                   "limit": {
                     "type": "integer",
@@ -4694,8 +4693,8 @@
                   },
                   "per_document_limit": {
                     "type": "integer",
-                    "default": 20,
-                    "description": "Per Document Limit parameter."
+                    "description": "Maximum KPI evidence rows per source document.",
+                    "default": 20
                   }
                 },
                 "required": [
@@ -5086,13 +5085,13 @@
                   },
                   "lookback_days": {
                     "type": "integer",
-                    "default": 20,
-                    "description": "Lookback Days parameter."
+                    "description": "Lookback window in calendar days.",
+                    "default": 20
                   },
                   "group_by": {
                     "type": "string",
-                    "default": "sector",
-                    "description": "Group By parameter."
+                    "description": "Aggregation grouping for analysis output.",
+                    "default": "sector"
                   }
                 },
                 "required": [],
@@ -5272,18 +5271,15 @@
                   },
                   "symbol": {
                     "type": "string",
-                    "description": "Ticker symbol.",
-                    "default": "SYMBOL"
+                    "description": "Ticker symbol."
                   },
                   "sector": {
                     "type": "string",
-                    "default": "SECTOR",
-                    "description": "Sector parameter."
+                    "description": "Sector key or sector name to query."
                   },
                   "mode": {
                     "type": "string",
-                    "default": "MODE",
-                    "description": "Mode parameter."
+                    "description": "Analysis mode."
                   },
                   "max_records": {
                     "type": "integer",
@@ -5292,13 +5288,13 @@
                   },
                   "timespan": {
                     "type": "string",
+                    "description": "Relative provider lookback window such as 24H, 7D, or 1M.",
                     "enum": [
                       "30D",
                       "1W",
                       "1M",
                       "24H"
-                    ],
-                    "description": "Timespan parameter."
+                    ]
                   },
                   "date": {
                     "type": "string",
@@ -5320,13 +5316,11 @@
                   },
                   "start_datetime": {
                     "type": "string",
-                    "default": "YYYYMMDDHHMMSS",
-                    "description": "Start Datetime parameter."
+                    "description": "Inclusive start timestamp for precise provider queries."
                   },
                   "end_datetime": {
                     "type": "string",
-                    "default": "YYYYMMDDHHMMSS",
-                    "description": "End Datetime parameter."
+                    "description": "Inclusive end timestamp for precise provider queries."
                   }
                 },
                 "required": [
@@ -5432,13 +5426,13 @@
                   },
                   "timespan": {
                     "type": "string",
+                    "description": "Relative provider lookback window such as 24H, 7D, or 1M.",
                     "enum": [
                       "30D",
                       "1W",
                       "1M",
                       "24H"
-                    ],
-                    "description": "Timespan parameter."
+                    ]
                   },
                   "date": {
                     "type": "string",
@@ -5460,13 +5454,11 @@
                   },
                   "start_datetime": {
                     "type": "string",
-                    "default": "YYYYMMDDHHMMSS",
-                    "description": "Start Datetime parameter."
+                    "description": "Inclusive start timestamp for precise provider queries."
                   },
                   "end_datetime": {
                     "type": "string",
-                    "default": "YYYYMMDDHHMMSS",
-                    "description": "End Datetime parameter."
+                    "description": "Inclusive end timestamp for precise provider queries."
                   }
                 },
                 "required": [],
@@ -5562,23 +5554,23 @@
                   },
                   "lookback": {
                     "type": "string",
-                    "default": "3D",
-                    "description": "Lookback parameter."
+                    "description": "Lookback window around the requested date.",
+                    "default": "3D"
                   },
                   "news_limit": {
                     "type": "integer",
-                    "default": 5,
-                    "description": "News Limit parameter."
+                    "description": "Maximum news records to include.",
+                    "default": 5
                   },
                   "filing_limit": {
                     "type": "integer",
-                    "default": 80,
-                    "description": "Filing Limit parameter."
+                    "description": "Maximum filing records to include.",
+                    "default": 80
                   },
                   "transcript_limit": {
                     "type": "integer",
-                    "default": 12,
-                    "description": "Transcript Limit parameter."
+                    "description": "Maximum transcript records to include.",
+                    "default": 12
                   }
                 },
                 "required": [
@@ -5672,26 +5664,26 @@
                   },
                   "window": {
                     "type": "string",
+                    "description": "Trading or text window size, depending on the command.",
                     "enum": [
                       "1d",
                       "3d",
                       "1w",
                       "1m"
-                    ],
-                    "description": "Window parameter."
+                    ]
                   },
                   "years": {
                     "type": "integer",
-                    "default": 3,
-                    "description": "Years parameter."
+                    "description": "Number of historical years to inspect.",
+                    "default": 3
                   },
                   "threshold": {
                     "type": "string",
+                    "description": "Move threshold. CLI accepts decimal or percent notation.",
                     "enum": [
                       8,
                       "8%"
-                    ],
-                    "description": "Threshold parameter."
+                    ]
                   },
                   "limit": {
                     "type": "integer",
@@ -5700,8 +5692,8 @@
                   },
                   "provider": {
                     "type": "string",
-                    "default": "auto",
-                    "description": "Provider parameter."
+                    "description": "Provider selection.",
+                    "default": "auto"
                   }
                 },
                 "required": [
@@ -5795,7 +5787,7 @@
                   "style": {
                     "type": "string",
                     "default": "fundamental",
-                    "description": "Style parameter."
+                    "description": "Value supplied for `style`."
                   }
                 },
                 "required": [
@@ -5970,7 +5962,7 @@
                   },
                   "sort_field": {
                     "type": "string",
-                    "description": "Sort Field parameter."
+                    "description": "Field used to sort screen results."
                   },
                   "sort_asc": {
                     "type": "boolean",
@@ -6059,7 +6051,7 @@
                 "properties": {
                   "key": {
                     "type": "string",
-                    "description": "Key parameter."
+                    "description": "Provider key returned by the corresponding list command."
                   }
                 },
                 "required": [
@@ -6220,7 +6212,7 @@
                 "properties": {
                   "key": {
                     "type": "string",
-                    "description": "Key parameter."
+                    "description": "Provider key returned by the corresponding list command."
                   }
                 },
                 "required": [
@@ -6304,17 +6296,17 @@
                 "properties": {
                   "key": {
                     "type": "string",
-                    "description": "Key parameter."
+                    "description": "Provider key returned by the corresponding list command."
                   },
                   "table": {
                     "type": "string",
+                    "description": "Provider table name to return.",
                     "enum": [
                       "top_companies",
                       "top_etfs",
                       "top_mutual_funds",
                       "research_reports"
-                    ],
-                    "description": "Table parameter."
+                    ]
                   },
                   "limit": {
                     "type": "integer",
@@ -6557,18 +6549,16 @@
                 "properties": {
                   "source": {
                     "type": "string",
-                    "description": "Source key, path, or URL depending on command.",
-                    "default": "SOURCE"
+                    "description": "Source key, path, or URL depending on command."
                   },
                   "symbol": {
                     "type": "string",
-                    "description": "Ticker symbol.",
-                    "default": "AAPL"
+                    "description": "Ticker symbol."
                   },
                   "timeout": {
                     "type": "integer",
-                    "default": 30,
-                    "description": "Timeout parameter."
+                    "description": "Provider test timeout in seconds.",
+                    "default": 30
                   }
                 },
                 "required": [],
@@ -6835,8 +6825,8 @@
                   },
                   "quarter": {
                     "type": "string",
-                    "default": "latest",
-                    "description": "Quarter parameter."
+                    "description": "Fiscal quarter label, such as Q1 or Q4.",
+                    "default": "latest"
                   },
                   "limit": {
                     "type": "integer",
@@ -6902,7 +6892,7 @@
         },
         "x-finance-cli": {
           "command": "transcripts.qa",
-          "usage": "finance transcripts.qa [SYMBOL] [url=...] [quarter=latest limit=10]",
+          "usage": "finance transcripts.qa [SYMBOL] [url=URL] [quarter=latest limit=10]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -6938,8 +6928,8 @@
                   },
                   "quarter": {
                     "type": "string",
-                    "default": "latest",
-                    "description": "Quarter parameter."
+                    "description": "Fiscal quarter label, such as Q1 or Q4.",
+                    "default": "latest"
                   },
                   "max_chars": {
                     "type": "integer",
@@ -7010,7 +7000,7 @@
         },
         "x-finance-cli": {
           "command": "transcripts.read",
-          "usage": "finance transcripts.read [SYMBOL] [url=...] [quarter=latest max_chars=12000 include_turns=false]",
+          "usage": "finance transcripts.read [SYMBOL] [url=URL] [quarter=latest max_chars=12000 include_turns=false]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -7504,24 +7494,24 @@
                   },
                   "revenue": {
                     "type": "number",
-                    "description": "Revenue parameter."
+                    "description": "Reported, assumed, or user-supplied revenue input."
                   },
                   "bear_multiple": {
                     "type": "number",
-                    "description": "Bear Multiple parameter."
+                    "description": "Bear-case valuation multiple."
                   },
                   "base_multiple": {
                     "type": "number",
-                    "description": "Base Multiple parameter."
+                    "description": "Base-case valuation multiple."
                   },
                   "bull_multiple": {
                     "type": "number",
-                    "description": "Bull Multiple parameter."
+                    "description": "Value supplied for `bull_multiple`."
                   },
                   "shares": {
                     "type": "number",
-                    "default": "580M",
-                    "description": "Shares parameter."
+                    "description": "Share count used for per-share valuation output.",
+                    "default": "580M"
                   }
                 },
                 "required": [
@@ -7609,19 +7599,19 @@
                 "properties": {
                   "equity_value": {
                     "type": "number",
-                    "description": "Equity Value parameter."
+                    "description": "Equity market value used in WACC or valuation math."
                   },
                   "debt_value": {
                     "type": "number",
-                    "description": "Debt Value parameter."
+                    "description": "Debt value used in WACC or valuation math."
                   },
                   "cost_of_equity": {
                     "type": "string",
-                    "description": "Cost Of Equity parameter."
+                    "description": "Cost of equity. CLI accepts decimal or percent."
                   },
                   "cost_of_debt": {
                     "type": "string",
-                    "description": "Cost Of Debt parameter."
+                    "description": "Cost of debt. CLI accepts decimal or percent."
                   },
                   "tax_rate": {
                     "type": "number",
