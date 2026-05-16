@@ -1,0 +1,211 @@
+/* Finance CLI Starlight theme */
+
+:root {
+  /* Light Theme Colors (Default) */
+  --sl-color-accent-low: #ecfdf5;
+  --sl-color-accent: #16a34a;
+  --sl-color-accent-high: #14532d;
+
+  /* Text and Backgrounds - Neutral Grays, no blue */
+  --sl-color-white: #171717;
+  --sl-color-gray-1: #262626;
+  --sl-color-gray-2: #404040;
+  --sl-color-gray-3: #737373;
+  --sl-color-gray-4: #d4d4d4;
+  --sl-color-gray-5: #f5f5f5;
+  --sl-color-gray-6: #fafafa;
+  --sl-color-black: #ffffff;
+}
+
+[data-theme='dark'] {
+  /* Dark Theme Colors */
+  --sl-color-accent-low: #0b2f18;
+  --sl-color-accent: #22c55e;
+  --sl-color-accent-high: #4ade80;
+
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f5f5f5;
+  --sl-color-gray-2: #d4d4d4;
+  --sl-color-gray-3: #a3a3a3;
+  --sl-color-gray-4: #404040;
+  --sl-color-gray-5: #171717;
+  --sl-color-gray-6: #0a0a0a;
+  --sl-color-black: #050505;
+}
+
+/* Base Polish */
+:root {
+    --sl-content-font-size: 1rem;
+    --sl-line-height: 1.6;
+    --sl-font: "Avenir Next", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+    background-color: var(--sl-color-black);
+    background-image: none !important;
+}
+
+/* Header & Navigation */
+header {
+    border-bottom: 1px solid var(--sl-color-gray-4) !important;
+    background-color: var(--sl-color-black) !important;
+    backdrop-filter: blur(8px);
+}
+
+.sidebar-pane {
+    border-inline-end: 1px solid var(--sl-color-gray-4) !important;
+    background-color: var(--sl-color-gray-6) !important;
+}
+
+.sidebar-content [aria-current="page"] {
+    color: #15803d !important;
+    background-color: var(--sl-color-accent-low) !important;
+    font-weight: 600;
+}
+
+.sidebar-content a {
+    color: var(--sl-color-gray-2) !important;
+}
+
+.sidebar-content a:hover {
+    color: #15803d !important;
+    text-decoration: none;
+}
+
+.sidebar-content [aria-current="page"]:hover {
+    color: #15803d !important;
+}
+
+.hero .sl-link-button.primary {
+    background-color: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+}
+
+.hero .sl-link-button.primary:hover {
+    background-color: #15803d !important;
+    border-color: #15803d !important;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+[data-theme='dark'] .sidebar-content [aria-current="page"] {
+    color: #86efac !important;
+    background-color: #102016 !important;
+}
+
+[data-theme='dark'] .sidebar-content a:hover {
+    color: #86efac !important;
+}
+
+[data-theme='dark'] .hero .sl-link-button.primary {
+    background-color: #166534 !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .hero .sl-link-button.primary:hover {
+    background-color: #14532d !important;
+    border-color: #4ade80 !important;
+}
+
+/* Links */
+a:not(.button) {
+    color: var(--sl-color-accent);
+    text-decoration: none;
+}
+
+a:not(.button):hover {
+    color: #15803d;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+}
+
+[data-theme='dark'] a:not(.button):hover {
+    color: #4ade80;
+}
+
+/* Tables - Professional Financial Look */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 1.5rem 0;
+    line-height: 1.4;
+}
+
+table th, table td {
+    border: 1px solid var(--sl-color-gray-4);
+    padding: 0.6rem 0.8rem;
+}
+
+table thead th {
+    background-color: var(--sl-color-gray-5);
+    color: var(--sl-color-white);
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid var(--sl-color-gray-4);
+}
+
+/* Subtle zebra striping */
+table tbody tr:nth-child(even) {
+    background-color: var(--sl-color-gray-6);
+}
+
+/* Right-align numbers in tables if possible (heuristic) */
+table td:has(code) {
+    font-family: var(--sl-font-mono);
+}
+
+/* Code Blocks */
+pre {
+    border: 1px solid var(--sl-color-gray-4) !important;
+    border-radius: 4px !important;
+    background-color: var(--sl-color-gray-6) !important;
+}
+
+/* Inline code */
+code:not(pre code) {
+    background-color: var(--sl-color-gray-5);
+    border: 1px solid var(--sl-color-gray-4);
+    padding: 0.15em 0.3em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Search Input */
+site-search button {
+    border: 1px solid var(--sl-color-gray-4) !important;
+    border-radius: 6px !important;
+}
+
+/* Asides / Callouts */
+.starlight-aside {
+    border-left-width: 4px !important;
+    border-radius: 4px;
+}
+
+/* Focus states */
+:focus-visible {
+    outline: 2px solid var(--sl-color-accent) !important;
+    outline-offset: 2px;
+}
+
+/* Scrollbar styling for a cleaner look */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--sl-color-black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sl-color-gray-4);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--sl-color-gray-3);
+}

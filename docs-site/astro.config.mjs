@@ -8,6 +8,7 @@ export default defineConfig({
     starlight({
       title: "Finance CLI",
       description: "Public-company research from the terminal.",
+      customCss: ["./src/styles/custom.css"],
       social: [
         {
           icon: "github",
@@ -30,6 +31,7 @@ export default defineConfig({
           label: "Reference",
           items: [
             { label: "Commands", slug: "commands" },
+            { label: "Namespaces", slug: "namespaces" },
             { label: "JSON Results", slug: "json-results" },
             { label: "MCP And Plugins", slug: "mcp" },
             { label: "Data Sources", slug: "data-sources" },
@@ -38,28 +40,58 @@ export default defineConfig({
           ],
         },
         {
-          label: "Namespaces",
+          label: "Use Cases",
           items: [
-            { label: "sources", slug: "namespaces/sources" },
-            { label: "filings", slug: "namespaces/filings" },
-            { label: "document", slug: "namespaces/document" },
-            { label: "market", slug: "namespaces/market" },
-            { label: "calendar", slug: "namespaces/calendar" },
-            { label: "sector", slug: "namespaces/sector" },
-            { label: "industry", slug: "namespaces/industry" },
-            { label: "screen", slug: "namespaces/screen" },
-            { label: "symbol", slug: "namespaces/symbol" },
-            { label: "fundamentals", slug: "namespaces/fundamentals" },
-            { label: "news", slug: "namespaces/news" },
-            { label: "price", slug: "namespaces/price" },
-            { label: "transcripts", slug: "namespaces/transcripts" },
-            { label: "kpi", slug: "namespaces/kpi" },
-            { label: "ir", slug: "namespaces/ir" },
-            { label: "formula", slug: "namespaces/formula" },
-            { label: "valuation", slug: "namespaces/valuation" },
-            { label: "estimates", slug: "namespaces/estimates" },
-            { label: "research", slug: "namespaces/research" },
-            { label: "backtest", slug: "namespaces/backtest" },
+            {
+              label: "Setup & Planning",
+              collapsed: true,
+              items: [
+                { label: "Sources", slug: "namespaces/sources" },
+                { label: "Research", slug: "namespaces/research" },
+              ],
+            },
+            {
+              label: "Filings & Documents",
+              collapsed: true,
+              items: [
+                { label: "Filings", slug: "namespaces/filings" },
+                { label: "Document", slug: "namespaces/document" },
+                { label: "IR", slug: "namespaces/ir" },
+              ],
+            },
+            {
+              label: "Market Discovery",
+              collapsed: true,
+              items: [
+                { label: "Symbol", slug: "namespaces/symbol" },
+                { label: "Market", slug: "namespaces/market" },
+                { label: "Calendar", slug: "namespaces/calendar" },
+                { label: "Sector", slug: "namespaces/sector" },
+                { label: "Industry", slug: "namespaces/industry" },
+                { label: "Screen", slug: "namespaces/screen" },
+                { label: "Fundamentals", slug: "namespaces/fundamentals" },
+              ],
+            },
+            {
+              label: "News & Evidence",
+              collapsed: true,
+              items: [
+                { label: "News", slug: "namespaces/news" },
+                { label: "Price", slug: "namespaces/price" },
+                { label: "Transcripts", slug: "namespaces/transcripts" },
+                { label: "KPI", slug: "namespaces/kpi" },
+              ],
+            },
+            {
+              label: "Calculators & Backtests",
+              collapsed: true,
+              items: [
+                { label: "Formula", slug: "namespaces/formula" },
+                { label: "Valuation", slug: "namespaces/valuation" },
+                { label: "Estimates", slug: "namespaces/estimates" },
+                { label: "Backtest", slug: "namespaces/backtest" },
+              ],
+            },
           ],
         },
       ],
