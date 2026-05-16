@@ -125,6 +125,25 @@ a:not(.button):hover {
     color: #4ade80;
 }
 
+starlight-toc a {
+    color: var(--sl-color-gray-2) !important;
+}
+
+starlight-toc a:hover,
+starlight-toc a[aria-current="true"],
+starlight-toc a[aria-current="location"],
+starlight-toc a[aria-current="page"] {
+    color: #15803d !important;
+    text-decoration: none;
+}
+
+[data-theme='dark'] starlight-toc a:hover,
+[data-theme='dark'] starlight-toc a[aria-current="true"],
+[data-theme='dark'] starlight-toc a[aria-current="location"],
+[data-theme='dark'] starlight-toc a[aria-current="page"] {
+    color: #86efac !important;
+}
+
 /* Tables - Professional Financial Look */
 table {
     width: 100%;
