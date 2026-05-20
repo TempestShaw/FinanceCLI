@@ -2,8 +2,11 @@
 
 Use `finance --list` and `tools.json` as the source of truth for the installed command set. Prefer `tools.json` over prose when parameter names, defaults, enums, side effects, or output schemas matter.
 
+Most company workflows are symbol-based. Extract the ticker before running symbol commands; do not pass a full natural-language task as the `SYMBOL` argument. Use `research.plan SYMBOL` as a checklist after the ticker is known.
+
 | User asks for | Prefer | Details |
 | --- | --- | --- |
+| Research workflow planning for a company | `research.plan SYMBOL` | Pass only the ticker as `SYMBOL`; keep the user question as your own task context. |
 | Latest SEC filing, accession, filing URL | `filings.recent` | Use before section/table reads when the user only gives a ticker. |
 | XBRL income, balance, or cashflow rows | `filings.statement` | Best for structured SEC statement rows. |
 | A named SEC report table | `filings.reports`, then `filings.report` | Discover report names before reading rows. |
@@ -21,4 +24,4 @@ Use `finance --list` and `tools.json` as the source of truth for the installed c
 | Transcripts and KPI evidence | `transcripts.*`, `kpi.*` | Preserve URLs, quarters, snippets, and metric labels. |
 | Investor presentation discovery | `ir.*` | Preserve company IR and SEC exhibit URLs. |
 | Reproducible strategy checks | `backtest.*` | Use explicit symbols, dates, strategy names, and parameters. |
-| Provider setup/debugging | `sources.*` | Use `sources.status` before assuming a provider is configured. |
+| Provider setup/debugging | `sources.*` | Use `sources.status` for local setup and `sources.test SOURCE symbol=SYMBOL` before relying on a live provider. |

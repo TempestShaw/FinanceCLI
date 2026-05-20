@@ -4,6 +4,7 @@ Run commands with `--output json` and keep the raw result envelope available unt
 
 ## Extract A Metric From A 10-K
 
+0. Identify the ticker from the user request; if only a company name is given, resolve the ticker before running symbol-based commands.
 1. Run `finance filings.recent SYMBOL form=10-K --output json`.
 2. Try `finance filings.statement SYMBOL statement=income query=METRIC --output json` or the relevant statement family.
 3. If the XBRL row is missing, run `filings.reports` and `filings.report` for table discovery.
@@ -12,6 +13,13 @@ Run commands with `--output json` and keep the raw result envelope available unt
 6. Use `formula.*` only after numeric inputs are explicit and cited.
 
 Failure handling: if no XBRL row or text match appears, report that the source returned no matching record. Do not invent a value.
+
+## Plan A Company Research Workflow
+
+1. Identify the ticker from the user request.
+2. Run `finance research.plan SYMBOL --output json`.
+3. Choose the next command from the returned checklist and verify any live provider with `sources.test` before depending on it.
+4. Keep the user's natural-language objective as task context; do not pass it as the `SYMBOL` argument.
 
 ## Explain A Dated Price Move
 

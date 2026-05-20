@@ -23,6 +23,13 @@ finance --list
 finance sources.status --output json
 ```
 
+For workflows that depend on live provider access, run a targeted connectivity check before assuming the provider works:
+
+```bash
+finance sources.test sec symbol=AAPL --output json
+finance sources.test yfinance symbol=AAPL --output json
+```
+
 Use this pattern for command execution:
 
 ```bash
@@ -30,6 +37,8 @@ finance filings.statement COST statement=income --output json
 finance document.scan source=report.pdf query=revenue max_pages=5 --output json
 finance formula.margin numerator=10 denominator=20 --output json
 ```
+
+If the user asks a broad natural-language research question, identify the ticker first, then pass only the ticker to symbol-based commands. For example, run `finance research.plan AAPL --output json`, not `finance research.plan task="analyze Apple" --output json`.
 
 ## Discovery Order
 
