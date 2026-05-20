@@ -11,6 +11,8 @@ Finance CLI is an installed command-line tool for repeatable public-company rese
 
 - Use the installed CLI for supported operations: `finance <command> [arguments] --output json`.
 - Treat the `finance` executable as the public interface for supported workflows.
+- Validate command names and `key=value` arguments against `tools.json`; use only documented arguments or listed aliases.
+- Do not guess provider-native parameters such as Yahoo Finance `period` when Finance CLI documents a different argument.
 - Do not generate custom Python entrypoints to replace supported CLI commands.
 - Do not fabricate missing provider data. If a command returns `ok=false`, surface the error.
 

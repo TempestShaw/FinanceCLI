@@ -882,6 +882,7 @@ finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto
 **Details**
 
 - Arguments use key=value syntax for script-friendly CLI calls.
+- interval is accepted as an alias for timeframe.
 
 ### `market.quote`
 

@@ -17,6 +17,18 @@ def _market_ohlcv(args: list[str]) -> FinanceCommandResult:
     if not args:
         return FinanceCommandResult(ok=False, error="usage: market.ohlcv SYMBOL[,SYMBOL...] [timeframe=1d start_date=YYYY-MM-DD end_date=YYYY-MM-DD limit=200 provider=auto include_attempts=false]")
     kv = KVArgs(args[1:])
+    alias_error = kv.apply_aliases({"interval": "timeframe"})
+    if alias_error:
+        return FinanceCommandResult(ok=False, error=alias_error)
+    allowed_args = {"timeframe", "start_date", "end_date", "limit", "provider", "include_attempts"}
+    unknown_args = kv.unknown_keys(allowed_args)
+    if unknown_args:
+        allowed_text = ", ".join(sorted(allowed_args | {"interval"}))
+        unknown_text = ", ".join(unknown_args)
+        return FinanceCommandResult(
+            ok=False,
+            error=f"unknown argument(s): {unknown_text}. Allowed arguments: {allowed_text}. interval is an alias for timeframe.",
+        )
     symbols = parse_csv(args[0])
     common_kwargs = dict(
         timeframe=kv.str("timeframe", "1d"),
@@ -48,5 +60,5 @@ def register_market_data_commands() -> None:
             "finance market.ohlcv NVDA timeframe=1d limit=20",
             "finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto",
         ),
-        notes=("Arguments use key=value syntax for script-friendly CLI calls.",),
+        notes=("Arguments use key=value syntax for script-friendly CLI calls.", "interval is accepted as an alias for timeframe."),
     ))

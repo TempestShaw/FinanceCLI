@@ -2,6 +2,8 @@
 
 Use `finance --list` and `tools.json` as the source of truth for the installed command set. Prefer `tools.json` over prose when parameter names, defaults, enums, side effects, or output schemas matter.
 
+Do not infer command parameters from upstream provider libraries. For example, `market.ohlcv` uses `timeframe` and accepts `interval` as a documented alias; do not pass Yahoo-style `period` unless it appears in `tools.json`.
+
 Most company workflows are symbol-based. Extract the ticker before running symbol commands; do not pass a full natural-language task as the `SYMBOL` argument. Use `research.plan SYMBOL` as a checklist after the ticker is known.
 
 | User asks for | Prefer | Details |

@@ -263,7 +263,7 @@ PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
     },
     "market.ohlcv": {
         "symbols": {"type": "string", "required": True, "description": "One ticker or comma-separated tickers."},
-        "timeframe": {"type": "string", "required": False, "default": "1d", "description": "Bar interval."},
+        "timeframe": {"type": "string", "required": False, "default": "1d", "aliases": ["interval"], "description": "Bar interval."},
         "start_date": {"type": "string", "required": False, "format": "date", "description": "Start date."},
         "end_date": {"type": "string", "required": False, "format": "date", "description": "End date."},
         "limit": {"type": "integer", "required": False, "default": 200, "description": "Maximum bars when date bounds are not enough."},

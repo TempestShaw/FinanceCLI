@@ -23,6 +23,21 @@ class KVArgs:
     def __init__(self, args: list[str]) -> None:
         self.values = parse_key_values(args)
 
+    def apply_aliases(self, aliases: dict[str, str]) -> str | None:
+        for alias, target in aliases.items():
+            alias_value = self.values.get(alias)
+            if alias_value is None:
+                continue
+            target_value = self.values.get(target)
+            if target_value is not None and target_value != alias_value:
+                return f"conflicting arguments: {alias} is an alias for {target}; use only one value"
+            self.values[target] = alias_value
+            self.values.pop(alias, None)
+        return None
+
+    def unknown_keys(self, allowed: set[str]) -> list[str]:
+        return sorted(key for key in self.values if key not in allowed)
+
     def str(self, key: str, default: str | None = None) -> str | None:
         return self.values.get(key, default)
 

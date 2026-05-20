@@ -333,6 +333,51 @@ def test_cli_command_accepts_help_flag(capsys):
     assert "SYMBOL[,SYMBOL...]" in output
 
 
+def test_market_ohlcv_rejects_unknown_key(capsys, monkeypatch):
+    def fake_fetch_ohlcv(*args, **kwargs):
+        raise AssertionError("provider should not be called for invalid arguments")
+
+    monkeypatch.setattr("finance_cli.cli.commands.market_data.fetch_ohlcv", fake_fetch_ohlcv)
+
+    code = main(["market.ohlcv", "AAPL", "period=5d", "--output", "json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 1
+    assert payload["ok"] is False
+    assert "unknown argument(s): period" in payload["error"]
+    assert "timeframe" in payload["error"]
+
+
+def test_market_ohlcv_accepts_interval_alias(capsys, monkeypatch):
+    captured = {}
+
+    def fake_fetch_ohlcv(symbol, **kwargs):
+        captured["symbol"] = symbol
+        captured.update(kwargs)
+        return {"symbol": symbol, "timeframe": kwargs["timeframe"], "rows": [], "count": 0}
+
+    monkeypatch.setattr("finance_cli.cli.commands.market_data.fetch_ohlcv", fake_fetch_ohlcv)
+
+    code = main(["market.ohlcv", "AAPL", "interval=5m", "limit=3", "--output", "json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 0
+    assert payload["ok"] is True
+    assert captured["symbol"] == "AAPL"
+    assert captured["timeframe"] == "5m"
+    assert captured["limit"] == 3
+
+
+def test_market_ohlcv_rejects_conflicting_interval_alias(capsys):
+    code = main(["market.ohlcv", "AAPL", "timeframe=1d", "interval=5m", "--output", "json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 1
+    assert payload["ok"] is False
+    assert "conflicting arguments" in payload["error"]
+    assert "interval is an alias for timeframe" in payload["error"]
+
+
 def test_cli_sources_help_and_status(capsys):
     code = main(["sources", "--help"])
     output = capsys.readouterr().out
