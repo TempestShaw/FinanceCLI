@@ -1,29 +1,82 @@
 ---
 title: Finance CLI
 description: Public-company research from the terminal.
-template: splash
-hero:
-  tagline: Pull filings, parse documents, run finance math, fetch market context, and test VectorBT strategies from one CLI.
-  actions:
-    - text: Quick Start
-      link: /FinanceCLI/quickstart/
-      icon: right-arrow
-    - text: Agent Guide
-      link: /FinanceCLI/agents/
-      icon: document
-    - text: AI Skills
-      link: /FinanceCLI/ai/
-      icon: document
-    - text: Command Reference
-      link: /FinanceCLI/commands/
-      icon: document
+tableOfContents: false
 ---
 
-Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
+<section class="fc-command-hero" aria-label="Finance CLI overview">
+  <div>
+    <p class="fc-lede">
+      Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML,
+      extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from
+      one command-line interface.
+    </p>
 
-It is designed for repeatable public-company research: commands in, structured output out.
+    <p>
+      It is designed for repeatable public-company research: commands in, structured output out.
+    </p>
 
-Agents can start from [`llms.txt`](/FinanceCLI/llms.txt), [`tools.json`](/FinanceCLI/tools.json), the [`Agent Guide`](/FinanceCLI/agents/), or [`AI Integration & Skills`](/FinanceCLI/ai/).
+    <p>
+      Agents can start from <a href="/FinanceCLI/llms.txt"><code>llms.txt</code></a>,
+      <a href="/FinanceCLI/tools.json"><code>tools.json</code></a>, the
+      <a href="/FinanceCLI/agents/">Agent Guide</a>, or
+      <a href="/FinanceCLI/ai/">AI Integration & Skills</a>.
+    </p>
+
+    <div class="fc-action-row">
+      <a href="/FinanceCLI/quickstart/">Quick Start</a>
+      <a href="/FinanceCLI/namespaces/">Browse Use Cases</a>
+      <a href="/FinanceCLI/commands/">Command Reference</a>
+    </div>
+  </div>
+
+  <div class="fc-terminal" aria-label="Example terminal session">
+    <div class="fc-terminal-bar">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <strong>research session</strong>
+    </div>
+    <pre><code>{`python -m pip install -U finresearch-cli
+
+finance filings.recent AAPL --output json
+finance filings.statement AAPL statement=income --output json
+finance document.scan filing.html query="gross margin" --output json`}</code></pre>
+  </div>
+</section>
+
+<section class="fc-usecase-grid" aria-label="Use case shortcuts">
+  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/filings/">
+    <span>Filings</span>
+    <strong>SEC discovery and XBRL statements</strong>
+    <small>Find filings, read sections, inspect reports, and pull statement rows.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/document/">
+    <span>Documents</span>
+    <strong>PDF, HTML, table, and OCR workflows</strong>
+    <small>Read documents, scan phrases, open windows, and extract tables.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/market/">
+    <span>Market Data</span>
+    <strong>Quotes, history, calendars, sectors</strong>
+    <small>Fetch market context before deeper company research.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/valuation/">
+    <span>Finance Math</span>
+    <strong>Formulas, valuation, and estimates</strong>
+    <small>Run deterministic calculations from explicit assumptions.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/backtest/">
+    <span>Backtesting</span>
+    <strong>VectorBT strategy and factor helpers</strong>
+    <small>Create payloads, run simulations, and inspect strategy outputs.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/agents/">
+    <span>Agents</span>
+    <strong>LLM-ready command routing</strong>
+    <small>Use schemas, JSON output, source attribution, and playbooks.</small>
+  </a>
+</section>
 
 ## Why This Exists
 

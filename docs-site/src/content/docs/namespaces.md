@@ -1,51 +1,69 @@
 ---
 title: Namespaces
 description: Finance CLI command namespaces grouped by research workflow.
+tableOfContents: false
 ---
 
 Finance CLI commands are grouped by the research job they support. Use this page when you know the workflow you want but do not know the exact command namespace yet.
 
-## Setup & Planning
+<section class="fc-namespace-grid" aria-label="Namespace groups">
+  <article class="fc-namespace-card">
+    <span>Setup & Planning</span>
+    <h2>Prepare a research run</h2>
+    <p>Inspect provider readiness and generate a command plan before running deeper workflows.</p>
+    <div class="fc-chip-row">
+      <a href="/FinanceCLI/namespaces/sources/">sources</a>
+      <a href="/FinanceCLI/namespaces/research/">research</a>
+    </div>
+  </article>
 
-| Namespace | Use it for |
-| --- | --- |
-| [`sources`](/FinanceCLI/namespaces/sources/) | Inspect installed providers, configured credentials, package readiness, and connectivity. |
-| [`research`](/FinanceCLI/namespaces/research/) | Generate a command plan before running a public-company research workflow. |
+  <article class="fc-namespace-card">
+    <span>Filings & Documents</span>
+    <h2>Work from source documents</h2>
+    <p>Discover SEC filings, read canonical filing sections, scan documents, extract tables, and inspect investor presentations.</p>
+    <div class="fc-chip-row">
+      <a href="/FinanceCLI/namespaces/filings/">filings</a>
+      <a href="/FinanceCLI/namespaces/document/">document</a>
+      <a href="/FinanceCLI/namespaces/ir/">ir</a>
+    </div>
+  </article>
 
-## Filings & Documents
+  <article class="fc-namespace-card">
+    <span>Market Discovery</span>
+    <h2>Build market context</h2>
+    <p>Resolve symbols, fetch quote and history context, inspect calendars, and explore sectors, industries, screens, and fundamentals.</p>
+    <div class="fc-chip-row">
+      <a href="/FinanceCLI/namespaces/symbol/">symbol</a>
+      <a href="/FinanceCLI/namespaces/market/">market</a>
+      <a href="/FinanceCLI/namespaces/calendar/">calendar</a>
+      <a href="/FinanceCLI/namespaces/sector/">sector</a>
+      <a href="/FinanceCLI/namespaces/industry/">industry</a>
+      <a href="/FinanceCLI/namespaces/screen/">screen</a>
+      <a href="/FinanceCLI/namespaces/fundamentals/">fundamentals</a>
+    </div>
+  </article>
 
-| Namespace | Use it for |
-| --- | --- |
-| [`filings`](/FinanceCLI/namespaces/filings/) | Discover SEC filings, read canonical sections, pull XBRL statement rows, and inspect filing reports. |
-| [`document`](/FinanceCLI/namespaces/document/) | Read PDFs and HTML, scan text, open windows around matches, extract tables, and run OCR fallback. |
-| [`ir`](/FinanceCLI/namespaces/ir/) | Discover investor presentations and extract text from presentation URLs. |
+  <article class="fc-namespace-card">
+    <span>News & Evidence</span>
+    <h2>Collect attributed evidence</h2>
+    <p>Search news, gather price-event context, read transcripts, and extract KPI evidence with snippets.</p>
+    <div class="fc-chip-row">
+      <a href="/FinanceCLI/namespaces/news/">news</a>
+      <a href="/FinanceCLI/namespaces/price/">price</a>
+      <a href="/FinanceCLI/namespaces/transcripts/">transcripts</a>
+      <a href="/FinanceCLI/namespaces/kpi/">kpi</a>
+    </div>
+  </article>
 
-## Market Discovery
-
-| Namespace | Use it for |
-| --- | --- |
-| [`symbol`](/FinanceCLI/namespaces/symbol/) | Resolve company profile fields, SEC identity, and compact symbol snapshots. |
-| [`market`](/FinanceCLI/namespaces/market/) | Fetch quotes, OHLCV bars, market status, regime summaries, and sector heat. |
-| [`calendar`](/FinanceCLI/namespaces/calendar/) | Read company calendar fields and earnings-date rows. |
-| [`sector`](/FinanceCLI/namespaces/sector/) | Discover sector keys, industries, overview fields, and sector tables. |
-| [`industry`](/FinanceCLI/namespaces/industry/) | Discover industry keys, industry overviews, and industry tables. |
-| [`screen`](/FinanceCLI/namespaces/screen/) | List and run predefined Yahoo Finance screens. |
-| [`fundamentals`](/FinanceCLI/namespaces/fundamentals/) | Fetch provider financial statement rows outside SEC filing context. |
-
-## News & Evidence
-
-| Namespace | Use it for |
-| --- | --- |
-| [`news`](/FinanceCLI/namespaces/news/) | Search source-attributed news and run GDELT timeline, tone, context, geo, or document analysis. |
-| [`price`](/FinanceCLI/namespaces/price/) | Find price moves and gather dated evidence windows around market events. |
-| [`transcripts`](/FinanceCLI/namespaces/transcripts/) | Search, read, and extract Q&A from public earnings-call transcripts. |
-| [`kpi`](/FinanceCLI/namespaces/kpi/) | Extract KPI evidence from filings and transcripts with source snippets. |
-
-## Calculators & Backtests
-
-| Namespace | Use it for |
-| --- | --- |
-| [`formula`](/FinanceCLI/namespaces/formula/) | Run deterministic finance formulas from explicit numeric inputs. |
-| [`valuation`](/FinanceCLI/namespaces/valuation/) | Run DCF, NPV, IRR, WACC, multiples, and scenario math from explicit assumptions. |
-| [`estimates`](/FinanceCLI/namespaces/estimates/) | Compare reported or assumed values against consensus inputs and fetch consensus estimate rows. |
-| [`backtest`](/FinanceCLI/namespaces/backtest/) | Inspect strategies, create payloads, run VectorBT simulations, tune grids, and preview factor weights. |
+  <article class="fc-namespace-card">
+    <span>Calculators & Backtests</span>
+    <h2>Run deterministic calculations</h2>
+    <p>Use explicit inputs for formulas, valuation, estimates, and VectorBT strategy or factor workflows.</p>
+    <div class="fc-chip-row">
+      <a href="/FinanceCLI/namespaces/formula/">formula</a>
+      <a href="/FinanceCLI/namespaces/valuation/">valuation</a>
+      <a href="/FinanceCLI/namespaces/estimates/">estimates</a>
+      <a href="/FinanceCLI/namespaces/backtest/">backtest</a>
+    </div>
+  </article>
+</section>
