@@ -16,6 +16,8 @@ Finance CLI commands return JSON with the same top-level envelope:
 
 Use [`tools.json`](/FinanceCLI/tools.json) for command-specific input and output schemas. The examples below are representative result shapes; provider values and source text vary by response.
 
+For smaller LLM contexts, use [`Agent Output Formats`](/FinanceCLI/agent-output-formats/) after you know the full JSON envelope is not needed for audit or replay.
+
 ## Success
 
 ```json

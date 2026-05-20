@@ -8,6 +8,7 @@
 - Agent guide: https://tempestshaw.github.io/FinanceCLI/agents/
 - AI integration and skill install: https://tempestshaw.github.io/FinanceCLI/ai/
 - Agent playbooks: https://tempestshaw.github.io/FinanceCLI/workflows/
+- Agent output formats: https://tempestshaw.github.io/FinanceCLI/agent-output-formats/
 - Trust and citation policy: https://tempestshaw.github.io/FinanceCLI/trust/
 - Human command reference: https://tempestshaw.github.io/FinanceCLI/commands/
 
@@ -26,4 +27,5 @@
 - Use formula.* only when numeric inputs are explicit and cited.
 - Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.
 - Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.
+- Use --output compact, agent, table, or schema only when normalized token-efficient records are enough; keep --output json for audit trails.
 - Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.

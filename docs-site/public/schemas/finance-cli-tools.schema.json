@@ -29,6 +29,12 @@
     "result_envelope": {
       "type": "object"
     },
+    "record_schema": {
+      "type": "object"
+    },
+    "output_formats": {
+      "type": "object"
+    },
     "side_effect_levels": {
       "type": "object"
     },

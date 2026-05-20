@@ -52,6 +52,9 @@ def test_generated_agent_schema_covers_registered_commands():
     assert len(specs) == len(commands)
     assert len(tools_doc["commands"]) == len(commands)
     assert tools_doc["$schema"] == tools_schema["$id"]
+    assert tools_doc["record_schema"]["required"] == ["entity", "kind", "fields"]
+    assert tools_doc["output_formats"]["compact"]["record_renderer"] is True
+    assert tools_schema["properties"]["record_schema"]["type"] == "object"
     assert "/commands/filings.statement" in openapi_doc["paths"]
 
     filings_statement = next(spec for spec in specs if spec["name"] == "filings.statement")

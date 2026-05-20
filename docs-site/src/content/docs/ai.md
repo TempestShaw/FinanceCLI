@@ -30,6 +30,7 @@ Agents should prefer the machine-readable files over scraping prose pages.
 | [`llms-full.txt`](/FinanceCLI/llms-full.txt) | Full routing context and common playbooks. |
 | [`tools.json`](/FinanceCLI/tools.json) | Canonical command schema, argument metadata, side effects, and citation fields. |
 | [`openapi.json`](/FinanceCLI/openapi.json) | Adapter contract for MCP/plugin/tool wrappers. |
+| [`Agent Output Formats`](/FinanceCLI/agent-output-formats/) | Normalized records and compact renderers for LLM context compression. |
 | [`finance-cli-skills.zip`](/FinanceCLI/skills/finance-cli-skills.zip) | Local skill package for agents that support skills. |
 
 ## 3. Install The Skill
@@ -83,4 +84,5 @@ The command schema truth remains [`tools.json`](/FinanceCLI/tools.json). The ski
 - Use `finance sources.status --output json` before assuming provider availability.
 - Use `tools.json` for arguments, defaults, enums, output schemas, side effects, and citation fields.
 - Preserve `ok`, `data`, `error`, and `warnings` from command output.
+- Use compact record output only after deciding that the full JSON envelope is not needed for audit or replay.
 - Keep finance calculations research-oriented and source-aware.
