@@ -15,10 +15,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="finance", description="Finance research helper CLI")
     parser.add_argument("command", nargs="?", help="Command name, for example market.regime")
     parser.add_argument("args", nargs="*", help="Command arguments")
-    parser.add_argument("--output", choices=["json", "text", "compact", "agent", "table", "schema"], default="json")
-    parser.add_argument("--fields", help="Comma-separated record fields for compact, agent, table, or schema output")
+    parser.add_argument("--output", choices=["json", "text", "compact", "schema"], default="json")
+    parser.add_argument("--fields", help="Comma-separated record fields for compact or schema output")
     parser.add_argument("--max-records", type=_non_negative_int, help="Maximum normalized records to render")
-    parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact agent output")
+    parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact or schema output")
     parser.add_argument("--list", action="store_true", help="List available commands")
     return parser
 

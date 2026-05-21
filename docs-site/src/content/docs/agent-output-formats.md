@@ -9,7 +9,7 @@ Finance CLI already has command-level schemas in [`tools.json`](/FinanceCLI/tool
 {"ok": true, "data": {}, "error": null, "warnings": []}
 ```
 
-Those remain the canonical audit and integration format. The compact agent formats are an additive rendering layer for cases where an LLM needs dense structured facts rather than the full provider payload.
+Those remain the canonical audit and integration format. The record formats are an additive rendering layer for cases where an LLM needs dense structured facts rather than the full provider payload.
 
 ## Architecture
 
@@ -88,17 +88,17 @@ Use compact formats when the agent only needs normalized facts:
 ```bash
 finance market.quote AAPL --output compact --fields last_price,market_cap,currency
 finance filings.statement AAPL statement=income --output schema --fields label,value,unit --max-records 20
-finance news.search symbol=NVDA max_records=5 --output agent --fields title,url,domain
-finance calendar.earnings AAPL --output table --fields earnings_date,eps_estimate,reported_eps
+finance news.search symbol=NVDA max_records=5 --output schema --fields title,url,domain
+finance calendar.earnings AAPL --output schema --fields earnings_date,eps_estimate,reported_eps
 ```
 
 Global record-renderer controls:
 
 | Option | Applies To | Use |
 | --- | --- | --- |
-| `--fields a,b,c` | compact, agent, table, schema | Select record `fields` to render. Structural fields stay available. |
-| `--max-records N` | compact, agent, table, schema | Bound repeated rows before rendering. |
-| `--max-chars N` | compact, agent, table, schema | Apply an approximate final character cap. |
+| `--fields a,b,c` | compact, schema | Select record `fields` to render. Structural fields stay available. |
+| `--max-records N` | compact, schema | Bound repeated rows before rendering. |
+| `--max-chars N` | compact, schema | Apply an approximate final character cap. |
 
 ## Output Examples
 
@@ -120,26 +120,14 @@ Compact:
 AAPL|financial_metric|2024Q4|revenue=119.6B USD|net_income=36.3B USD|src=10-K
 ```
 
-Agent:
-
-```text
-AAPL financial metric 2024Q4: revenue 119.6B USD; net income 36.3B USD. Source: 10-K.
-```
-
-Table:
-
-```text
-| entity | kind | period | revenue | net_income | source |
-| --- | --- | --- | --- | --- | --- |
-| AAPL | financial_metric | 2024Q4 | 119.6B USD | 36.3B USD | 10-K |
-```
-
 Schema-once rows:
 
 ```text
-schema|entity|kind|period|revenue|net_income|source
-row|AAPL|financial_metric|2024Q4|119.6B USD|36.3B USD|10-K
+schema|entity|kind|period|source|revenue|net_income
+row|AAPL|financial_metric|2024Q4|10-K|119.6B USD|36.3B USD
 ```
+
+The `schema` renderer derives its header from the present `Record` structural fields plus the selected or discovered field names. It does not use command-specific column templates.
 
 ## Domain Examples
 
@@ -205,19 +193,19 @@ Record(
 | Normalized JSON records | Programmatic adapter boundaries | Still key-heavy, but schema is stable. |
 | Compact text | Dense inline facts for LLM context | Less self-describing than JSON. |
 | Schema-once rows | Many records with the same fields | Requires the consumer to retain the header. |
-| Markdown table | Human scan plus LLM comparison | More tokens than schema rows. |
+| Markdown table | Human scan plus LLM comparison | Prefer schema rows in CLI output; render Markdown at the presentation layer if needed. |
 | TSV | Very compact tabular data | Harder to preserve nested citations and escaping. |
 | YAML | Readable config-like data | Usually more tokens than compact rows and easier to misparse. |
 | MessagePack | Binary transport/storage | Not useful inside LLM context because models see text tokens. |
 
-Default recommendation: keep `--output json` for source-of-truth capture, then render selected records as `compact` or `schema` for agent context. Use `agent` when the next step is natural-language reasoning. Use `table` when row comparison matters.
+Default recommendation: keep `--output json` for source-of-truth capture, then render selected records as `compact` or `schema` for agent context. `compact` is best for a few records; `schema` is best when many rows share fields.
 
 ## RAG And Chunking
 
 Records are good retrieval units because each row has stable subject, kind, time, fields, and source. A practical RAG pipeline can:
 
 1. Store `Record.to_dict()` as metadata.
-2. Embed the `agent` or `compact` rendering as chunk text.
+2. Embed the `compact` rendering as chunk text, or `schema` rows when the chunk contains repeated records.
 3. Build chunk IDs from `entity`, `kind`, `period` or `timestamp`, and `source`.
 4. Keep long document text out of default compact fields and retrieve it with `document.window` or command-specific JSON when needed.
 5. Re-render retrieved records into `schema` rows before passing many similar rows back to an LLM.

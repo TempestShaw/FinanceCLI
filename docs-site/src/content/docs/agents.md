@@ -18,7 +18,7 @@ Use this page when an agent needs to decide which command to call. Use [`tools.j
 
 Agents that support skills can install [`finance-cli-skills.zip`](/FinanceCLI/skills/finance-cli-skills.zip). The skill tells agents to call the installed `finance` executable with JSON output, read `tools.json` for schemas, and preserve source-aware citations.
 
-Use `--output json` for canonical audit output. Use `--output compact`, `--output agent`, `--output table`, or `--output schema` when a task only needs normalized facts in a smaller LLM context.
+Use `--output json` for canonical audit output. Use `--output compact` or `--output schema` when a task only needs normalized facts in a smaller LLM context.
 
 ## Routing Rules
 

@@ -16,9 +16,7 @@ def test_record_renderers_share_normalized_schema():
     options = RecordRenderOptions(fields=("revenue", "net_income"))
 
     assert render_records([record], "compact", options) == "AAPL|financial_metric|2024Q4|revenue=119.6B USD|net_income=36.3B USD|src=10-K"
-    assert render_records([record], "agent", options) == "AAPL financial metric 2024Q4: revenue 119.6B USD; net income 36.3B USD. Source: 10-K."
-    assert render_records([record], "table", options).splitlines()[0] == "| entity | kind | period | revenue | net_income | source |"
-    assert render_records([record], "schema", options).splitlines()[0] == "schema|entity|kind|period|revenue|net_income|source"
+    assert render_records([record], "schema", options).splitlines()[0] == "schema|entity|kind|period|source|revenue|net_income"
 
     normalized_json = json.loads(render_records([record], "json", options))
     assert normalized_json == [
@@ -129,7 +127,7 @@ def test_cli_json_output_keeps_existing_envelope(capsys, monkeypatch):
     }
 
 
-def test_cli_record_bounds_are_wired(capsys, monkeypatch):
+def test_cli_schema_output_uses_data_driven_columns(capsys, monkeypatch):
     def fake_ohlcv(symbol, **kwargs):
         return {
             "symbol": symbol.upper(),
@@ -143,13 +141,14 @@ def test_cli_record_bounds_are_wired(capsys, monkeypatch):
 
     monkeypatch.setattr("finance_cli.cli.commands.market_data.fetch_ohlcv", fake_ohlcv)
 
-    code = main(["market.ohlcv", "aapl", "--output", "agent", "--fields", "close", "--max-records", "1"])
-    output = capsys.readouterr().out.strip()
+    code = main(["market.ohlcv", "aapl", "--output", "schema", "--max-records", "1"])
+    output = capsys.readouterr().out.strip().splitlines()
 
     assert code == 0
-    assert "2026-05-20" in output
-    assert "close 190.12" in output
-    assert "2026-05-21" not in output
+    assert output == [
+        "schema|entity|kind|timestamp|source|close",
+        "row|AAPL|market_ohlcv_row|2026-05-20|test_provider|190.12",
+    ]
 
 
 def test_cli_record_max_chars_is_wired(capsys, monkeypatch):
@@ -158,7 +157,7 @@ def test_cli_record_max_chars_is_wired(capsys, monkeypatch):
         lambda symbol: {"symbol": symbol.upper(), "summary": "x" * 120, "source": "test_provider"},
     )
 
-    code = main(["market.quote", "aapl", "--output", "agent", "--fields", "summary", "--max-chars", "60"])
+    code = main(["market.quote", "aapl", "--output", "compact", "--fields", "summary", "--max-chars", "60"])
     output = capsys.readouterr().out.strip()
 
     assert code == 0
@@ -173,7 +172,7 @@ def test_record_render_controls_bound_output():
     ]
     options = RecordRenderOptions(fields=("title",), max_records=1, max_chars=80)
 
-    output = render_records(records, "agent", options)
+    output = render_records(records, "compact", options)
 
     assert "first" in output
     assert "second" not in output

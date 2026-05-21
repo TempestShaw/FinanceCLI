@@ -70,14 +70,6 @@ OUTPUT_FORMATS: dict[str, dict[str, Any]] = {
         "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
         "record_renderer": True,
     },
-    "agent": {
-        "description": "Deterministic sentence-like normalized records for direct LLM context.",
-        "record_renderer": True,
-    },
-    "table": {
-        "description": "Markdown table over normalized records for scan-friendly row comparison.",
-        "record_renderer": True,
-    },
     "schema": {
         "description": "Schema-once row format: one header line plus compact rows for repeated records.",
         "record_renderer": True,
@@ -830,7 +822,7 @@ def build_llms_txt() -> str:
         "- Use formula.* only when numeric inputs are explicit and cited.",
         "- Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.",
         "- Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.",
-        "- Use --output compact, agent, table, or schema only when normalized token-efficient records are enough; keep --output json for audit trails.",
+        "- Use --output compact or schema only when normalized token-efficient records are enough; keep --output json for audit trails.",
         "- Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.",
     ]) + "\n"
 

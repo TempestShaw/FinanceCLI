@@ -100,14 +100,6 @@
       "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
       "record_renderer": true
     },
-    "agent": {
-      "description": "Deterministic sentence-like normalized records for direct LLM context.",
-      "record_renderer": true
-    },
-    "table": {
-      "description": "Markdown table over normalized records for scan-friendly row comparison.",
-      "record_renderer": true
-    },
     "schema": {
       "description": "Schema-once row format: one header line plus compact rows for repeated records.",
       "record_renderer": true

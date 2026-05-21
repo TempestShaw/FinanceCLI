@@ -21,7 +21,7 @@ def render_result(
         if not result.ok:
             return f"Error: {result.error or 'unknown error'}"
         return _render_text(result.data)
-    if output in {"compact", "agent", "table", "schema"}:
+    if output in {"compact", "schema"}:
         if not result.ok:
             return f"Error: {result.error or 'unknown error'}"
         records = normalize_records(result.data, command=command)

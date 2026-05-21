@@ -9,7 +9,7 @@ from typing import Any, Literal, Protocol
 from finance_cli.schemas import Record
 
 
-RecordFormat = Literal["json", "compact", "agent", "table", "schema"]
+RecordFormat = Literal["json", "compact", "schema"]
 
 
 @dataclass(frozen=True)
@@ -92,7 +92,6 @@ NON_FIELD_KEYS = {
     "warnings",
 }
 DEFAULT_MAX_FIELD_CHARS = 240
-DEFAULT_MAX_TABLE_FIELDS = 8
 
 
 def normalize_records(payload: Any, *, command: str | None = None, adapter: RecordAdapter | None = None) -> list[Record]:
@@ -109,10 +108,6 @@ def render_records(records: list[Record], output: RecordFormat, options: RecordR
         rendered = _render_records_json(selected, opts)
     elif output == "compact":
         rendered = _render_compact(selected, opts)
-    elif output == "agent":
-        rendered = _render_agent(selected, opts)
-    elif output == "table":
-        rendered = _render_table(selected, opts)
     elif output == "schema":
         rendered = _render_schema_rows(selected, opts)
     else:
@@ -318,61 +313,23 @@ def _render_compact(records: list[Record], options: RecordRenderOptions) -> str:
     return "\n".join(lines)
 
 
-def _render_agent(records: list[Record], options: RecordRenderOptions) -> str:
-    if not records:
-        return "No records."
-    lines = []
-    for record in records:
-        heading_parts = [_clean_text(record.entity), _label(record.kind), _clean_text(record.period), _clean_text(record.timestamp)]
-        heading = " ".join(part for part in heading_parts if part)
-        fields = "; ".join(f"{_label(key)} {_value_text(value)}" for key, value in _field_pairs(record, options))
-        line = f"{heading}: {fields}." if fields else f"{heading}."
-        if record.source:
-            line += f" Source: {_clean_text(record.source)}."
-        lines.append(line)
-    return "\n".join(lines)
-
-
-def _render_table(records: list[Record], options: RecordRenderOptions) -> str:
-    if not records:
-        return ""
-    columns = _table_columns(records, options)
-    lines = [
-        "| " + " | ".join(columns) + " |",
-        "| " + " | ".join("---" for _ in columns) + " |",
-    ]
-    for record in records:
-        row = _record_table_row(record, columns, options)
-        lines.append("| " + " | ".join(row) + " |")
-    return "\n".join(lines)
-
-
 def _render_schema_rows(records: list[Record], options: RecordRenderOptions) -> str:
     if not records:
         return ""
-    columns = _table_columns(records, options)
+    columns = _schema_columns(records, options)
     lines = ["schema|" + "|".join(columns)]
     for record in records:
-        lines.append("row|" + "|".join(_record_table_row(record, columns, options)))
+        lines.append("row|" + "|".join(_record_schema_row(record, columns, options)))
     return "\n".join(lines)
 
 
-def _table_columns(records: list[Record], options: RecordRenderOptions) -> list[str]:
-    field_names = list(options.fields or _ordered_field_names(records, options))
-    if not options.fields:
-        field_names = field_names[:DEFAULT_MAX_TABLE_FIELDS]
-    columns = ["entity", "kind"]
-    if any(record.period for record in records):
-        columns.append("period")
-    if any(record.timestamp for record in records):
-        columns.append("timestamp")
-    columns.extend(field_names)
-    if any(record.source for record in records):
-        columns.append("source")
-    return columns
+def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list[str]:
+    structural = ["entity", "kind"]
+    structural.extend(key for key in ("period", "timestamp", "source") if any(getattr(record, key) for record in records))
+    return structural + list(options.fields or _ordered_field_names(records, options))
 
 
-def _record_table_row(record: Record, columns: list[str], options: RecordRenderOptions) -> list[str]:
+def _record_schema_row(record: Record, columns: list[str], options: RecordRenderOptions) -> list[str]:
     fields = dict(_field_pairs(record, options, include_large=bool(options.fields)))
     values = {
         "entity": record.entity,
@@ -382,7 +339,7 @@ def _record_table_row(record: Record, columns: list[str], options: RecordRenderO
         "source": record.source,
         **fields,
     }
-    return [_escape_table(_value_text(values.get(column))) for column in columns]
+    return [_value_text(values.get(column)) for column in columns]
 
 
 def _ordered_field_names(records: list[Record], options: RecordRenderOptions) -> tuple[str, ...]:
@@ -424,18 +381,10 @@ def _value_text(value: Any) -> str:
     return _clean_text(text)
 
 
-def _label(value: str | None) -> str:
-    return _clean_text(value or "").replace("_", " ")
-
-
 def _clean_text(value: Any) -> str:
     if value is None:
         return ""
     return re.sub(r"\s+", " ", str(value)).strip().replace("|", "\\|")
-
-
-def _escape_table(value: str) -> str:
-    return value.replace("|", "\\|")
 
 
 def _cap_chars(text: str, max_chars: int | None) -> str:
