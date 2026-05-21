@@ -56,10 +56,17 @@ If the user asks a broad natural-language research question, identify the ticker
 
 ## Output Handling
 
-Every command should be requested as JSON. Expect:
+Use JSON when capturing or auditing command results. Expect:
 
 ```json
 {"ok": true, "data": {}, "error": null, "warnings": []}
 ```
 
 Preserve `warnings`. Cite source fields when present, especially `accession`, `accession_no`, `url`, `report_name`, `section`, `page`, `start_char`, `end_char`, `match_id`, `source`, `provider`, and `timestamp`.
+
+When the full JSON envelope is too large and the task only needs normalized facts, use one of the record renderers:
+
+```bash
+finance market.quote AAPL --output compact --fields last_price,market_cap,currency
+finance filings.statement AAPL statement=income --output schema --fields label,value,unit --max-records 20
+```

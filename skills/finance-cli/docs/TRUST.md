@@ -14,6 +14,8 @@ Commands return:
 - If `ok=true` with empty arrays, say the source returned no matching records.
 - If `warnings` is non-empty, preserve the warning context in the final answer.
 
+Compact outputs (`--output compact`, `--output schema`) are normalized record renderers for context compression. Use them only when the full JSON envelope is not needed for audit or replay.
+
 ## Citation Policy
 
 Cite fields when present:

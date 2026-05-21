@@ -36,6 +36,75 @@
       }
     }
   },
+  "record_schema": {
+    "type": "object",
+    "required": [
+      "entity",
+      "kind",
+      "fields"
+    ],
+    "properties": {
+      "entity": {
+        "type": "string",
+        "description": "Ticker, company, query, market, or other record subject."
+      },
+      "kind": {
+        "type": "string",
+        "description": "Normalized fact type, usually derived from the command or row collection."
+      },
+      "period": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Fiscal or reporting period when available."
+      },
+      "timestamp": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Date or timestamp when available."
+      },
+      "fields": {
+        "type": "object",
+        "description": "Record-specific facts after entity/kind/time/source extraction."
+      },
+      "source": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Provider, filing, or document source when available."
+      },
+      "metadata": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "description": "Optional adapter metadata for retrieval or audit trails."
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_formats": {
+    "json": {
+      "description": "Canonical command result envelope. Preserves ok, data, error, and warnings for audit and tool contracts.",
+      "record_renderer": false
+    },
+    "text": {
+      "description": "Legacy plain text view for humans.",
+      "record_renderer": false
+    },
+    "compact": {
+      "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
+      "record_renderer": true
+    },
+    "schema": {
+      "description": "Schema-once row format: one header line plus compact rows for repeated records.",
+      "record_renderer": true
+    }
+  },
   "side_effect_levels": {
     "pure_calculation": "No network, no filesystem read, no mutation.",
     "local_file_read": "Reads local files supplied by the caller. Does not mutate files.",

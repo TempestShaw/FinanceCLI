@@ -7,6 +7,7 @@ import sys
 from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.formatting import render_result
 from finance_cli.cli.registry import FinanceCommand, get_command, list_commands
+from finance_cli.records import RecordRenderOptions
 from finance_cli.schemas import FinanceCommandResult
 
 
@@ -14,7 +15,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="finance", description="Finance research helper CLI")
     parser.add_argument("command", nargs="?", help="Command name, for example market.regime")
     parser.add_argument("args", nargs="*", help="Command arguments")
-    parser.add_argument("--output", choices=["json", "text"], default="json")
+    parser.add_argument("--output", choices=["json", "text", "compact", "schema"], default="json")
+    parser.add_argument("--fields", help="Comma-separated record fields for compact or schema output")
+    parser.add_argument("--max-records", type=_non_negative_int, help="Maximum normalized records to render")
+    parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact or schema output")
     parser.add_argument("--list", action="store_true", help="List available commands")
     return parser
 
@@ -34,6 +38,11 @@ def main(argv: list[str] | None = None) -> int:
 
     parser = build_parser()
     ns = parser.parse_args(raw_args)
+    record_options = RecordRenderOptions(
+        fields=_parse_fields(ns.fields),
+        max_records=ns.max_records,
+        max_chars=ns.max_chars,
+    )
 
     if ns.list or not ns.command:
         _print_command_list()
@@ -41,7 +50,12 @@ def main(argv: list[str] | None = None) -> int:
 
     command = get_command(ns.command)
     if command is None:
-        print(render_result(FinanceCommandResult(ok=False, error=f"unknown command: {ns.command}"), ns.output))
+        print(render_result(
+            FinanceCommandResult(ok=False, error=f"unknown command: {ns.command}"),
+            ns.output,
+            command=ns.command,
+            record_options=record_options,
+        ))
         return 2
 
     try:
@@ -49,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         result = FinanceCommandResult(ok=False, error=str(exc))
 
-    print(render_result(result, ns.output))
+    print(render_result(result, ns.output, command=ns.command, record_options=record_options))
     return 0 if result.ok else 1
 
 
@@ -83,6 +97,20 @@ def _print_help(name: str) -> int:
 def _commands_in_namespace(namespace: str) -> list[FinanceCommand]:
     prefix = f"{namespace}."
     return [command for command in list_commands() if command.name.startswith(prefix)]
+
+
+def _parse_fields(value: str | None) -> tuple[str, ...] | None:
+    if not value:
+        return None
+    fields = tuple(part.strip() for part in value.split(",") if part.strip())
+    return fields or None
+
+
+def _non_negative_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be greater than or equal to 0")
+    return parsed
 
 
 def format_command_help(command: FinanceCommand) -> str:

@@ -42,6 +42,40 @@ RESULT_ENVELOPE_SCHEMA: dict[str, Any] = {
     },
 }
 
+RECORD_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": ["entity", "kind", "fields"],
+    "properties": {
+        "entity": {"type": "string", "description": "Ticker, company, query, market, or other record subject."},
+        "kind": {"type": "string", "description": "Normalized fact type, usually derived from the command or row collection."},
+        "period": {"type": ["string", "null"], "description": "Fiscal or reporting period when available."},
+        "timestamp": {"type": ["string", "null"], "description": "Date or timestamp when available."},
+        "fields": {"type": "object", "description": "Record-specific facts after entity/kind/time/source extraction."},
+        "source": {"type": ["string", "null"], "description": "Provider, filing, or document source when available."},
+        "metadata": {"type": ["object", "null"], "description": "Optional adapter metadata for retrieval or audit trails."},
+    },
+    "additionalProperties": False,
+}
+
+OUTPUT_FORMATS: dict[str, dict[str, Any]] = {
+    "json": {
+        "description": "Canonical command result envelope. Preserves ok, data, error, and warnings for audit and tool contracts.",
+        "record_renderer": False,
+    },
+    "text": {
+        "description": "Legacy plain text view for humans.",
+        "record_renderer": False,
+    },
+    "compact": {
+        "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
+        "record_renderer": True,
+    },
+    "schema": {
+        "description": "Schema-once row format: one header line plus compact rows for repeated records.",
+        "record_renderer": True,
+    },
+}
+
 SIDE_EFFECTS = {
     "pure_calculation": "No network, no filesystem read, no mutation.",
     "local_file_read": "Reads local files supplied by the caller. Does not mutate files.",
@@ -609,6 +643,8 @@ def build_tools_document(specs: list[dict[str, Any]]) -> dict[str, Any]:
         "description": "Machine-readable Finance CLI command metadata for LLM agents, MCP adapters, and plugin wrappers.",
         "canonical_docs": SITE_URL + "/",
         "result_envelope": RESULT_ENVELOPE_SCHEMA,
+        "record_schema": RECORD_SCHEMA,
+        "output_formats": OUTPUT_FORMATS,
         "side_effect_levels": SIDE_EFFECTS,
         "trust_policy": {
             "cite_when_available": ["accession", "accession_no", "url", "report_name", "section", "page", "start_char", "end_char", "source", "provider", "timestamp"],
@@ -683,6 +719,8 @@ def build_tools_schema_document() -> dict[str, Any]:
             "description": {"type": "string"},
             "canonical_docs": {"type": "string"},
             "result_envelope": {"type": "object"},
+            "record_schema": {"type": "object"},
+            "output_formats": {"type": "object"},
             "side_effect_levels": {"type": "object"},
             "trust_policy": {"type": "object"},
             "playbooks": {"type": "array", "items": {"type": "object"}},
@@ -765,6 +803,7 @@ def build_llms_txt() -> str:
         f"- Agent guide: {SITE_URL}/agents/",
         f"- AI integration and skill install: {SITE_URL}/ai/",
         f"- Agent playbooks: {SITE_URL}/workflows/",
+        f"- Agent output formats: {SITE_URL}/agent-output-formats/",
         f"- Trust and citation policy: {SITE_URL}/trust/",
         f"- Human command reference: {SITE_URL}/commands/",
         "",
@@ -783,6 +822,7 @@ def build_llms_txt() -> str:
         "- Use formula.* only when numeric inputs are explicit and cited.",
         "- Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.",
         "- Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.",
+        "- Use --output compact or schema only when normalized token-efficient records are enough; keep --output json for audit trails.",
         "- Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.",
     ]) + "\n"
 
@@ -797,6 +837,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "",
         f"- `tools.json`: {SITE_URL}/tools.json",
         f"- `openapi.json`: {SITE_URL}/openapi.json",
+        f"- Agent output formats: {SITE_URL}/agent-output-formats/",
         f"- AI integration and skill install: {SITE_URL}/ai/",
         f"- Finance CLI skill zip: {SITE_URL}/skills/finance-cli-skills.zip",
         f"- Human docs: {SITE_URL}/",
@@ -816,6 +857,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "- Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.",
         "- Formula and valuation commands are deterministic calculators, not investment advice.",
         "- If `ok=false`, surface the error clearly and do not fabricate data.",
+        "- Keep `--output json` for canonical audit output; use compact record renderers only for context compression.",
         "",
         "## Agent Playbooks",
         "",

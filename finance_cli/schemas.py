@@ -69,3 +69,31 @@ class FinanceCommandResult:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class Record:
+    """Normalized finance fact record for agent-oriented rendering."""
+
+    entity: str
+    kind: str
+    period: str | None = None
+    timestamp: str | None = None
+    fields: dict[str, Any] = field(default_factory=dict)
+    source: str | None = None
+    metadata: dict[str, Any] | None = None
+
+    def to_dict(self, *, omit_null: bool = True, include_metadata: bool = True) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "entity": self.entity,
+            "kind": self.kind,
+            "period": self.period,
+            "timestamp": self.timestamp,
+            "fields": dict(self.fields),
+            "source": self.source,
+        }
+        if include_metadata:
+            payload["metadata"] = dict(self.metadata) if self.metadata is not None else None
+        if omit_null:
+            return {key: value for key, value in payload.items() if value is not None}
+        return payload

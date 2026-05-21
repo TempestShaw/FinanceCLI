@@ -2,6 +2,8 @@
 
 Use `finance --list` and `tools.json` as the source of truth for the installed command set. Prefer `tools.json` over prose when parameter names, defaults, enums, side effects, or output schemas matter.
 
+Use `--output json` for canonical command capture. Use compact record outputs only after selecting the fields the agent needs.
+
 Most company workflows are symbol-based. Extract the ticker before running symbol commands; do not pass a full natural-language task as the `SYMBOL` argument. Use `research.plan SYMBOL` as a checklist after the ticker is known.
 
 | User asks for | Prefer | Details |
