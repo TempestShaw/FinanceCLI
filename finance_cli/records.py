@@ -27,16 +27,112 @@ class RecordAdapter(Protocol):
 
 
 class DictRecordAdapter:
-    """Best-effort adapter for existing dict/list Finance CLI payloads."""
+    """Best-effort adapter for already record-like dict/list payloads."""
 
     def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
         return _records_from_payload(payload, command=command, base_context={})
 
 
+class MarketQuoteRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        return [
+            Record(
+                entity=_entity_from_context(payload),
+                kind="market_quote",
+                fields=_fields_except(payload, {"symbol", "ticker", "source", "provider"}),
+                source=_first_text(payload, SOURCE_KEYS),
+            )
+        ]
+
+
+class MarketOhlcvRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        if isinstance(payload.get("symbols"), dict):
+            records: list[Record] = []
+            for symbol, entry in payload["symbols"].items():
+                if isinstance(entry, dict):
+                    context = {**payload, **entry, "symbol": symbol}
+                    records.extend(_market_ohlcv_rows(context))
+            return records
+        return _market_ohlcv_rows(payload)
+
+
+class NewsSearchRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        scope = payload.get("scope") if isinstance(payload.get("scope"), dict) else {}
+        entity = _entity_from_context({"scope": scope})
+        source = _first_text(payload, SOURCE_KEYS)
+        records = []
+        for article in payload.get("articles") or []:
+            if not isinstance(article, dict):
+                continue
+            records.append(Record(
+                entity=entity,
+                kind="news_article",
+                timestamp=_first_text(article, ("published_at", "seendate", "date", "datetime", "timestamp")),
+                fields=dict(article),
+                source=source,
+                metadata=_adapter_metadata({"published_at": "timestamp", "seendate": "timestamp"}),
+            ))
+        return records
+
+
+class FilingsRecentRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        source = _first_text(payload, SOURCE_KEYS)
+        records = []
+        for filing in payload.get("filings") or []:
+            if isinstance(filing, dict):
+                records.append(_filing_record(payload, filing, source=source))
+        for event in payload.get("events") or []:
+            if isinstance(event, dict):
+                records.append(_filing_event_record(payload, event, source=source))
+        return records
+
+
+class FilingsStatementRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        filing = payload.get("filing") if isinstance(payload.get("filing"), dict) else {}
+        source = _first_text(payload, SOURCE_KEYS)
+        entity = _filing_entity(payload, filing)
+        records = []
+        for row in payload.get("rows") or []:
+            if not isinstance(row, dict):
+                continue
+            fields = {"statement": payload.get("statement"), **_fields_except(filing, set()), **row}
+            records.append(Record(
+                entity=entity,
+                kind="filings_statement_row",
+                period=_text_or_none(row.get("period") or filing.get("period_of_report")),
+                timestamp=_text_or_none(filing.get("filing_date")),
+                fields=fields,
+                source=source,
+                metadata=_adapter_metadata({"filing_date": "timestamp", "period": "period", "period_of_report": "period"}),
+            ))
+        return records
+
+
 ENTITY_KEYS = ("entity", "symbol", "ticker", "market")
-PERIOD_KEYS = ("period", "fiscal_period", "quarter", "fiscal_year", "year")
-TIMESTAMP_KEYS = ("timestamp", "datetime", "published_at", "seendate", "date", "filing_date", "report_date", "earnings_date")
+PERIOD_KEYS = ("period",)
+TIMESTAMP_KEYS = ("timestamp",)
 SOURCE_KEYS = ("source", "provider")
+COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
+    "market.quote": MarketQuoteRecordAdapter(),
+    "market.ohlcv": MarketOhlcvRecordAdapter(),
+    "news.search": NewsSearchRecordAdapter(),
+    "filings.recent": FilingsRecentRecordAdapter(),
+    "filings.statement": FilingsStatementRecordAdapter(),
+}
 LIST_CONTAINER_KEYS = {
     "records",
     "rows",
@@ -71,18 +167,7 @@ NON_FIELD_KEYS = {
     "ticker",
     "kind",
     "period",
-    "fiscal_period",
-    "quarter",
-    "fiscal_year",
-    "year",
     "timestamp",
-    "datetime",
-    "published_at",
-    "seendate",
-    "date",
-    "filing_date",
-    "report_date",
-    "earnings_date",
     "source",
     "provider",
     "metadata",
@@ -92,11 +177,12 @@ NON_FIELD_KEYS = {
     "warnings",
 }
 DEFAULT_MAX_FIELD_CHARS = 240
+FIELD_ALIASES_METADATA_KEY = "field_aliases"
 
 
 def normalize_records(payload: Any, *, command: str | None = None, adapter: RecordAdapter | None = None) -> list[Record]:
     """Normalize a command payload into a list of finance records."""
-    normalizer = adapter or DictRecordAdapter()
+    normalizer = adapter or (COMMAND_RECORD_ADAPTERS.get(command or "") or DictRecordAdapter())
     return normalizer.to_records(payload, command=command)
 
 
@@ -113,6 +199,66 @@ def render_records(records: list[Record], output: RecordFormat, options: RecordR
     else:
         raise ValueError(f"unknown record output format: {output}")
     return _cap_chars(rendered, opts.max_chars)
+
+
+def _market_ohlcv_rows(payload: dict[str, Any]) -> list[Record]:
+    rows = payload.get("rows") or []
+    source = _first_text(payload, SOURCE_KEYS)
+    records = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        fields = {**_fields_except(payload, {"symbol", "ticker", "symbols", "rows", "count", "source", "provider"}), **row}
+        records.append(Record(
+            entity=_entity_from_context(payload),
+            kind="market_ohlcv_row",
+            timestamp=_text_or_none(row.get("date")),
+            fields=fields,
+            source=source,
+            metadata=_adapter_metadata({"date": "timestamp"}),
+        ))
+    return records
+
+
+def _filing_record(context: dict[str, Any], filing: dict[str, Any], *, source: str | None) -> Record:
+    fields = {**_fields_except(context, {"symbol", "ticker", "filings", "events", "count", "source", "provider"}), **filing}
+    return Record(
+        entity=_entity_from_context(context),
+        kind="filing",
+        period=_text_or_none(filing.get("report_date") or filing.get("period_of_report")),
+        timestamp=_text_or_none(filing.get("filing_date") or filing.get("filed_at")),
+        fields=fields,
+        source=source,
+        metadata=_adapter_metadata({"report_date": "period", "period_of_report": "period", "filing_date": "timestamp", "filed_at": "timestamp"}),
+    )
+
+
+def _filing_event_record(context: dict[str, Any], event: dict[str, Any], *, source: str | None) -> Record:
+    fields = {**_fields_except(context, {"symbol", "ticker", "filings", "events", "count", "source", "provider"}), **event}
+    return Record(
+        entity=_entity_from_context(context),
+        kind=str(event.get("kind") or event.get("event_type") or "filing_event"),
+        period=_text_or_none(event.get("report_date") or event.get("period_of_report")),
+        timestamp=_text_or_none(event.get("filing_date") or event.get("filed_at") or event.get("date")),
+        fields=fields,
+        source=source,
+        metadata=_adapter_metadata({"report_date": "period", "period_of_report": "period", "filing_date": "timestamp", "filed_at": "timestamp", "date": "timestamp"}),
+    )
+
+
+def _filing_entity(payload: dict[str, Any], filing: dict[str, Any]) -> str:
+    symbol = _text_or_none(payload.get("symbol") or filing.get("symbol"))
+    if symbol:
+        return symbol.upper()
+    return _text_or_none(filing.get("company") or filing.get("accession_no")) or "record"
+
+
+def _fields_except(mapping: dict[str, Any], excluded: set[str]) -> dict[str, Any]:
+    return {key: value for key, value in mapping.items() if key not in excluded}
+
+
+def _adapter_metadata(field_aliases: dict[str, str]) -> dict[str, Any]:
+    return {FIELD_ALIASES_METADATA_KEY: field_aliases}
 
 
 def _records_from_payload(payload: Any, *, command: str | None, base_context: dict[str, Any]) -> list[Record]:
@@ -324,9 +470,14 @@ def _render_schema_rows(records: list[Record], options: RecordRenderOptions) -> 
 
 
 def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list[str]:
+    selected_structural = _selected_structural_fields(records, options)
     structural = ["entity", "kind"]
-    structural.extend(key for key in ("period", "timestamp", "source") if any(getattr(record, key) for record in records))
-    return structural + list(options.fields or _ordered_field_names(records, options))
+    structural.extend(
+        key
+        for key in ("period", "timestamp", "source")
+        if key not in selected_structural and any(getattr(record, key) for record in records)
+    )
+    return _dedupe_columns(structural + list(options.fields or _ordered_field_names(records, options)))
 
 
 def _record_schema_row(record: Record, columns: list[str], options: RecordRenderOptions) -> list[str]:
@@ -339,7 +490,46 @@ def _record_schema_row(record: Record, columns: list[str], options: RecordRender
         "source": record.source,
         **fields,
     }
-    return [_value_text(values.get(column)) for column in columns]
+    return [_value_text(_schema_value(record, values, column)) for column in columns]
+
+
+def _schema_value(record: Record, values: dict[str, Any], column: str) -> Any:
+    value = values.get(column)
+    if value is not None:
+        return value
+    structural_key = _field_aliases(record).get(column)
+    if structural_key:
+        return getattr(record, structural_key)
+    return None
+
+
+def _selected_structural_fields(records: list[Record], options: RecordRenderOptions) -> set[str]:
+    selected: set[str] = set()
+    for field in options.fields or ():
+        if field in {"period", "timestamp", "source"}:
+            selected.add(field)
+        for record in records:
+            target = _field_aliases(record).get(field)
+            if target in {"period", "timestamp", "source"}:
+                selected.add(target)
+    return selected
+
+
+def _field_aliases(record: Record) -> dict[str, str]:
+    if not isinstance(record.metadata, dict):
+        return {}
+    aliases = record.metadata.get(FIELD_ALIASES_METADATA_KEY)
+    if not isinstance(aliases, dict):
+        return {}
+    return {str(key): str(value) for key, value in aliases.items()}
+
+
+def _dedupe_columns(columns: list[str]) -> list[str]:
+    deduped: list[str] = []
+    for column in columns:
+        if column not in deduped:
+            deduped.append(column)
+    return deduped
 
 
 def _ordered_field_names(records: list[Record], options: RecordRenderOptions) -> tuple[str, ...]:

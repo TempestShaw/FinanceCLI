@@ -73,7 +73,7 @@ class RecordAdapter(Protocol):
         """Normalize a provider or command payload into records."""
 ```
 
-The built-in dict adapter handles existing Finance CLI payloads by looking for common row containers such as `rows`, `filings`, `articles`, `events`, `estimates`, `transcripts`, and grouped `symbols`. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
+Command adapters own source semantics. For example, the filings adapter decides that `filing_date` is the filing timestamp and `report_date` is the reporting period; the OHLCV adapter decides that `date` is the bar timestamp. The fallback dict adapter is only best-effort for already record-like payloads. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
 
 ## Renderer Controls
 
@@ -99,6 +99,8 @@ Global record-renderer controls:
 | `--fields a,b,c` | compact, schema | Select record `fields` to render. Structural fields stay available. |
 | `--max-records N` | compact, schema | Bound repeated rows before rendering. |
 | `--max-chars N` | compact, schema | Apply an approximate final character cap. |
+
+Adapters may preserve source-native fields while also mapping them into the normalized record. For example, `market.ohlcv` keeps `date` in `fields` and maps it to `Record.timestamp`; `filings.recent` keeps `filing_date` and `report_date` in `fields` while mapping them to `Record.timestamp` and `Record.period`. The renderer only consumes those adapter-declared records; it does not infer finance semantics globally.
 
 ## Output Examples
 
@@ -128,6 +130,20 @@ row|AAPL|financial_metric|2024Q4|10-K|119.6B USD|36.3B USD
 ```
 
 The `schema` renderer derives its header from the present `Record` structural fields plus the selected or discovered field names. It does not use command-specific column templates.
+
+When an adapter declares that a source-native field maps to a structural field, selecting the source-native field does not duplicate the canonical column:
+
+```text
+schema|entity|kind|source|date|close|volume
+row|AAPL|market_ohlcv_row|yfinance|2025-08-07 00:00:00-04:00|220.03|90224800
+```
+
+For filings, `filing_date` and `report_date` remain distinguishable even though both are normalized into the common record shape:
+
+```text
+schema|entity|kind|source|filing_date|report_date|form|accession_no
+row|AAPL|filing|sec_edgar|2025-10-31|2025-09-27|10-K|0000320193-25-000079
+```
 
 ## Domain Examples
 
