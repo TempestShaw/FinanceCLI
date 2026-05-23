@@ -7,7 +7,7 @@ description: Fetch SEC filings, canonical sections, XBRL statements, and filing 
 
 The `filings.*` commands read public SEC EDGAR filings through Finance CLI's SEC and edgartools integration. Use this namespace when a workflow needs filing discovery, canonical 10-K sections, structured XBRL statement rows, or filing summary reports.
 
-For SEC access, set `FINANCE_SEC_USER_AGENT` in environments where SEC requires explicit caller identification.
+For reliable SEC access, set `FINANCE_SEC_USER_AGENT` to a real contact string in CI or production. SEC may reject generic user agents.
 
 ## finance filings.recent
 
