@@ -9,6 +9,7 @@ Run:
 
 Artifacts:
     .pytest_cache/finance_cli_live/<command>.json
+    .pytest_cache/finance_cli_live/summary.json
     Each artifact includes json.duration_seconds and json.attempts for CLI subprocess calls.
 """
 from __future__ import annotations
@@ -35,8 +36,9 @@ LIVE_MAX_ATTEMPTS = int(os.getenv("FINANCECLI_LIVE_ATTEMPTS", "3"))
 LIVE_RETRY_DELAY_SECONDS = float(os.getenv("FINANCECLI_LIVE_RETRY_DELAY", "60"))
 STRICT_LIVE = os.getenv("FINANCECLI_LIVE_STRICT") == "1"
 ARTIFACT_DIR = Path(".pytest_cache/finance_cli_live")
+SUMMARY_PATH = ARTIFACT_DIR / "summary.json"
 SAMPLE_DOC = ARTIFACT_DIR / "sample.html"
-SAMPLE_TABLE_PDF = ARTIFACT_DIR / "sample_table.pdf"
+SAMPLE_TABLE_PDF_URL = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
 SENSITIVE_ENV_NAMES = (
     "FMP_API_KEY",
     "ALPHAVANTAGE_API_KEY",
@@ -61,7 +63,7 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "document.ocr": [str(SAMPLE_DOC), "max_chars=500", "max_pages=1"],
     "document.read": [str(SAMPLE_DOC), "format=html", "max_chars=500"],
     "document.scan": [str(SAMPLE_DOC), "format=html", "query=revenue", "limit=3", "max_chars=500"],
-    "document.tables": [str(SAMPLE_TABLE_PDF), "pages=1", "flavor=stream", "max_tables=1", "max_rows=3"],
+    "document.tables": [SAMPLE_TABLE_PDF_URL, "pages=1", "flavor=stream", "max_tables=1", "max_rows=3"],
     "document.window": [str(SAMPLE_DOC), "format=html", "start_char=0", "chars=120"],
     "estimates.compare": ["IOT", "revenue=2.2B", "consensus_revenue=2.0B", "eps=0.50", "consensus_eps=0.45", "fiscal_year=2027"],
     "estimates.consensus": ["IOT", "period=annual", "limit=2"],
@@ -129,6 +131,13 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
 
 def test_live_cases_cover_every_registered_command() -> None:
     assert set(LIVE_COMMAND_CASES) == set(_registered_command_names())
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _live_summary_writer() -> Any:
+    yield
+    if os.getenv("FINANCECLI_LIVE") == "1":
+        _write_live_summary()
 
 
 @pytest.mark.parametrize("command", sorted(LIVE_COMMAND_CASES))
@@ -235,12 +244,14 @@ def _parse_json_payload(run: subprocess.CompletedProcess[str]) -> dict[str, Any]
 
 def _summarize_run(run: subprocess.CompletedProcess[str], payload: dict[str, Any]) -> dict[str, Any]:
     data = payload.get("data")
+    ok = payload.get("ok") is True and run.returncode == 0
     return {
         "exit_code": run.returncode,
         "duration_seconds": round(getattr(run, "duration_seconds", 0.0), 3),
         "ok": payload.get("ok"),
         "error": _redact_text(payload.get("error")),
         "warnings": payload.get("warnings") or [],
+        "failure_payload": _redacted_payload(payload) if not ok else None,
         "data_shape": _shape(data),
         "data_counts": _counts(data),
         "stdout_preview": _preview(_redact_text(run.stdout)),
@@ -291,6 +302,58 @@ def _write_artifact(command: str, artifact: dict[str, Any]) -> None:
     path.write_text(json.dumps(artifact, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def _write_live_summary() -> None:
+    artifacts = []
+    for path in sorted(ARTIFACT_DIR.glob("*.json")):
+        if path.name == SUMMARY_PATH.name:
+            continue
+        try:
+            artifact = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            continue
+        if isinstance(artifact, dict) and isinstance(artifact.get("json"), dict):
+            artifacts.append(artifact)
+
+    commands = [_summary_command_row(artifact) for artifact in artifacts]
+    failed = [row for row in commands if not row["ok"]]
+    retried = [row for row in commands if row["attempt_count"] > 1]
+    slowest = sorted(commands, key=lambda row: row["total_call_duration_seconds"], reverse=True)[:15]
+    completed_commands = {str(row["command"]) for row in commands}
+    expected_commands = set(LIVE_COMMAND_CASES)
+
+    summary = {
+        "expected_command_count": len(expected_commands),
+        "command_count": len(commands),
+        "missing_commands": sorted(expected_commands - completed_commands),
+        "ok_count": len([row for row in commands if row["ok"]]),
+        "failed_count": len(failed),
+        "retried_count": len(retried),
+        "slowest": slowest,
+        "failed": failed,
+        "retried": retried,
+    }
+    SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def _summary_command_row(artifact: dict[str, Any]) -> dict[str, Any]:
+    result = artifact["json"]
+    return {
+        "command": artifact.get("command"),
+        "namespace": artifact.get("namespace"),
+        "ok": result.get("ok") is True,
+        "exit_code": result.get("exit_code"),
+        "duration_seconds": result.get("duration_seconds") or 0,
+        "total_call_duration_seconds": result.get("total_call_duration_seconds") or result.get("duration_seconds") or 0,
+        "attempt_count": result.get("attempt_count") or 1,
+        "error": result.get("error"),
+        "failure_payload": result.get("failure_payload"),
+    }
+
+
+def _redacted_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    return json.loads(_redact_text(json.dumps(payload, ensure_ascii=False, default=str)) or "{}")
+
+
 def _ensure_sample_doc() -> None:
     ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
     if not SAMPLE_DOC.exists():
@@ -306,12 +369,3 @@ def _ensure_sample_doc() -> None:
             """,
             encoding="utf-8",
         )
-    if not SAMPLE_TABLE_PDF.exists():
-        import fitz
-
-        doc = fitz.open()
-        page = doc.new_page(width=595, height=842)
-        for index, line in enumerate(["Metric        Value", "Revenue       100", "Net Income    20"]):
-            page.insert_text((72, 72 + index * 20), line, fontsize=12, fontname="courier")
-        doc.save(SAMPLE_TABLE_PDF)
-        doc.close()

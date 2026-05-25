@@ -73,7 +73,9 @@ class RecordAdapter(Protocol):
         """Normalize a provider or command payload into records."""
 ```
 
-Command adapters own source semantics. For example, the filings adapter decides that `filing_date` is the filing timestamp and `report_date` is the reporting period; the OHLCV adapter decides that `date` is the bar timestamp. The fallback dict adapter is only best-effort for already record-like payloads. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
+Command adapters own source semantics. For example, the filings adapter decides that `filing_date` is the filing timestamp and `report_date` is the reporting period; the OHLCV adapter decides that `date` is the bar timestamp; KPI and transcript adapters preserve document/source fields while mapping period and published timestamps. The fallback dict adapter is only best-effort for already record-like payloads. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
+
+Current command-specific adapters cover high-value repeated facts from `market.quote`, `market.ohlcv`, `news.search`, `filings.recent`, `filings.statement`, `calendar.earnings`, `transcripts.search`, `transcripts.read`, `kpi.extract`, `kpi.history`, `price.moves`, `price.context`, `estimates.consensus`, and `screen.run`.
 
 ## Renderer Controls
 

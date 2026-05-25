@@ -122,16 +122,184 @@ class FilingsStatementRecordAdapter:
         return records
 
 
+class CalendarEarningsRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        source = _first_text(payload, SOURCE_KEYS)
+        records = []
+        for row in payload.get("rows") or []:
+            if not isinstance(row, dict):
+                continue
+            records.append(Record(
+                entity=_entity_from_context(payload),
+                kind="earning",
+                timestamp=_text_or_none(row.get("earnings_date")),
+                fields=dict(row),
+                source=source,
+                metadata=_adapter_metadata({"earnings_date": "timestamp"}),
+            ))
+        return records
+
+
+class TranscriptSearchRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records = []
+        for row in payload.get("transcripts") or []:
+            if not isinstance(row, dict):
+                continue
+            records.append(Record(
+                entity=_entity_from_context({**payload, **row}),
+                kind="transcript",
+                period=_text_or_none(row.get("quarter") or row.get("period")),
+                timestamp=_text_or_none(row.get("published_at")),
+                fields=dict(row),
+                source=_first_text(row, SOURCE_KEYS) or _first_text(payload, SOURCE_KEYS),
+                metadata=_adapter_metadata({"quarter": "period", "period": "period", "published_at": "timestamp"}),
+            ))
+        return records
+
+
+class TranscriptReadRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        transcript = payload.get("transcript") if isinstance(payload.get("transcript"), dict) else {}
+        fields = {**transcript, **_fields_except(payload, {"transcript", "source", "provider"})}
+        return [Record(
+            entity=_entity_from_context(payload),
+            kind="transcript",
+            period=_text_or_none(transcript.get("quarter") or payload.get("quarter")),
+            timestamp=_text_or_none(transcript.get("published_at") or payload.get("date")),
+            fields=fields,
+            source=_first_text(payload, SOURCE_KEYS) or _first_text(transcript, SOURCE_KEYS),
+            metadata=_adapter_metadata({"quarter": "period", "published_at": "timestamp", "date": "timestamp"}),
+        )]
+
+
+class KpiRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records: list[Record] = []
+        document_lookup = _document_lookup(payload.get("documents"))
+        for row in payload.get("kpis") or []:
+            if isinstance(row, dict):
+                records.append(_kpi_record(payload, row, document_lookup))
+        for group in payload.get("history") or []:
+            if not isinstance(group, dict):
+                continue
+            group_lookup = _document_lookup(group.get("documents")) or document_lookup
+            for row in group.get("kpis") or []:
+                if isinstance(row, dict):
+                    records.append(_kpi_record(payload, row, group_lookup))
+        return records
+
+
+class PriceMovesRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        context = _fields_except(payload, {"moves", "count", "notes", "source", "provider"})
+        records = []
+        for move in payload.get("moves") or []:
+            if not isinstance(move, dict):
+                continue
+            fields = {**context, **move}
+            records.append(Record(
+                entity=_entity_from_context({**payload, **move}),
+                kind="price_move",
+                period=_text_or_none(move.get("start_date")),
+                timestamp=_text_or_none(move.get("end_date")),
+                fields=fields,
+                source=_first_text(move, SOURCE_KEYS) or _first_text(payload, SOURCE_KEYS),
+                metadata=_adapter_metadata({"start_date": "period", "end_date": "timestamp"}),
+            ))
+        return records
+
+
+class PriceContextRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        context = _fields_except(payload, {"timeline", "count", "notes", "warnings"})
+        records = []
+        for event in payload.get("timeline") or []:
+            if not isinstance(event, dict):
+                continue
+            fields = {**context, **event}
+            records.append(Record(
+                entity=_entity_from_context(payload),
+                kind=f"price_context_{event.get('source_type') or 'event'}",
+                timestamp=_text_or_none(event.get("date")),
+                fields=fields,
+                source=_text_or_none(event.get("source_type")),
+                metadata=_adapter_metadata({"date": "timestamp"}),
+            ))
+        return records
+
+
+class EstimatesConsensusRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        source = _first_text(payload, SOURCE_KEYS)
+        records = []
+        for row in payload.get("estimates") or []:
+            if not isinstance(row, dict):
+                continue
+            period = _first_text(row, ("date", "period", "fiscalDateEnding")) or _text_or_none(payload.get("period"))
+            records.append(Record(
+                entity=_entity_from_context(payload),
+                kind="consensus_estimate",
+                period=period,
+                fields={**_fields_except(payload, {"symbol", "ticker", "estimates", "count", "source", "provider"}), **row},
+                source=source,
+                metadata=_adapter_metadata({"date": "period", "fiscalDateEnding": "period"}),
+            ))
+        return records
+
+
+class ScreenRunRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        context = _fields_except(payload, {"quotes", "count", "total", "source", "provider"})
+        source = _first_text(payload, SOURCE_KEYS)
+        records = []
+        for quote in payload.get("quotes") or []:
+            if not isinstance(quote, dict):
+                continue
+            records.append(Record(
+                entity=_entity_from_context(quote),
+                kind="screen_quote",
+                fields={**context, **quote},
+                source=source,
+            ))
+        return records
+
+
 ENTITY_KEYS = ("entity", "symbol", "ticker", "market")
 PERIOD_KEYS = ("period",)
 TIMESTAMP_KEYS = ("timestamp",)
 SOURCE_KEYS = ("source", "provider")
 COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
+    "calendar.earnings": CalendarEarningsRecordAdapter(),
+    "estimates.consensus": EstimatesConsensusRecordAdapter(),
     "market.quote": MarketQuoteRecordAdapter(),
     "market.ohlcv": MarketOhlcvRecordAdapter(),
     "news.search": NewsSearchRecordAdapter(),
     "filings.recent": FilingsRecentRecordAdapter(),
     "filings.statement": FilingsStatementRecordAdapter(),
+    "kpi.extract": KpiRecordAdapter(),
+    "kpi.history": KpiRecordAdapter(),
+    "price.context": PriceContextRecordAdapter(),
+    "price.moves": PriceMovesRecordAdapter(),
+    "screen.run": ScreenRunRecordAdapter(),
+    "transcripts.read": TranscriptReadRecordAdapter(),
+    "transcripts.search": TranscriptSearchRecordAdapter(),
 }
 LIST_CONTAINER_KEYS = {
     "records",
@@ -251,6 +419,39 @@ def _filing_entity(payload: dict[str, Any], filing: dict[str, Any]) -> str:
     if symbol:
         return symbol.upper()
     return _text_or_none(filing.get("company") or filing.get("accession_no")) or "record"
+
+
+def _document_lookup(documents: Any) -> dict[Any, dict[str, Any]]:
+    if not isinstance(documents, list):
+        return {}
+    lookup = {}
+    for document in documents:
+        if not isinstance(document, dict):
+            continue
+        doc_ref = document.get("doc_ref")
+        if doc_ref is not None:
+            lookup[doc_ref] = document
+    return lookup
+
+
+def _kpi_record(payload: dict[str, Any], row: dict[str, Any], document_lookup: dict[Any, dict[str, Any]]) -> Record:
+    document = document_lookup.get(row.get("doc_ref"), {})
+    value = row.get("value") if isinstance(row.get("value"), dict) else {}
+    document_fields = {f"document_{key}": value for key, value in document.items() if key != "doc_ref"}
+    fields = {**document_fields, **row}
+    if value:
+        fields.setdefault("value_raw", value.get("raw"))
+        fields.setdefault("value_number", value.get("number"))
+        fields.setdefault("currency", value.get("currency"))
+    return Record(
+        entity=_entity_from_context({**payload, **document}),
+        kind="kpi",
+        period=_text_or_none(row.get("period") or document.get("period") or document.get("quarter")),
+        timestamp=_text_or_none(document.get("published_at")),
+        fields=fields,
+        source=_first_text(document, SOURCE_KEYS) or _first_text(payload, SOURCE_KEYS),
+        metadata=_adapter_metadata({"period": "period", "quarter": "period", "published_at": "timestamp"}),
+    )
 
 
 def _fields_except(mapping: dict[str, Any], excluded: set[str]) -> dict[str, Any]:

@@ -117,6 +117,74 @@ def test_filings_recent_adapter_treats_report_date_as_period_and_filing_date_as_
     assert records[0].source == "sec_edgar"
 
 
+def test_agent_adapters_cover_earnings_transcripts_kpis_and_price_moves():
+    earnings = normalize_records(
+        {
+            "symbol": "AAPL",
+            "rows": [{"earnings_date": "2026-07-30", "eps_estimate": 1.9}],
+            "source": "yfinance",
+        },
+        command="calendar.earnings",
+    )
+    transcripts = normalize_records(
+        {
+            "symbol": "IOT",
+            "transcripts": [{"title": "Q4 call", "quarter": "Q4 2026", "published_at": "2026-03-05", "url": "https://example.com", "source": "motley_fool"}],
+            "source": "motley_fool",
+        },
+        command="transcripts.search",
+    )
+    kpis = normalize_records(
+        {
+            "symbol": "IOT",
+            "source": "transcripts",
+            "documents": [{"doc_ref": 0, "quarter": "Q4 2026", "published_at": "2026-03-05", "source": "motley_fool"}],
+            "kpis": [{"doc_ref": 0, "metric": "arr", "period": "Q4 2026", "value": {"raw": "$1.9B", "number": 1900000000, "currency": "USD"}}],
+        },
+        command="kpi.extract",
+    )
+    moves = normalize_records(
+        {
+            "symbol": "IOT",
+            "moves": [{"start_date": "2026-03-05", "end_date": "2026-03-06", "return_pct": 19.54, "source": "yfinance"}],
+            "source": "yfinance",
+        },
+        command="price.moves",
+    )
+
+    assert (earnings[0].kind, earnings[0].timestamp, earnings[0].source) == ("earning", "2026-07-30", "yfinance")
+    assert (transcripts[0].kind, transcripts[0].period, transcripts[0].timestamp) == ("transcript", "Q4 2026", "2026-03-05")
+    assert kpis[0].fields["value_number"] == 1900000000
+    assert kpis[0].source == "motley_fool"
+    assert (moves[0].kind, moves[0].period, moves[0].timestamp) == ("price_move", "2026-03-05", "2026-03-06")
+
+
+def test_screen_and_price_context_adapters_keep_source_context():
+    screen = normalize_records(
+        {
+            "query": "day_gainers",
+            "title": "Day Gainers",
+            "quotes": [{"symbol": "NVDA", "price": 215.33, "change_pct": 5.1}],
+            "source": "yfinance",
+        },
+        command="screen.run",
+    )
+    context = normalize_records(
+        {
+            "symbol": "IOT",
+            "target_date": "2026-03-06",
+            "timeline": [{"date": "2026-03-05", "source_type": "filing", "title": "8-K filed"}],
+        },
+        command="price.context",
+    )
+
+    assert screen[0].entity == "NVDA"
+    assert screen[0].kind == "screen_quote"
+    assert screen[0].fields["query"] == "day_gainers"
+    assert context[0].kind == "price_context_filing"
+    assert context[0].timestamp == "2026-03-05"
+
+
 def test_cli_compact_output_uses_generic_record_renderer(capsys, monkeypatch):
     def fake_quote(symbol):
         return {
