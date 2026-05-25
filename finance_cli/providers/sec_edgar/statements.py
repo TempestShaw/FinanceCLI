@@ -7,20 +7,25 @@ from finance_cli.providers.base import ProviderError, quiet_call
 from finance_cli.providers.sec_edgar.common import _json_number
 
 
-FILING_STATEMENT_ATTRS = {
+STATEMENT_ALIASES = {
+    "income": "income",
+    "income_statement": "income",
+    "balance": "balance",
+    "balance_sheet": "balance",
+    "cashflow": "cashflow",
+    "cash_flow": "cashflow",
+    "cash_flow_statement": "cashflow",
+}
+RAW_FILING_STATEMENT_ATTRS = {
     "income": "income_statement",
-    "income_statement": "income_statement",
     "balance": "balance_sheet",
-    "balance_sheet": "balance_sheet",
     "cashflow": "cash_flow_statement",
-    "cash_flow": "cash_flow_statement",
-    "cash_flow_statement": "cash_flow_statement",
 }
 
 
 def _get_statement_object(filing: Any, statement: str) -> tuple[str, Any]:
-    key = statement.strip().lower().replace("-", "_")
-    attr = FILING_STATEMENT_ATTRS.get(key)
+    key = _normalize_statement_key(statement)
+    attr = RAW_FILING_STATEMENT_ATTRS.get(key)
     if not attr:
         raise ProviderError("statement must be one of: income, balance, cashflow")
     obj = quiet_call(filing.obj)
@@ -28,6 +33,77 @@ def _get_statement_object(filing: Any, statement: str) -> tuple[str, Any]:
     if value is None:
         raise ProviderError(f"statement not available: {statement}")
     return key, value
+
+
+def _normalize_statement_key(statement: str) -> str:
+    key = statement.strip().lower().replace("-", "_").replace(" ", "_")
+    normalized = STATEMENT_ALIASES.get(key)
+    if not normalized:
+        raise ProviderError("statement must be one of: income, balance, cashflow")
+    return normalized
+
+
+def _financials_statement_object(financials: Any, statement: str) -> tuple[str, Any]:
+    key = _normalize_statement_key(statement)
+    if financials is None:
+        raise ProviderError("financial statements not available")
+    if key == "income":
+        value = quiet_call(financials.income_statement)
+    elif key == "balance":
+        value = quiet_call(financials.balance_sheet)
+    else:
+        value = quiet_call(financials.cashflow_statement)
+    if value is None:
+        raise ProviderError(f"statement not available: {statement}")
+    return key, value
+
+
+def _shape_standard_statement_rows(
+    statement_obj: Any,
+    *,
+    query: str | None,
+    include_abstract: bool,
+    max_rows: int,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    rendered = quiet_call(statement_obj.render, standard=True)
+    frame = quiet_call(rendered.to_dataframe)
+    records = frame.to_dict(orient="records") if hasattr(frame, "to_dict") else []
+    columns = [str(column) for column in getattr(frame, "columns", [])]
+    periods = [column for column in columns if column not in _STANDARD_METADATA_COLUMNS]
+    rows = []
+    query_text = str(query or "").strip().lower()
+    for item in records:
+        row = _shape_standard_statement_row(item)
+        if row.get("abstract") and not include_abstract:
+            continue
+        if query_text and query_text not in _standard_row_search_text(row):
+            continue
+        rows.append(row)
+        if max_rows > 0 and len(rows) >= max_rows:
+            break
+    return rows, periods
+
+
+_STANDARD_METADATA_COLUMNS = {"concept", "label", "level", "abstract", "dimension", "is_breakdown"}
+
+
+def _shape_standard_statement_row(item: dict[str, Any]) -> dict[str, Any]:
+    row = {
+        "concept": item.get("concept"),
+        "label": item.get("label"),
+        "level": _json_number(item.get("level")),
+        "abstract": bool(item.get("abstract")),
+    }
+    for key, value in item.items():
+        column = str(key)
+        if column in _STANDARD_METADATA_COLUMNS:
+            continue
+        row[column] = _json_number(value)
+    return row
+
+
+def _standard_row_search_text(row: dict[str, Any]) -> str:
+    return " ".join(str(row.get(key) or "").lower() for key in ("concept", "label"))
 
 
 def _shape_statement_rows(

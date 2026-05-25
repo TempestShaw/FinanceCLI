@@ -232,11 +232,11 @@ Args: symbol:string, accession:string, url:string, form:string
 Usage: `finance filings.sections [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K]`
 
 ### filings.statement
-Use when: Use when the user asks for structured XBRL financial statement rows such as income, balance, or cashflow items.
+Use when: Use when the user asks for agent-friendly or raw XBRL rows from a specific SEC filing.
 Avoid when: Do not use for narrative section text or non-XBRL table discovery.
 Side effects: network_read_only
-Args: symbol:string, accession:string, url:string, form:string, statement:string, query:string, max_rows:integer, include_abstract:boolean
-Usage: `finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]`
+Args: symbol:string, accession:string, url:string, form:string, statement:string, view:string, query:string, max_rows:integer, include_abstract:boolean
+Usage: `finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]`
 
 ### formula.adjusted_ebitda
 Use when: Use only when all numeric inputs are explicit in the prompt or already extracted with citations.
@@ -350,12 +350,19 @@ Side effects: pure_calculation
 Args: operating_current_assets:number required, operating_current_liabilities:number required
 Usage: `finance formula.working_capital operating_current_assets=28191 operating_current_liabilities=35035`
 
+### fundamentals.metrics
+Use when: Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.
+Avoid when: Do not use when the user needs multi-period YoY or CAGR rows; fetch statements or use explicit formulas for that.
+Side effects: network_read_only
+Args: symbol:string required, period:string, metrics:string
+Usage: `finance fundamentals.metrics SYMBOL [period=annual|quarterly metrics=revenue,eps,net_income,operating_income]`
+
 ### fundamentals.statement
-Use when: Use for Yahoo financial statement tables outside SEC filing context.
+Use when: Use for standard SEC/edgartools income, balance, or cashflow statement rows for a symbol, or Yahoo Finance statement tables when requested.
 Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
-Args: symbol:string required, statement:string, period:string
-Usage: `finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly]`
+Args: symbol:string required, statement:string, period:string, provider:string
+Usage: `finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly provider=sec|yahoo]`
 
 ### industry.keys
 Use when: Use for Yahoo industry keys, overview data, top companies, and research-report tables.
@@ -455,6 +462,13 @@ Side effects: network_read_only
 Args: query:string, symbol:string, sector:string, max_records:integer, timespan:string, date:string, start_date:string, end_date:string, start_datetime:string, end_datetime:string
 Usage: `finance news.search [query=TEXT | symbol=SYMBOL | sector=SECTOR] [max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]`
 
+### ownership.holders
+Use when: Use for Yahoo major holder, institutional holder, fund holder, and insider tables.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string required, limit:integer
+Usage: `finance ownership.holders SYMBOL [limit=10]`
+
 ### price.context
 Use when: Use when the user asks what filings, news, or transcripts were near a dated price move.
 Avoid when: Do not claim causality unless the evidence explicitly supports it.
@@ -468,6 +482,13 @@ Avoid when: Do not infer causality from price.context alone.
 Side effects: network_read_only
 Args: symbol:string required, window:string, years:integer, threshold:string, limit:integer, provider:string
 Usage: `finance price.moves SYMBOL [window=1d|3d|1w|1m years=3 threshold=8|8% limit=20 provider=auto]`
+
+### price.performance
+Use when: Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.
+Avoid when: Do not infer causality from price.context alone.
+Side effects: network_read_only
+Args: symbol:string required, benchmark:string, periods:string, provider:string
+Usage: `finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]`
 
 ### research.plan
 Use when: Use before executing a complex public-company research workflow.

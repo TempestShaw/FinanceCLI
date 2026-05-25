@@ -1,0 +1,216 @@
+# CANSLIM Coverage Assessment
+
+Date: 2026-05-25
+
+Example tickers tested: `NVDA`, `AAPL`, `TSLA`.
+
+Purpose: assess whether FinanceCLI can fetch, normalize, and render the data needed for a CANSLIM stock workflow without faking paid or unavailable data.
+
+## Summary
+
+FinanceCLI is useful for CANSLIM research, but it is not yet a one-command CANSLIM evaluator.
+
+The strongest areas are filings, earnings dates, transcripts, OHLCV-derived performance, company metadata, sector/industry tables, ownership holder tables, and market status. The weakest areas are multi-period fundamental growth summaries, ownership changes, and market breadth.
+
+FinanceCLI exposes small reusable primitives rather than a CANSLIM-specific command: `fundamentals.metrics` for standard SEC/edgartools financial metrics, `price.performance` for benchmark-relative return rows, and CANSLIM-relevant Yahoo quote fields through `market.quote` and `symbol.profile`.
+
+## Support Matrix
+
+| CANSLIM item | Needed data | Current support | Provider/API | Existing command(s) | Rendering notes |
+|---|---|---:|---|---|---|
+| C | Latest quarterly EPS | Fully supported | SEC/edgartools, yfinance | `fundamentals.metrics`, `calendar.earnings`, `fundamentals.statement` | `fundamentals.metrics` is compact and agent-ready; EPS is computed as net income / diluted shares when available. |
+| C | YoY EPS growth | Partially supported | SEC/edgartools, yfinance | `fundamentals.metrics`, `fundamentals.statement period=quarterly provider=sec` | Latest EPS is compact; YoY still requires fetching historical statement rows or a future multi-period metrics option. |
+| C | Latest quarterly revenue | Fully supported | SEC/edgartools, yfinance | `fundamentals.metrics`, `fundamentals.statement statement=income period=quarterly` | `fundamentals.metrics` avoids statement row scanning. |
+| C | YoY revenue growth | Partially supported | SEC/edgartools, yfinance | `fundamentals.metrics`, `fundamentals.statement statement=income period=quarterly provider=sec` | Latest revenue is compact; YoY growth remains caller-side. |
+| C | Operating/net margin | Fully supported for latest period | SEC/edgartools, yfinance | `fundamentals.metrics`, `market.quote` | `fundamentals.metrics` can return `operating_margin` and `net_margin`; quote provides Yahoo trailing margins. |
+| A | Annual EPS 3-5y | Fully supported as raw data | SEC/edgartools, yfinance | `fundamentals.statement statement=income period=annual provider=sec` | Standard SEC rows are better for agents than Yahoo tables; growth is still caller-side. |
+| A | Annual revenue 3-5y | Fully supported as raw data | SEC/edgartools, yfinance | `fundamentals.statement statement=income period=annual provider=sec` | Same as above. |
+| A | CAGR | Partially supported | local formula + yfinance | `formula.cagr`, `fundamentals.statement` | Requires manual extraction of start/end values. |
+| A | ROE | Partially supported | SEC/edgartools, yfinance | `fundamentals.metrics`, `market.quote`, `symbol.profile` | `fundamentals.metrics` can compute latest ROE when equity is available; multi-year ROE still caller-side. |
+| N | Recent news | Partially supported | GDELT | `news.search`, `news.analyze` | Compact works, but GDELT can return duplicate/low-specificity articles. |
+| N | 8-K filings | Fully supported | SEC EDGAR | `filings.recent forms=8-K classify=true` | Compact is strong for agent use. |
+| N | Press releases | Partially supported | SEC EDGAR / IR pages | `filings.recent`, `ir.presentations` | Earnings releases appear via 8-K Item 2.02; broader press releases need better IR/news handling. |
+| N | Earnings call commentary | Fully supported where public transcript exists | Motley Fool | `transcripts.search`, `transcripts.read`, `transcripts.qa` | Compact search rows are good. |
+| N | 52-week high / breakout | Fully supported for latest distance | yfinance | `market.quote`, `price.performance`, `price.moves` | `price.performance` includes `distance_from_52w_high_pct`. |
+| S | Shares outstanding | Fully supported | yfinance | `market.quote`, `symbol.profile` | Compact is good. |
+| S | Float | Fully supported when Yahoo provides it | yfinance | `market.quote`, `symbol.profile` | Added `float_shares`. |
+| S | Average volume | Fully supported | yfinance | `market.quote`, `symbol.profile` | Added `average_volume` and `average_volume_10d`. |
+| S | Recent volume | Fully supported | yfinance | `market.quote`, `market.ohlcv` | Added `regular_market_volume`; OHLCV has daily rows. |
+| S | Volume vs average | Fully supported | yfinance + local normalization | `market.quote`, `symbol.profile` | Added `volume_vs_average`. |
+| S | Market cap | Fully supported | yfinance | `market.quote`, `symbol.profile` | Already good. |
+| L | Relative strength vs sector/index | Partially supported | yfinance/OHLCV | `price.performance`, `industry.table` | Works against an explicit benchmark such as SPY/QQQ; automatic sector ETF mapping is not implemented. |
+| L | Price performance 1M/3M/6M/1Y | Fully supported | yfinance/OHLCV | `price.performance` | Compact rows are agent-ready and avoid sending raw OHLCV. |
+| L | Peer comparison | Partially supported | yfinance | `industry.table`, `sector.table` | Industry top companies work, but no metric comparison against the target. |
+| L | Sector/industry metadata | Fully supported | yfinance | `symbol.profile`, `sector.*`, `industry.*` | Good. |
+| I | Institutional ownership percent | Fully supported when Yahoo provides it | yfinance | `market.quote`, `symbol.profile`, `ownership.holders` | Quote exposes percent; holder command exposes major holder breakdown. |
+| I | Major holders | Fully supported when Yahoo provides it | yfinance | `ownership.holders` | Returns major holder breakdown plus institutional/fund holder rows. |
+| I | Fund ownership | Partially supported | yfinance | `ownership.holders` | Mutual fund holder rows are available; broader fund ownership history still needs a paid/source-specific provider. |
+| I | Ownership changes | Missing | paid provider likely needed | none | Requires time-series ownership provider. |
+| M | Major index status | Fully supported | yfinance | `market.status US` | Schema output includes S&P 500, Nasdaq, Dow, VIX. |
+| M | Index moving averages | Partially supported | yfinance/raw OHLCV available | `price.performance SPY benchmark=QQQ`, `market.ohlcv SPY,QQQ,DIA` | Return trend works; moving-average crossover rows are still missing. |
+| M | Market breadth | Missing | unavailable | none | Needs new provider. |
+| M | VIX | Fully supported as current quote summary | yfinance | `market.status US` | Current VIX appears in summary; no trend calculation. |
+| M | Macro indicators | Missing | unavailable | none | Out of current provider scope. |
+
+## Example Commands
+
+### Quote / Supply-Demand / Ownership Snapshot
+
+```bash
+finance market.quote NVDA --output compact \
+  --fields last_price,market_cap,shares_outstanding,float_shares,average_volume,regular_market_volume,volume_vs_average,fifty_two_week_high,trailing_eps,profit_margins,operating_margins,return_on_equity,held_percent_institutions
+```
+
+Observed compact shape:
+
+```text
+NVDA|market_quote|last_price=215.33|market_cap=5215507972096|shares_outstanding=24221000000|float_shares=23222320000|average_volume=169915488|regular_market_volume=169275710|volume_vs_average=0.9962|fifty_two_week_high=236.54|trailing_eps=6.52|profit_margins=0.62966|operating_margins=0.65596|return_on_equity=1.14288|held_percent_institutions=0.70777|src=yfinance
+```
+
+### Current Earnings
+
+```bash
+finance calendar.earnings NVDA limit=4 --output compact --max-records 4
+```
+
+This gives recent and upcoming EPS estimates/reported EPS. It does not include revenue.
+
+### Quarterly / Annual Fundamentals
+
+```bash
+finance fundamentals.statement NVDA statement=income period=quarterly provider=sec --output schema --max-records 6
+finance fundamentals.statement NVDA statement=income period=annual provider=sec --output schema --max-records 12
+finance fundamentals.metrics NVDA period=quarterly metrics=revenue,eps,net_income,operating_income,operating_margin,net_margin --output compact
+```
+
+`fundamentals.metrics` is the agent-native latest-period path. Statement rows remain useful when the agent needs historical quarterly or annual values for YoY/CAGR math.
+
+### New Catalyst / Filings
+
+```bash
+finance filings.recent NVDA forms=8-K,10-Q,10-K limit=8 classify=true --output compact
+```
+
+This is one of the strongest outputs. It returns classified events such as earnings releases, financial exhibits, quarterly reports, annual reports, and executive changes.
+
+### News
+
+```bash
+finance news.search symbol=NVDA max_records=3 timespan=7D --output compact
+```
+
+This works, but quality depends on GDELT. In testing it returned duplicate syndicated articles that mentioned large tech companies rather than NVDA-specific catalyst news.
+
+### Transcripts
+
+```bash
+finance transcripts.search NVDA limit=3 --output compact
+```
+
+This works well when Motley Fool transcript pages exist.
+
+### Price / Breakout Context
+
+```bash
+finance price.moves NVDA window=1d years=1 threshold=5% limit=5 --output compact
+finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y --output compact \
+  --fields symbol_return_pct,benchmark_return_pct,relative_return_pct,distance_from_52w_high_pct
+```
+
+`price.moves` gives deterministic large-move dates. `price.performance` gives 1M/3M/6M/1Y return, benchmark return, return spread, and distance from 52-week high without sending raw OHLCV.
+
+### Leader / Peer Context
+
+```bash
+finance industry.table semiconductors table=top_companies limit=5 --output schema
+```
+
+This gives peer names, symbols, ratings, and market weights. It does not compute relative price performance.
+
+### Market Direction
+
+```bash
+finance market.status US --output schema
+finance market.ohlcv NVDA,SPY,QQQ,DIA timeframe=1d limit=5 --output schema
+```
+
+`market.status` is compact enough for current index/VIX context. Use `price.performance` for multi-period index trend rows; use `market.ohlcv` only when the agent needs the underlying bars.
+
+## Missing Data / Provider Gaps
+
+1. Multi-period fundamental summaries:
+   - YoY quarterly revenue/EPS growth
+   - Annual EPS/revenue 3-5y and CAGR
+   - Multi-period statement-derived margins/ROE
+
+2. Relative strength:
+   - Automatic sector ETF benchmark selection
+   - Peer-group return comparison
+
+3. Institutional sponsorship:
+   - Ownership changes over time
+
+4. Market direction:
+   - Index moving averages
+   - Market breadth
+   - VIX trend, not only current VIX
+
+5. Provider-gated data:
+   - FMP analyst estimates currently return `402 Payment Required` with the available key/plan.
+   - Do not fake this data.
+
+## Recommended Command Surface
+
+Keep this practical and avoid a large CANSLIM mega-command. CANSLIM is one investment framework; FinanceCLI should expose reusable data primitives that an agent can combine across many frameworks.
+
+Implemented small commands:
+
+```text
+price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y]
+fundamentals.metrics SYMBOL [period=quarterly metrics=revenue,eps,net_income,operating_income]
+```
+
+Potential future commands/options:
+
+```text
+fundamentals.metrics SYMBOL [period=quarterly metrics=revenue,eps years=5 growth=yoy]
+market.trend SYMBOLS=SPY,QQQ,DIA [periods=1M,3M,6M,1Y]
+```
+
+The implemented commands intentionally do not decide whether a stock passes CANSLIM. They only reduce token waste and row-selection errors for facts that many frameworks need.
+
+## Output Format Assessment
+
+| Format | Assessment |
+|---|---|
+| JSON | Best for programmatic use; sometimes verbose for LLM context. |
+| compact | Best for event rows, quote snapshots, transcripts, filings, price moves. |
+| schema | Good for row/table data; useful for statements and OHLCV, but statement rows still require calculation. |
+| human table/text | Not the main strength; current project is more agent-oriented. |
+
+## Validation Commands
+
+Representative checks:
+
+```bash
+finance market.quote NVDA --output compact --fields last_price,market_cap,float_shares,volume_vs_average,fifty_two_week_high,return_on_equity,held_percent_institutions
+finance ownership.holders NVDA limit=5 --output compact --fields section,breakdown,value,holder,shares,pct_held,pct_change
+finance symbol.profile AAPL --output json
+finance calendar.earnings TSLA limit=4 --output compact
+finance fundamentals.metrics NVDA period=quarterly metrics=revenue,eps,net_income,operating_income,operating_margin,net_margin --output compact
+finance fundamentals.statement NVDA statement=income period=quarterly provider=sec --output schema --max-records 12
+finance filings.recent NVDA forms=8-K,10-Q,10-K limit=8 classify=true --output compact
+finance transcripts.search NVDA limit=3 --output compact
+finance price.moves NVDA window=1d years=1 threshold=5% limit=5 --output compact
+finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y --output compact
+finance industry.table semiconductors table=top_companies limit=5 --output schema
+finance market.status US --output schema
+finance market.ohlcv NVDA,SPY,QQQ,DIA timeframe=1d limit=5 --output schema
+```
+
+Automated coverage includes:
+
+- Yahoo quote normalization for CANSLIM fields.
+- `symbol.profile` propagation of those quote fields.
+- `fundamentals.metrics` provider delegation and compact rendering.
+- `price.performance` benchmark-relative return math and compact rendering.

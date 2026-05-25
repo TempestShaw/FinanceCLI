@@ -36,6 +36,7 @@ def _finance_statement(params: dict, _config: dict) -> str:
             params["symbol"],
             statement=params.get("statement", "income"),
             period=params.get("period", "annual"),
+            provider=params.get("provider", "sec"),
         )
     )
 
@@ -91,6 +92,7 @@ FinanceToolSpec(
                     "symbol": {"type": "string"},
                     "statement": {"type": "string"},
                     "period": {"type": "string"},
+                    "provider": {"type": "string", "description": "sec or yahoo"},
                 },
                 "required": ["symbol"],
             },

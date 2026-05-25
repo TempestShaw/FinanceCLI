@@ -24,16 +24,16 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
     ProviderMetadata(
         name="yfinance",
         label="Yahoo Finance via yfinance",
-        capabilities=("quote", "ohlcv", "fundamentals", "calendar", "sector", "industry", "screen"),
+        capabilities=("quote", "ohlcv", "fundamentals", "calendar", "sector", "industry", "screen", "holders"),
         package="yfinance",
-        notes="Public market, company calendar, sector, industry, and screener data via yfinance.",
+        notes="Public market, company calendar, sector, industry, screener, and holder data via yfinance.",
     ),
     ProviderMetadata(
         name="sec",
         label="SEC EDGAR",
-        capabilities=("filings", "filing_sections", "company_metadata"),
+        capabilities=("filings", "filing_sections", "company_metadata", "financial_statements", "financial_metrics"),
         optional_env=("FINANCE_SEC_USER_AGENT",),
-        notes="Public SEC JSON plus edgartools for filing reads.",
+        notes="Public SEC JSON plus edgartools for filing reads, XBRL statements, and standard financial metrics.",
     ),
     ProviderMetadata(
         name="gdelt",

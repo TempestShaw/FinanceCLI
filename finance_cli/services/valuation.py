@@ -239,12 +239,13 @@ def _latest_revenue_from_statement(symbol: str) -> dict[str, Any]:
     except Exception:
         return {}
     for row in statement.get("rows", []):
-        if str(row.get("field", "")).strip().lower() not in {"total revenue", "revenue"}:
+        label = str(row.get("field") or row.get("label") or row.get("concept") or "").strip().lower()
+        if not any(term in label for term in ("total revenue", "revenue")):
             continue
         dated_values = [
             (key, _number_or_none(value))
             for key, value in row.items()
-            if key != "field" and _number_or_none(value) is not None
+            if key not in {"field", "concept", "label", "level", "abstract"} and _number_or_none(value) is not None
         ]
         if not dated_values:
             continue

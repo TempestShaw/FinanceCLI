@@ -73,7 +73,7 @@ def _filings_sections(args: list[str]) -> FinanceCommandResult:
 def _filings_statement(args: list[str]) -> FinanceCommandResult:
     symbol, accession_no, url, kv = _filing_lookup(args)
     if not symbol and not accession_no and not url:
-        return _missing_filing_source("filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]")
+        return _missing_filing_source("filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]")
     data = read_filing_statement(
         symbol=symbol,
         accession_no=accession_no,
@@ -83,6 +83,7 @@ def _filings_statement(args: list[str]) -> FinanceCommandResult:
         query=kv.str("query"),
         include_abstract=kv.bool("include_abstract"),
         max_rows=kv.int("max_rows", 0),
+        view=kv.str("view", "standard"),
     )
     return FinanceCommandResult(ok=True, data=data)
 
@@ -156,12 +157,12 @@ def register_filings_commands() -> None:
         "filings.statement",
         "Read structured XBRL statement rows with edgartools",
         _filings_statement,
-        usage="filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]",
+        usage="filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]",
         examples=(
-            "finance filings.statement COST statement=balance query='Common Stock'",
-            "finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income max_rows=20",
+            "finance filings.statement COST statement=balance view=standard query='Common Stock'",
+            "finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income view=raw max_rows=20",
         ),
-        notes=("Returns raw XBRL values plus reported values scaled by XBRL decimals.",),
+        notes=("standard view returns flat agent-friendly rows; raw view returns XBRL values plus reported values scaled by XBRL decimals.",),
     ))
     register_command(FinanceCommand(
         "filings.reports",

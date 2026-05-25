@@ -2296,7 +2296,7 @@
       "post": {
         "operationId": "finance_filings_statement",
         "summary": "Read structured XBRL statement rows with edgartools",
-        "description": "Use when the user asks for structured XBRL financial statement rows such as income, balance, or cashflow items.",
+        "description": "Use when the user asks for agent-friendly or raw XBRL rows from a specific SEC filing.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2331,6 +2331,15 @@
                       "cashflow"
                     ],
                     "description": "Statement family."
+                  },
+                  "view": {
+                    "type": "string",
+                    "default": "standard",
+                    "enum": [
+                      "standard",
+                      "raw"
+                    ],
+                    "description": "standard returns flat agent-friendly rows; raw keeps XBRL unit/decimals metadata."
                   },
                   "query": {
                     "type": "string",
@@ -2439,7 +2448,7 @@
         },
         "x-finance-cli": {
           "command": "filings.statement",
-          "usage": "finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]",
+          "usage": "finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -3965,11 +3974,11 @@
         }
       }
     },
-    "/commands/fundamentals.statement": {
+    "/commands/fundamentals.metrics": {
       "post": {
-        "operationId": "finance_fundamentals_statement",
-        "summary": "Fetch income/balance/cashflow statement data",
-        "description": "Use for Yahoo financial statement tables outside SEC filing context.",
+        "operationId": "finance_fundamentals_metrics",
+        "summary": "Fetch standard SEC financial metrics with edgartools getters",
+        "description": "Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3981,15 +3990,6 @@
                     "type": "string",
                     "description": "Ticker symbol."
                   },
-                  "statement": {
-                    "type": "string",
-                    "enum": [
-                      "income",
-                      "balance",
-                      "cashflow"
-                    ],
-                    "description": "Financial statement family."
-                  },
                   "period": {
                     "type": "string",
                     "description": "Financial statement period, such as annual or quarterly.",
@@ -3997,6 +3997,11 @@
                       "annual",
                       "quarterly"
                     ]
+                  },
+                  "metrics": {
+                    "type": "string",
+                    "description": "Comma-separated KPI or metric names to search for.",
+                    "default": "revenue,eps,net_income,operating_income"
                   }
                 },
                 "required": [
@@ -4029,7 +4034,119 @@
                       "anyOf": [
                         {
                           "type": "object",
-                          "description": "Statement rows from Yahoo Finance.",
+                          "description": "Financial statement rows or standard financial metrics.",
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "fundamentals.metrics",
+          "usage": "finance fundamentals.metrics SYMBOL [period=annual|quarterly metrics=revenue,eps,net_income,operating_income]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/fundamentals.statement": {
+      "post": {
+        "operationId": "finance_fundamentals_statement",
+        "summary": "Fetch income/balance/cashflow statement data",
+        "description": "Use for standard SEC/edgartools income, balance, or cashflow statement rows for a symbol, or Yahoo Finance statement tables when requested.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "statement": {
+                    "type": "string",
+                    "default": "income",
+                    "enum": [
+                      "income",
+                      "balance",
+                      "cashflow"
+                    ],
+                    "description": "Statement family."
+                  },
+                  "period": {
+                    "type": "string",
+                    "default": "annual",
+                    "enum": [
+                      "annual",
+                      "quarterly"
+                    ],
+                    "description": "Statement period."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "default": "sec",
+                    "enum": [
+                      "sec",
+                      "yahoo"
+                    ],
+                    "description": "Statement provider."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Financial statement rows or standard financial metrics.",
                           "additionalProperties": true
                         },
                         {
@@ -4059,7 +4176,7 @@
         },
         "x-finance-cli": {
           "command": "fundamentals.statement",
-          "usage": "finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly]",
+          "usage": "finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly provider=sec|yahoo]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": []
@@ -5531,6 +5648,99 @@
         }
       }
     },
+    "/commands/ownership.holders": {
+      "post": {
+        "operationId": "finance_ownership_holders",
+        "summary": "Fetch major, institutional, fund, and insider holder tables",
+        "description": "Use for Yahoo major holder, institutional holder, fund holder, and insider tables.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum records to return.",
+                    "default": 10
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "ownership.holders",
+          "usage": "finance ownership.holders SYMBOL [limit=10]",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": [
+            "symbol",
+            "source",
+            "date_reported",
+            "start_date",
+            "latest_transaction_date"
+          ]
+        }
+      }
+    },
     "/commands/price.context": {
       "post": {
         "operationId": "finance_price_context",
@@ -5604,7 +5814,7 @@
                       "anyOf": [
                         {
                           "type": "object",
-                          "description": "Price moves or dated evidence timeline.",
+                          "description": "Price moves, performance rows, or dated evidence timeline.",
                           "additionalProperties": true
                         },
                         {
@@ -5726,7 +5936,7 @@
                       "anyOf": [
                         {
                           "type": "object",
-                          "description": "Price moves or dated evidence timeline.",
+                          "description": "Price moves, performance rows, or dated evidence timeline.",
                           "additionalProperties": true
                         },
                         {
@@ -5757,6 +5967,109 @@
         "x-finance-cli": {
           "command": "price.moves",
           "usage": "finance price.moves SYMBOL [window=1d|3d|1w|1m years=3 threshold=8|8% limit=20 provider=auto]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "symbol",
+            "date",
+            "source",
+            "url"
+          ]
+        }
+      }
+    },
+    "/commands/price.performance": {
+      "post": {
+        "operationId": "finance_price_performance",
+        "summary": "Compute price returns and benchmark-relative performance",
+        "description": "Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "benchmark": {
+                    "type": "string",
+                    "description": "Value supplied for `benchmark`."
+                  },
+                  "periods": {
+                    "type": "string",
+                    "default": "1M,3M,6M,1Y",
+                    "description": "Value supplied for `periods`."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "description": "Provider selection.",
+                    "default": "auto"
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Price moves, performance rows, or dated evidence timeline.",
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "price.performance",
+          "usage": "finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [

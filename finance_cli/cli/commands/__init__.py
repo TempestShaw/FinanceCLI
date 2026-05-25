@@ -14,6 +14,7 @@ from finance_cli.cli.commands.kpi import register_kpi_commands
 from finance_cli.cli.commands.market import register_market_commands
 from finance_cli.cli.commands.market_data import register_market_data_commands
 from finance_cli.cli.commands.news import register_news_commands
+from finance_cli.cli.commands.ownership import register_ownership_commands
 from finance_cli.cli.commands.price import register_price_commands
 from finance_cli.cli.commands.research import register_research_commands
 from finance_cli.cli.commands.screen import register_screen_commands
@@ -34,6 +35,7 @@ def register_builtin_commands() -> None:
     register_industry_commands()
     register_screen_commands()
     register_news_commands()
+    register_ownership_commands()
     register_price_commands()
     register_estimates_commands()
     register_filings_commands()

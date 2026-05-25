@@ -2966,13 +2966,13 @@
       "name": "filings.statement",
       "namespace": "filings",
       "description": "Read structured XBRL statement rows with edgartools",
-      "usage": "finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]",
+      "usage": "finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]",
       "examples": [
-        "finance filings.statement COST statement=balance query='Common Stock'",
-        "finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income max_rows=20"
+        "finance filings.statement COST statement=balance view=standard query='Common Stock'",
+        "finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income view=raw max_rows=20"
       ],
       "notes": [
-        "Returns raw XBRL values plus reported values scaled by XBRL decimals."
+        "standard view returns flat agent-friendly rows; raw view returns XBRL values plus reported values scaled by XBRL decimals."
       ],
       "args": {
         "symbol": {
@@ -3010,6 +3010,16 @@
             "cashflow"
           ],
           "description": "Statement family."
+        },
+        "view": {
+          "type": "string",
+          "required": false,
+          "default": "standard",
+          "enum": [
+            "standard",
+            "raw"
+          ],
+          "description": "standard returns flat agent-friendly rows; raw keeps XBRL unit/decimals metadata."
         },
         "query": {
           "type": "string",
@@ -3059,6 +3069,15 @@
               "cashflow"
             ],
             "description": "Statement family."
+          },
+          "view": {
+            "type": "string",
+            "default": "standard",
+            "enum": [
+              "standard",
+              "raw"
+            ],
+            "description": "standard returns flat agent-friendly rows; raw keeps XBRL unit/decimals metadata."
           },
           "query": {
             "type": "string",
@@ -3167,7 +3186,7 @@
         "section"
       ],
       "agent": {
-        "use_when": "Use when the user asks for structured XBRL financial statement rows such as income, balance, or cashflow items.",
+        "use_when": "Use when the user asks for agent-friendly or raw XBRL rows from a specific SEC filing.",
         "avoid_when": "Do not use for narrative section text or non-XBRL table discovery.",
         "next_steps": [
           "filings.report",
@@ -4819,29 +4838,21 @@
       }
     },
     {
-      "name": "fundamentals.statement",
+      "name": "fundamentals.metrics",
       "namespace": "fundamentals",
-      "description": "Fetch income/balance/cashflow statement data",
-      "usage": "finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly]",
+      "description": "Fetch standard SEC financial metrics with edgartools getters",
+      "usage": "finance fundamentals.metrics SYMBOL [period=annual|quarterly metrics=revenue,eps,net_income,operating_income]",
       "examples": [
-        "finance fundamentals.statement NVDA statement=income period=quarterly"
+        "finance fundamentals.metrics NVDA period=quarterly metrics=revenue,eps,net_income,operating_income"
       ],
-      "notes": [],
+      "notes": [
+        "Uses edgartools financial getters for standard metrics; EPS is net_income / diluted_shares."
+      ],
       "args": {
         "symbol": {
           "type": "string",
           "description": "Ticker symbol.",
           "required": true
-        },
-        "statement": {
-          "type": "string",
-          "enum": [
-            "income",
-            "balance",
-            "cashflow"
-          ],
-          "description": "Financial statement family.",
-          "required": false
         },
         "period": {
           "type": "string",
@@ -4851,6 +4862,12 @@
             "quarterly"
           ],
           "required": false
+        },
+        "metrics": {
+          "type": "string",
+          "description": "Comma-separated KPI or metric names to search for.",
+          "required": false,
+          "default": "revenue,eps,net_income,operating_income"
         }
       },
       "input_schema": {
@@ -4860,15 +4877,6 @@
             "type": "string",
             "description": "Ticker symbol."
           },
-          "statement": {
-            "type": "string",
-            "enum": [
-              "income",
-              "balance",
-              "cashflow"
-            ],
-            "description": "Financial statement family."
-          },
           "period": {
             "type": "string",
             "description": "Financial statement period, such as annual or quarterly.",
@@ -4876,6 +4884,11 @@
               "annual",
               "quarterly"
             ]
+          },
+          "metrics": {
+            "type": "string",
+            "description": "Comma-separated KPI or metric names to search for.",
+            "default": "revenue,eps,net_income,operating_income"
           }
         },
         "required": [
@@ -4900,7 +4913,7 @@
             "anyOf": [
               {
                 "type": "object",
-                "description": "Statement rows from Yahoo Finance.",
+                "description": "Financial statement rows or standard financial metrics.",
                 "additionalProperties": true
               },
               {
@@ -4927,10 +4940,153 @@
       "side_effects": "network_read_only",
       "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
       "auth_required": "optional_environment_or_public_provider",
-      "rate_limit_notes": "Yahoo Finance responses can vary by symbol and session.",
+      "rate_limit_notes": "Yahoo Finance and SEC/edgartools responses can vary by symbol and session.",
       "citation_fields": [],
       "agent": {
-        "use_when": "Use for Yahoo financial statement tables outside SEC filing context.",
+        "use_when": "Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.",
+        "avoid_when": "Do not use when the user needs multi-period YoY or CAGR rows; fetch statements or use explicit formulas for that.",
+        "next_steps": []
+      }
+    },
+    {
+      "name": "fundamentals.statement",
+      "namespace": "fundamentals",
+      "description": "Fetch income/balance/cashflow statement data",
+      "usage": "finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly provider=sec|yahoo]",
+      "examples": [
+        "finance fundamentals.statement NVDA statement=income period=quarterly provider=sec",
+        "finance fundamentals.statement NVDA statement=income period=quarterly provider=yahoo"
+      ],
+      "notes": [
+        "Supports SEC/edgartools standard XBRL rows and Yahoo Finance statement tables."
+      ],
+      "args": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Ticker symbol."
+        },
+        "statement": {
+          "type": "string",
+          "required": false,
+          "default": "income",
+          "enum": [
+            "income",
+            "balance",
+            "cashflow"
+          ],
+          "description": "Statement family."
+        },
+        "period": {
+          "type": "string",
+          "required": false,
+          "default": "annual",
+          "enum": [
+            "annual",
+            "quarterly"
+          ],
+          "description": "Statement period."
+        },
+        "provider": {
+          "type": "string",
+          "required": false,
+          "default": "sec",
+          "enum": [
+            "sec",
+            "yahoo"
+          ],
+          "description": "Statement provider."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          },
+          "statement": {
+            "type": "string",
+            "default": "income",
+            "enum": [
+              "income",
+              "balance",
+              "cashflow"
+            ],
+            "description": "Statement family."
+          },
+          "period": {
+            "type": "string",
+            "default": "annual",
+            "enum": [
+              "annual",
+              "quarterly"
+            ],
+            "description": "Statement period."
+          },
+          "provider": {
+            "type": "string",
+            "default": "sec",
+            "enum": [
+              "sec",
+              "yahoo"
+            ],
+            "description": "Statement provider."
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Financial statement rows or standard financial metrics.",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "optional_environment_or_public_provider",
+      "rate_limit_notes": "Yahoo Finance and SEC/edgartools responses can vary by symbol and session.",
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for standard SEC/edgartools income, balance, or cashflow statement rows for a symbol, or Yahoo Finance statement tables when requested.",
         "avoid_when": null,
         "next_steps": []
       }
@@ -6701,6 +6857,104 @@
       }
     },
     {
+      "name": "ownership.holders",
+      "namespace": "ownership",
+      "description": "Fetch major, institutional, fund, and insider holder tables",
+      "usage": "finance ownership.holders SYMBOL [limit=10]",
+      "examples": [
+        "finance ownership.holders NVDA limit=5"
+      ],
+      "notes": [
+        "Uses yfinance holder tables; field availability can vary by ticker."
+      ],
+      "args": {
+        "symbol": {
+          "type": "string",
+          "description": "Ticker symbol.",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum records to return.",
+          "default": 10,
+          "required": false
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum records to return.",
+            "default": 10
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "none",
+      "rate_limit_notes": "Yahoo holder fields and availability can vary by ticker and session.",
+      "citation_fields": [
+        "symbol",
+        "source",
+        "date_reported",
+        "start_date",
+        "latest_transaction_date"
+      ],
+      "agent": {
+        "use_when": "Use for Yahoo major holder, institutional holder, fund holder, and insider tables.",
+        "avoid_when": null,
+        "next_steps": []
+      }
+    },
+    {
       "name": "price.context",
       "namespace": "price",
       "description": "Return a source-linked evidence timeline around a date",
@@ -6808,7 +7062,7 @@
             "anyOf": [
               {
                 "type": "object",
-                "description": "Price moves or dated evidence timeline.",
+                "description": "Price moves, performance rows, or dated evidence timeline.",
                 "additionalProperties": true
               },
               {
@@ -6972,7 +7226,7 @@
             "anyOf": [
               {
                 "type": "object",
-                "description": "Price moves or dated evidence timeline.",
+                "description": "Price moves, performance rows, or dated evidence timeline.",
                 "additionalProperties": true
               },
               {
@@ -7008,6 +7262,125 @@
       ],
       "agent": {
         "use_when": "Use for price move discovery and evidence timelines around a date.",
+        "avoid_when": "Do not infer causality from price.context alone.",
+        "next_steps": []
+      }
+    },
+    {
+      "name": "price.performance",
+      "namespace": "price",
+      "description": "Compute price returns and benchmark-relative performance",
+      "usage": "finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
+      "examples": [
+        "finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y"
+      ],
+      "notes": [
+        "Uses normalized OHLCV rows and deterministic close-to-close return math."
+      ],
+      "args": {
+        "symbol": {
+          "type": "string",
+          "description": "Ticker symbol.",
+          "required": true
+        },
+        "benchmark": {
+          "type": "string",
+          "required": false,
+          "description": "Value supplied for `benchmark`."
+        },
+        "periods": {
+          "type": "string",
+          "required": false,
+          "default": "1M,3M,6M,1Y",
+          "description": "Value supplied for `periods`."
+        },
+        "provider": {
+          "type": "string",
+          "description": "Provider selection.",
+          "required": false,
+          "default": "auto"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          },
+          "benchmark": {
+            "type": "string",
+            "description": "Value supplied for `benchmark`."
+          },
+          "periods": {
+            "type": "string",
+            "default": "1M,3M,6M,1Y",
+            "description": "Value supplied for `periods`."
+          },
+          "provider": {
+            "type": "string",
+            "description": "Provider selection.",
+            "default": "auto"
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Price moves, performance rows, or dated evidence timeline.",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "optional_environment_or_public_provider",
+      "rate_limit_notes": null,
+      "citation_fields": [
+        "symbol",
+        "date",
+        "source",
+        "url"
+      ],
+      "agent": {
+        "use_when": "Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.",
         "avoid_when": "Do not infer causality from price.context alone.",
         "next_steps": []
       }

@@ -72,7 +72,7 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "filings.report": ["COST", "form=10-K", "name=Consolidated Balance Sheets (Parenthetical)", "max_rows=2", "max_chars=500"],
     "filings.reports": ["COST", "form=10-K", "query=lease"],
     "filings.sections": ["AAPL", "form=10-K"],
-    "filings.statement": ["COST", "statement=balance", "query=Common Stock", "max_rows=2"],
+    "filings.statement": ["COST", "statement=balance", "view=standard", "query=Common Stock", "max_rows=2"],
     "formula.adjusted_ebitda": ["ebit=9285", "d_and_a=2237", "addbacks=284,163"],
     "formula.cagr": ["start=100", "end=150", "periods=3"],
     "formula.capm": ["risk_free=4.617%", "beta=0.79", "market_return=11%"],
@@ -89,7 +89,8 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "formula.turnover": ["numerator=222358", "current=18647", "prior=16651"],
     "formula.wacc": ["equity_value=418856", "debt_value=11415", "cost_of_equity=9.66%", "cost_of_debt=6%", "tax_rate=24%", "debt_tax=pretax"],
     "formula.working_capital": ["operating_current_assets=28191", "operating_current_liabilities=35035"],
-    "fundamentals.statement": ["NVDA", "statement=income", "period=quarterly"],
+    "fundamentals.metrics": ["NVDA", "period=quarterly", "metrics=revenue,eps,net_income,operating_income"],
+    "fundamentals.statement": ["NVDA", "statement=income", "period=quarterly", "provider=sec"],
     "industry.keys": ["sector=technology"],
     "industry.overview": ["software-infrastructure"],
     "industry.table": ["software-infrastructure", "table=top_companies", "limit=3"],
@@ -104,8 +105,10 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "market.status": ["US"],
     "news.analyze": ["symbol=NVDA", "analysis=timeline", "timespan=1d", "max_records=3"],
     "news.search": ["symbol=NVDA", "timespan=1d", "max_records=3"],
+    "ownership.holders": ["NVDA", "limit=2"],
     "price.context": ["IOT", "date=2026-03-06", "lookback=3D", "news_limit=2", "filing_limit=5", "transcript_limit=2"],
     "price.moves": ["IOT", "years=1", "threshold=8%", "limit=3"],
+    "price.performance": ["NVDA", "benchmark=SPY", "periods=1M,3M"],
     "research.plan": ["IOT", "style=fundamental"],
     "screen.predefined": [],
     "screen.run": ["day_gainers", "count=3"],
@@ -127,6 +130,10 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "valuation.npv": ["cashflows=-100M,30M,40M,50M", "discount_rate=10%"],
     "valuation.scenario": ["IOT", "revenue=2.2B", "bear_multiple=7", "base_multiple=10", "bull_multiple=13", "shares=580M"],
     "valuation.wacc": ["equity_value=10B", "debt_value=1B", "cost_of_equity=10%", "cost_of_debt=5%", "tax_rate=21%"],
+}
+
+LIVE_COMMAND_VARIANTS: dict[str, tuple[str, list[str]]] = {
+    "filings.statement.raw": ("filings.statement", ["COST", "statement=balance", "view=raw", "query=Common Stock", "max_rows=2"]),
 }
 
 def test_live_cases_cover_every_registered_command() -> None:
@@ -159,6 +166,34 @@ def test_live_command_json_contract(command: str) -> None:
     }
 
     _write_artifact(command, artifact)
+    print(json.dumps(artifact, ensure_ascii=False, sort_keys=True))
+
+    assert json_run.returncode in {0, 1, 124}
+    assert set(payload) >= {"ok", "data", "error", "warnings"}
+    if STRICT_LIVE:
+        assert json_run.returncode == 0
+        assert payload["ok"] is True
+
+
+@pytest.mark.parametrize("case_id", sorted(LIVE_COMMAND_VARIANTS))
+def test_live_command_json_contract_variants(case_id: str) -> None:
+    command, args = LIVE_COMMAND_VARIANTS[case_id]
+    json_run, payload, attempts = _run_cli_json_with_retries([command, *args, "--output", "json"])
+    json_summary = _summarize_run(json_run, payload)
+    json_summary["attempt_count"] = len(attempts)
+    json_summary["max_attempts"] = LIVE_MAX_ATTEMPTS
+    json_summary["retry_delay_seconds"] = LIVE_RETRY_DELAY_SECONDS
+    json_summary["total_call_duration_seconds"] = round(sum(attempt["duration_seconds"] for attempt in attempts), 3)
+    json_summary["attempts"] = attempts
+    artifact: dict[str, Any] = {
+        "command": command,
+        "case_id": case_id,
+        "namespace": command.split(".", 1)[0],
+        "args": args,
+        "json": json_summary,
+    }
+
+    _write_artifact(case_id, artifact)
     print(json.dumps(artifact, ensure_ascii=False, sort_keys=True))
 
     assert json_run.returncode in {0, 1, 124}
