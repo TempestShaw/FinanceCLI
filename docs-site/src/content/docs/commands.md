@@ -426,19 +426,19 @@ Read structured XBRL statement rows with edgartools
 **Usage**
 
 ```bash
-finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow query=TEXT max_rows=0]
+finance filings.statement [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K statement=income|balance|cashflow view=standard|raw query=TEXT max_rows=0]
 ```
 
 **Examples**
 
 ```bash
-finance filings.statement COST statement=balance query='Common Stock'
-finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income max_rows=20
+finance filings.statement COST statement=balance view=standard query='Common Stock'
+finance filings.statement url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm statement=income view=raw max_rows=20
 ```
 
 **Details**
 
-- Returns raw XBRL values plus reported values scaled by XBRL decimals.
+- standard view returns flat agent-friendly rows; raw view returns XBRL values plus reported values scaled by XBRL decimals.
 
 ## `formula.*`
 
@@ -700,6 +700,26 @@ finance formula.working_capital operating_current_assets=28191 operating_current
 
 ## `fundamentals.*`
 
+### `fundamentals.metrics`
+
+Fetch standard SEC financial metrics with edgartools getters
+
+**Usage**
+
+```bash
+finance fundamentals.metrics SYMBOL [period=annual|quarterly metrics=revenue,eps,net_income,operating_income]
+```
+
+**Examples**
+
+```bash
+finance fundamentals.metrics NVDA period=quarterly metrics=revenue,eps,net_income,operating_income
+```
+
+**Details**
+
+- Uses edgartools financial getters for standard metrics; EPS is net_income / diluted_shares.
+
 ### `fundamentals.statement`
 
 Fetch income/balance/cashflow statement data
@@ -707,14 +727,19 @@ Fetch income/balance/cashflow statement data
 **Usage**
 
 ```bash
-finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly]
+finance fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly provider=sec|yahoo]
 ```
 
 **Examples**
 
 ```bash
-finance fundamentals.statement NVDA statement=income period=quarterly
+finance fundamentals.statement NVDA statement=income period=quarterly provider=sec
+finance fundamentals.statement NVDA statement=income period=quarterly provider=yahoo
 ```
+
+**Details**
+
+- Supports SEC/edgartools standard XBRL rows and Yahoo Finance statement tables.
 
 ## `industry.*`
 
@@ -1007,6 +1032,28 @@ finance news.search symbol=IOT start_date=2026-03-03 end_date=2026-03-09 max_rec
 - Use start_datetime/end_datetime only when you need second-level precision.
 - Use either timespan or fixed date/date-time inputs, not both.
 
+## `ownership.*`
+
+### `ownership.holders`
+
+Fetch major, institutional, fund, and insider holder tables
+
+**Usage**
+
+```bash
+finance ownership.holders SYMBOL [limit=10]
+```
+
+**Examples**
+
+```bash
+finance ownership.holders NVDA limit=5
+```
+
+**Details**
+
+- Uses yfinance holder tables; field availability can vary by ticker.
+
 ## `price.*`
 
 ### `price.context`
@@ -1057,6 +1104,26 @@ finance price.moves NVDA window=1w years=2 threshold=15 limit=10
 - threshold accepts decimal or percentage-point inputs: 0.08, 8, and 8% all mean 8%.
 - Uses one OHLCV fetch and deterministic close-to-close math.
 - Returns move dates and magnitude only; it does not infer causality.
+
+### `price.performance`
+
+Compute price returns and benchmark-relative performance
+
+**Usage**
+
+```bash
+finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]
+```
+
+**Examples**
+
+```bash
+finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y
+```
+
+**Details**
+
+- Uses normalized OHLCV rows and deterministic close-to-close return math.
 
 ## `research.*`
 

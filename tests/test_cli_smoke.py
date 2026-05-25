@@ -123,6 +123,7 @@ def test_filings_statement_still_accepts_positional_symbol(monkeypatch):
     assert captured["accession_no"] is None
     assert captured["url"] is None
     assert captured["statement"] == "balance"
+    assert captured["view"] == "standard"
     assert captured["max_rows"] == 2
 
 

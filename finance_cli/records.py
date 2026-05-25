@@ -281,6 +281,38 @@ class ScreenRunRecordAdapter:
         return records
 
 
+class OwnershipHoldersRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records: list[Record] = []
+        source = _first_text(payload, SOURCE_KEYS)
+        for section in (
+            "major_holders",
+            "institutional_holders",
+            "mutualfund_holders",
+            "insider_transactions",
+            "insider_purchases",
+            "insider_roster_holders",
+        ):
+            for row in payload.get(section) or []:
+                if not isinstance(row, dict):
+                    continue
+                records.append(Record(
+                    entity=_entity_from_context(payload),
+                    kind=section[:-1] if section.endswith("s") else section,
+                    timestamp=_first_text(row, ("date_reported", "start_date", "latest_transaction_date")),
+                    fields={"section": section, **row},
+                    source=source,
+                    metadata=_adapter_metadata({
+                        "date_reported": "timestamp",
+                        "start_date": "timestamp",
+                        "latest_transaction_date": "timestamp",
+                    }),
+                ))
+        return records
+
+
 ENTITY_KEYS = ("entity", "symbol", "ticker", "market")
 PERIOD_KEYS = ("period",)
 TIMESTAMP_KEYS = ("timestamp",)
@@ -291,6 +323,7 @@ COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
     "market.quote": MarketQuoteRecordAdapter(),
     "market.ohlcv": MarketOhlcvRecordAdapter(),
     "news.search": NewsSearchRecordAdapter(),
+    "ownership.holders": OwnershipHoldersRecordAdapter(),
     "filings.recent": FilingsRecentRecordAdapter(),
     "filings.statement": FilingsStatementRecordAdapter(),
     "kpi.extract": KpiRecordAdapter(),

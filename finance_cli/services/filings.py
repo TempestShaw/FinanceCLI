@@ -100,6 +100,7 @@ def read_filing_statement(
     query: str | None = None,
     include_abstract: bool = False,
     max_rows: int = 0,
+    view: str = "standard",
     provider: SecEdgarProvider | None = None,
 ) -> dict[str, Any]:
     """Read structured XBRL statement rows from a filing."""
@@ -113,6 +114,7 @@ def read_filing_statement(
         query=query,
         include_abstract=include_abstract,
         max_rows=max_rows,
+        view=view,
     )
 
 

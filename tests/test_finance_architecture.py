@@ -48,8 +48,9 @@ from finance_cli.services.formulas import (
     formula_working_capital,
 )
 from finance_cli.services.kpi import extract_kpi_evidence
-from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv
+from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv, price_performance
 from finance_cli.services.news import news_geo, normalize_news_timespan
+from finance_cli.services.ownership import fetch_holders
 from finance_cli.services.price import detect_price_moves, price_context
 from finance_cli.services.research import research_plan
 from finance_cli.services.screen import list_predefined_screens, run_predefined_screen
@@ -63,6 +64,8 @@ from finance_cli.services.sectors import (
     list_sector_keys,
 )
 from finance_cli.services.sources import list_sources, sources_status
+from finance_cli.services.symbols import fetch_symbol_profile
+from finance_cli.services.fundamentals import fetch_financial_metrics, fetch_financial_statement
 from finance_cli.services.valuation import valuation_dcf, valuation_irr, valuation_multiples, valuation_npv, valuation_scenario, valuation_wacc
 from finance_cli.tools import FINANCE_TOOL_SPECS
 
@@ -155,6 +158,7 @@ def test_cli_registry_registers_builtin_commands():
     assert "transcripts.search" in names
     assert "transcripts.read" in names
     assert "transcripts.qa" in names
+    assert "fundamentals.metrics" in names
     assert "fundamentals.statement" in names
     assert "kpi.extract" in names
     assert "kpi.history" in names
@@ -182,8 +186,10 @@ def test_cli_registry_registers_builtin_commands():
     assert "formula.working_capital" in names
     assert "estimates.consensus" in names
     assert "estimates.compare" in names
+    assert "ownership.holders" in names
     assert "price.moves" in names
     assert "price.context" in names
+    assert "price.performance" in names
     assert "research.plan" in names
     assert "market.quote" in names
     assert "market.ohlcv" in names
@@ -262,6 +268,9 @@ def test_yfinance_intel_services_delegate_to_provider():
         def run_screen(self, query, *, count, offset=None, sort_field=None, sort_asc=None):
             return {"query": query, "quotes": [{"symbol": "NVDA"}], "count": count}
 
+        def holders(self, symbol, *, limit):
+            return {"symbol": symbol, "major_holders": [{"breakdown": "institutionsCount"}], "limit": limit}
+
     provider = Provider()
 
     assert fetch_market_status("US", provider=provider)["status"]["status"] == "open"
@@ -276,6 +285,7 @@ def test_yfinance_intel_services_delegate_to_provider():
     assert fetch_industry_table("software-infrastructure", limit=4, provider=provider)["count"] == 4
     assert list_predefined_screens(provider=provider)["queries"][0]["key"] == "day_gainers"
     assert run_predefined_screen("day_gainers", count=2, provider=provider)["quotes"][0]["symbol"] == "NVDA"
+    assert fetch_holders("NVDA", limit=2, provider=provider)["limit"] == 2
 
 
 def test_yfinance_intel_validates_sector_and_industry_keys():
@@ -294,6 +304,98 @@ def test_yfinance_intel_validates_sector_and_industry_keys():
         assert "unknown industry key" in str(exc)
     else:
         raise AssertionError("expected invalid industry key to fail")
+
+
+def test_price_performance_computes_benchmark_relative_returns():
+    class ProviderAttempt:
+        provider = "test_provider"
+
+    class Service:
+        def load_ohlcv(self, symbol, **_kwargs):
+            end = 121.0 if symbol == "AAPL" else 110.0
+            rows = [
+                {"symbol": symbol, "date": f"2026-01-{index + 1:02d}", "close": 100.0 + index, "adjusted_close": 100.0 + index}
+                for index in range(22)
+            ]
+            rows[-1]["close"] = end
+            rows[-1]["adjusted_close"] = end
+            return rows, ProviderAttempt(), []
+
+    data = price_performance("AAPL", benchmark="SPY", periods=["1M"], service=Service())
+    row = data["performance"][0]
+
+    assert row["period"] == "1M"
+    assert row["symbol_return_pct"] == 21.0
+    assert row["benchmark_return_pct"] == 10.0
+    assert row["relative_return_pct"] == 11.0
+    assert row["distance_from_52w_high_pct"] == 0.0
+
+
+def test_financial_metrics_delegates_to_provider():
+    class Provider:
+        def financial_metrics(self, symbol, *, period, metrics):
+            return {
+                "symbol": symbol.upper(),
+                "period": period,
+                "metrics": [{"metric": metric, "value": index} for index, metric in enumerate(metrics)],
+                "source": "test_provider",
+            }
+
+    data = fetch_financial_metrics("nvda", period="quarterly", metrics=["revenue", "eps"], provider=Provider())
+
+    assert data["symbol"] == "NVDA"
+    assert data["period"] == "quarterly"
+    assert data["metrics"] == [{"metric": "revenue", "value": 0}, {"metric": "eps", "value": 1}]
+
+
+def test_sec_edgar_financial_metrics_fallback_to_individual_getters(monkeypatch):
+    class Financials:
+        def get_revenue(self):
+            return 100.0
+
+        def get_operating_income(self):
+            return 30.0
+
+        def get_net_income(self):
+            return 20.0
+
+        def get_shares_outstanding_diluted(self):
+            return 10.0
+
+        def get_stockholders_equity(self):
+            return 50.0
+
+    provider = SecEdgarProvider()
+    monkeypatch.setattr(provider, "_company_financials", lambda symbol, period: (Financials(), symbol.upper(), period))
+
+    data = provider.financial_metrics("nvda", period="quarterly", metrics=["revenue", "eps", "net_margin", "roe"])
+
+    assert data["metrics"] == [
+        {"metric": "revenue", "value": 100.0, "method": "edgartools financial getter"},
+        {"metric": "eps", "value": 2.0, "method": "net_income / diluted_shares"},
+        {"metric": "net_margin", "value": 0.2, "method": "net_income / revenue"},
+        {"metric": "roe", "value": 0.4, "method": "net_income / stockholders_equity"},
+    ]
+
+
+def test_financial_statement_delegates_to_selected_provider():
+    class Provider:
+        def financial_statement(self, symbol, *, statement, period):
+            return {
+                "symbol": symbol.upper(),
+                "statement": statement,
+                "period": period,
+                "source": "test_provider",
+            }
+
+    data = fetch_financial_statement("nvda", statement="income", period="quarterly", provider=Provider())
+
+    assert data == {
+        "symbol": "NVDA",
+        "statement": "income",
+        "period": "quarterly",
+        "source": "test_provider",
+    }
 
 
 def test_cli_main_shows_command_help(capsys):
@@ -611,6 +713,7 @@ def test_cli_filings_statement_passes_url_and_query(capsys, monkeypatch):
             "statement": kwargs["statement"],
             "query": kwargs["query"],
             "max_rows": kwargs["max_rows"],
+            "view": kwargs["view"],
             "url": kwargs["url"],
         }
 
@@ -629,6 +732,7 @@ def test_cli_filings_statement_passes_url_and_query(capsys, monkeypatch):
     assert payload["data"]["statement"] == "balance"
     assert payload["data"]["query"] == "Common Stock"
     assert payload["data"]["max_rows"] == 0
+    assert payload["data"]["view"] == "standard"
     assert payload["data"]["url"].endswith("cost-20240901.htm")
 
 
@@ -678,7 +782,7 @@ def test_cli_filings_reports_passes_query(capsys, monkeypatch):
     assert payload["data"]["query"] == "lease"
 
 
-def test_sec_edgar_filing_statement_scales_reported_values(monkeypatch):
+def test_sec_edgar_filing_statement_raw_view_scales_reported_values(monkeypatch):
     class Statement:
         def get_raw_data(self):
             return [
@@ -718,11 +822,153 @@ def test_sec_edgar_filing_statement_scales_reported_values(monkeypatch):
     provider = SecEdgarProvider()
     monkeypatch.setattr(provider, "_get_filing", lambda **kwargs: Filing())
 
-    data = provider.filing_statement(url="https://sec.example/cost.htm", statement="balance", query="Common Stock")
+    data = provider.filing_statement(url="https://sec.example/cost.htm", statement="balance", query="Common Stock", view="raw")
 
+    assert data["view"] == "raw"
     assert data["periods"] == ["2024-09-01", "2023-09-03"]
     assert data["rows"][0]["values"]["2024-09-01"]["raw"] == 2_000_000
     assert data["rows"][0]["values"]["2024-09-01"]["reported"] == 2
+
+
+def test_sec_edgar_filing_statement_standard_view_shapes_flat_rows(monkeypatch):
+    class Frame:
+        columns = ["concept", "label", "level", "abstract", "2024-09-01", "2023-09-03"]
+
+        def to_dict(self, orient):
+            assert orient == "records"
+            return [
+                {"concept": "us-gaap_StockholdersEquityAbstract", "label": "Equity [Abstract]", "level": 1, "abstract": True, "2024-09-01": None},
+                {"concept": "us-gaap_CommonStockValue", "label": "Common Stock", "level": 4, "abstract": False, "2024-09-01": 2_000_000.0, "2023-09-03": 2_000_000.0},
+            ]
+
+    class Rendered:
+        def to_dataframe(self):
+            return Frame()
+
+    class Statement:
+        def render(self, *, standard):
+            assert standard is True
+            return Rendered()
+
+    class Financials:
+        def balance_sheet(self):
+            return Statement()
+
+    class FilingObject:
+        financials = Financials()
+
+    class Filing:
+        company = "Costco"
+        cik = "909832"
+        form = "10-K"
+        filing_date = "2024-10-09"
+        period_of_report = "2024-09-01"
+        accession_no = "0000909832-24-000049"
+        filing_url = "https://sec.example/cost.htm"
+        homepage_url = "https://sec.example/index.htm"
+        text_url = "https://sec.example/cost.txt"
+
+        def obj(self):
+            return FilingObject()
+
+    provider = SecEdgarProvider()
+    monkeypatch.setattr(provider, "_get_filing", lambda **kwargs: Filing())
+
+    data = provider.filing_statement(url="https://sec.example/cost.htm", statement="balance", query="Common Stock")
+
+    assert data["view"] == "standard"
+    assert data["periods"] == ["2024-09-01", "2023-09-03"]
+    assert data["rows"] == [
+        {
+            "concept": "us-gaap_CommonStockValue",
+            "label": "Common Stock",
+            "level": 4,
+            "abstract": False,
+            "2024-09-01": 2_000_000,
+            "2023-09-03": 2_000_000,
+        }
+    ]
+
+
+def test_sec_edgar_financial_statement_uses_quarterly_or_annual_financials(monkeypatch):
+    calls = []
+
+    class Frame:
+        columns = ["concept", "label", "level", "abstract", "2026-04-26"]
+
+        def to_dict(self, orient):
+            assert orient == "records"
+            return [{"concept": "us-gaap_Revenue", "label": "Revenue", "level": 2, "abstract": False, "2026-04-26": 100.0}]
+
+    class Rendered:
+        def to_dataframe(self):
+            return Frame()
+
+    class Statement:
+        def render(self, *, standard):
+            assert standard is True
+            return Rendered()
+
+    class Financials:
+        def income_statement(self):
+            return Statement()
+
+    class Company:
+        not_found = False
+
+        def __init__(self, symbol):
+            self.symbol = symbol
+
+        def get_quarterly_financials(self):
+            calls.append("quarterly")
+            return Financials()
+
+        def get_financials(self):
+            calls.append("annual")
+            return Financials()
+
+    class Edgar:
+        pass
+
+    Edgar.Company = Company
+
+    provider = SecEdgarProvider()
+    monkeypatch.setattr(provider, "_edgar", lambda: Edgar)
+
+    quarterly = provider.financial_statement("nvda", statement="income", period="quarterly")
+    annual = provider.financial_statement("nvda", statement="income", period="annual")
+
+    assert calls == ["quarterly", "annual"]
+    assert quarterly["symbol"] == "NVDA"
+    assert quarterly["view"] == "standard"
+    assert quarterly["rows"][0]["2026-04-26"] == 100
+    assert annual["period"] == "annual"
+
+
+def test_sec_edgar_filing_statement_rejects_invalid_view(monkeypatch):
+    provider = SecEdgarProvider()
+    called = []
+    monkeypatch.setattr(provider, "_get_filing", lambda **kwargs: called.append(kwargs) or object())
+
+    try:
+        provider.filing_statement(symbol="COST", view="verbose")
+    except ProviderError as exc:
+        assert "view must be standard or raw" in str(exc)
+        assert called == []
+    else:
+        raise AssertionError("expected ProviderError")
+
+
+def test_sec_edgar_filing_statement_rejects_invalid_statement(monkeypatch):
+    provider = SecEdgarProvider()
+    monkeypatch.setattr(provider, "_get_filing", lambda **kwargs: object())
+
+    try:
+        provider.filing_statement(symbol="COST", statement="equity", view="raw")
+    except ProviderError as exc:
+        assert "statement must be one of" in str(exc)
+    else:
+        raise AssertionError("expected ProviderError")
 
 
 def test_sec_edgar_report_reads_parenthetical_report(monkeypatch):
@@ -1765,6 +2011,17 @@ def test_yahoo_provider_suppresses_noisy_stdout(monkeypatch, capsys):
                 "industry": "Software - Infrastructure",
                 "regularMarketPrice": 29.96,
                 "marketCap": 17398259712,
+                "sharesOutstanding": 600000000,
+                "floatShares": 500000000,
+                "averageVolume": 2000000,
+                "regularMarketVolume": 3000000,
+                "fiftyTwoWeekHigh": 45.0,
+                "trailingEps": 0.12,
+                "earningsQuarterlyGrowth": 0.4,
+                "profitMargins": 0.08,
+                "operatingMargins": 0.11,
+                "returnOnEquity": 0.18,
+                "heldPercentInstitutions": 0.64,
                 "currency": "USD",
             }
 
@@ -1782,6 +2039,58 @@ def test_yahoo_provider_suppresses_noisy_stdout(monkeypatch, capsys):
     assert captured.out == ""
     assert captured.err == ""
     assert quote["company_name"] == "Samsara Inc."
+    assert quote["float_shares"] == 500000000
+    assert quote["volume_vs_average"] == 1.5
+    assert quote["fifty_two_week_high"] == 45.0
+    assert quote["trailing_eps"] == 0.12
+    assert quote["earnings_quarterly_growth"] == 0.4
+    assert quote["profit_margins"] == 0.08
+    assert quote["operating_margins"] == 0.11
+    assert quote["return_on_equity"] == 0.18
+    assert quote["held_percent_institutions"] == 0.64
+
+
+def test_symbol_profile_exposes_canslim_quote_fields():
+    class FakeQuoteProvider:
+        def quote(self, symbol):
+            return {
+                "symbol": symbol,
+                "company_name": "Example Inc.",
+                "sector": "Technology",
+                "industry": "Semiconductors",
+                "last_price": 100.0,
+                "market_cap": 1000000000,
+                "shares_outstanding": 10000000,
+                "float_shares": 8000000,
+                "average_volume": 200000,
+                "regular_market_volume": 300000,
+                "volume_vs_average": 1.5,
+                "fifty_two_week_high": 120.0,
+                "trailing_eps": 4.0,
+                "earnings_quarterly_growth": 0.4,
+                "profit_margins": 0.2,
+                "operating_margins": 0.3,
+                "return_on_equity": 0.25,
+                "held_percent_institutions": 0.7,
+                "source": "test_quote",
+            }
+
+    class FakeSecProvider:
+        def get_company(self, _symbol):
+            return {"cik_str": 1234, "title": "Example Inc."}
+
+    profile = fetch_symbol_profile("exm", quote_provider=FakeQuoteProvider(), sec_provider=FakeSecProvider())
+
+    assert profile["symbol"] == "EXM"
+    assert profile["float_shares"] == 8000000
+    assert profile["volume_vs_average"] == 1.5
+    assert profile["fifty_two_week_high"] == 120.0
+    assert profile["trailing_eps"] == 4.0
+    assert profile["earnings_quarterly_growth"] == 0.4
+    assert profile["profit_margins"] == 0.2
+    assert profile["operating_margins"] == 0.3
+    assert profile["return_on_equity"] == 0.25
+    assert profile["held_percent_institutions"] == 0.7
 
 
 def test_gdelt_news_provider_uses_doc_api_without_lang_query(monkeypatch):

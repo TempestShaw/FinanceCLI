@@ -165,26 +165,113 @@ class SecEdgarProvider:
         query: str | None = None,
         include_abstract: bool = False,
         max_rows: int = 0,
+        view: str = "standard",
     ) -> dict[str, Any]:
         """Return structured XBRL statement rows from an annual/quarterly filing."""
+        view_key = view.strip().lower()
+        if view_key not in {"standard", "raw"}:
+            raise ProviderError("view must be standard or raw")
         filing = self._get_filing(symbol=symbol, accession_no=accession_no, url=url, form=form)
-        statement_key, statement_obj = _statements._get_statement_object(filing, statement)
-        raw_rows = quiet_call(statement_obj.get_raw_data)
-        rows = _statements._shape_statement_rows(
-            raw_rows,
-            query=query,
-            include_abstract=include_abstract,
-            max_rows=max_rows,
-        )
+        if view_key == "raw":
+            statement_key, statement_obj = _statements._get_statement_object(filing, statement)
+            raw_rows = quiet_call(statement_obj.get_raw_data)
+            rows = _statements._shape_statement_rows(
+                raw_rows,
+                query=query,
+                include_abstract=include_abstract,
+                max_rows=max_rows,
+            )
+            periods = _statements._statement_periods(raw_rows)
+        else:
+            obj = quiet_call(filing.obj)
+            financials = getattr(obj, "financials", None)
+            statement_key, statement_obj = _statements._financials_statement_object(financials, statement)
+            rows, periods = _statements._shape_standard_statement_rows(
+                statement_obj,
+                query=query,
+                include_abstract=include_abstract,
+                max_rows=max_rows,
+            )
         return {
             "filing": _common._filing_metadata(filing),
             "statement": statement_key,
-            "periods": _statements._statement_periods(raw_rows),
+            "view": view_key,
+            "periods": periods,
             "rows": rows,
             "count": len(rows),
             "truncated": max_rows > 0 and len(rows) >= max_rows,
             "source": "edgartools",
         }
+
+    def financial_statement(
+        self,
+        symbol: str,
+        *,
+        statement: str = "income",
+        period: str = "annual",
+    ) -> dict[str, Any]:
+        """Return standard SEC financial statement rows for a company."""
+        financials, normalized, period_key = self._company_financials(symbol, period=period)
+        statement_key, statement_obj = _statements._financials_statement_object(financials, statement)
+        rows, periods = _statements._shape_standard_statement_rows(
+            statement_obj,
+            query=None,
+            include_abstract=False,
+            max_rows=0,
+        )
+        return {
+            "symbol": normalized,
+            "statement": statement_key,
+            "period": period_key,
+            "view": "standard",
+            "periods": periods,
+            "rows": rows,
+            "count": len(rows),
+            "source": "edgartools",
+        }
+
+    def financial_metrics(
+        self,
+        symbol: str,
+        *,
+        period: str = "annual",
+        metrics: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Return standard financial metrics using edgartools financial getters."""
+        financials, normalized, period_key = self._company_financials(symbol, period=period)
+        selected = metrics or ["revenue", "operating_income", "net_income", "eps"]
+        values = _financial_metric_values(financials)
+        rows = []
+        for metric in selected:
+            key = _normalize_financial_metric_key(metric)
+            rows.append({
+                "metric": key,
+                "value": values.get(key),
+                "method": _financial_metric_method(key),
+            })
+        return {
+            "symbol": normalized,
+            "period": period_key,
+            "metrics": rows,
+            "count": len(rows),
+            "source": "edgartools",
+        }
+
+    def _company_financials(self, symbol: str, *, period: str) -> tuple[Any, str, str]:
+        edgar = self._edgar()
+        normalized = symbol.strip().upper()
+        company = quiet_call(edgar.Company, normalized)
+        if getattr(company, "not_found", False):
+            raise ProviderError(f"SEC ticker not found: {symbol}")
+        period_key = period.strip().lower()
+        if period_key not in {"annual", "quarterly"}:
+            raise ProviderError("period must be annual or quarterly")
+        financials = quiet_call(
+            company.get_quarterly_financials if period_key == "quarterly" else company.get_financials
+        )
+        if financials is None:
+            raise ProviderError(f"financial statements not available: {symbol}")
+        return financials, normalized, period_key
 
     def filing_reports(
         self,
@@ -469,3 +556,75 @@ class SecEdgarProvider:
         if not isinstance(payload, dict):
             raise ProviderError("SEC response was not a JSON object")
         return payload
+
+
+def _financial_metric_values(financials: Any) -> dict[str, Any]:
+    values = quiet_call(financials.get_financial_metrics) if hasattr(financials, "get_financial_metrics") else {}
+    values = dict(values or {})
+    revenue = _metric_or_get(values, financials, "revenue", "get_revenue")
+    operating_income = _metric_or_get(values, financials, "operating_income", "get_operating_income")
+    net_income = _metric_or_get(values, financials, "net_income", "get_net_income")
+    shares_diluted = (
+        values.get("shares_outstanding_diluted")
+        or values.get("shares_diluted")
+        or _financial_get(financials, "get_shares_outstanding_diluted")
+    )
+    equity = _metric_or_get(values, financials, "stockholders_equity", "get_stockholders_equity")
+    values.setdefault("revenue", revenue)
+    values.setdefault("operating_income", operating_income)
+    values.setdefault("net_income", net_income)
+    values.setdefault("stockholders_equity", equity)
+    values.setdefault("shares_diluted", shares_diluted)
+    values.setdefault("eps", _safe_ratio(net_income, shares_diluted))
+    values.setdefault("operating_margin", _safe_ratio(operating_income, revenue))
+    values.setdefault("net_margin", _safe_ratio(net_income, revenue))
+    values.setdefault("roe", _safe_ratio(net_income, equity))
+    return values
+
+
+def _metric_or_get(values: dict[str, Any], financials: Any, key: str, method: str) -> Any:
+    value = values.get(key)
+    return value if value is not None else _financial_get(financials, method)
+
+
+def _financial_get(financials: Any, method: str) -> Any:
+    if not hasattr(financials, method):
+        return None
+    return quiet_call(getattr(financials, method))
+
+
+def _normalize_financial_metric_key(metric: str) -> str:
+    normalized = str(metric).strip().lower().replace("-", "_").replace(" ", "_")
+    aliases = {
+        "sales": "revenue",
+        "total_revenue": "revenue",
+        "operatingincome": "operating_income",
+        "netincome": "net_income",
+        "diluted_shares": "shares_diluted",
+        "shares_outstanding_diluted": "shares_diluted",
+        "diluted_eps": "eps",
+        "profit_margin": "net_margin",
+        "return_on_equity": "roe",
+    }
+    return aliases.get(normalized, normalized)
+
+
+def _financial_metric_method(metric: str) -> str:
+    if metric == "eps":
+        return "net_income / diluted_shares"
+    if metric == "operating_margin":
+        return "operating_income / revenue"
+    if metric == "net_margin":
+        return "net_income / revenue"
+    if metric == "roe":
+        return "net_income / stockholders_equity"
+    return "edgartools financial getter"
+
+
+def _safe_ratio(numerator: Any, denominator: Any) -> float | None:
+    try:
+        if numerator is None or denominator in (None, 0):
+            return None
+        return float(numerator) / float(denominator)
+    except Exception:
+        return None

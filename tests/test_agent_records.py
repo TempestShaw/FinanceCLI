@@ -223,6 +223,107 @@ def test_cli_json_output_keeps_existing_envelope(capsys, monkeypatch):
     }
 
 
+def test_cli_compact_output_renders_ownership_holders(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.ownership.fetch_holders",
+        lambda symbol, limit=10: {
+            "symbol": symbol.upper(),
+            "major_holders": [{"breakdown": "institutionsPercentHeld", "value": 0.7}],
+            "institutional_holders": [{"holder": "Blackrock Inc.", "shares": 1000, "pct_held": 0.08}],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["ownership.holders", "nvda", "--output", "compact", "--fields", "section,holder,shares,breakdown,value"])
+    output = capsys.readouterr().out.strip().splitlines()
+
+    assert code == 0
+    assert output == [
+        "NVDA|major_holder|section=major_holders|breakdown=institutionsPercentHeld|value=0.7|src=test_provider",
+        "NVDA|institutional_holder|section=institutional_holders|holder=Blackrock Inc.|shares=1000|src=test_provider",
+    ]
+
+
+def test_cli_compact_output_renders_price_performance(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.price.price_performance",
+        lambda symbol, **_kwargs: {
+            "symbol": symbol.upper(),
+            "benchmark": "SPY",
+            "performance": [{"period": "1M", "symbol_return_pct": 12.5, "benchmark_return_pct": 5.0, "relative_return_pct": 7.5}],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["price.performance", "nvda", "--output", "compact", "--fields", "period,symbol_return_pct,benchmark_return_pct,relative_return_pct"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "NVDA|performance|1M|symbol_return_pct=12.5|benchmark_return_pct=5.0|relative_return_pct=7.5|src=test_provider"
+
+
+def test_cli_compact_output_renders_fundamental_metrics(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.fundamentals.fetch_financial_metrics",
+        lambda symbol, **_kwargs: {
+            "symbol": symbol.upper(),
+            "period": "quarterly",
+            "metrics": [{"metric": "revenue", "value": 100.0}, {"metric": "eps", "value": 2.5}],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["fundamentals.metrics", "nvda", "--output", "compact", "--fields", "metric,value"])
+    output = capsys.readouterr().out.strip().splitlines()
+
+    assert code == 0
+    assert output == [
+        "NVDA|metric|quarterly|metric=revenue|value=100.0|src=test_provider",
+        "NVDA|metric|quarterly|metric=eps|value=2.5|src=test_provider",
+    ]
+
+
+def test_cli_schema_output_renders_standard_filing_statement_rows(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.read_filing_statement",
+        lambda **_kwargs: {
+            "filing": {"company": "Costco", "filing_date": "2024-10-09", "period_of_report": "2024-09-01"},
+            "statement": "balance",
+            "view": "standard",
+            "rows": [{"concept": "us-gaap_CommonStockValue", "label": "Common Stock", "level": 4, "abstract": False, "2024-09-01": 2}],
+            "source": "edgartools",
+        },
+    )
+
+    code = main(["filings.statement", "COST", "statement=balance", "--output", "schema", "--fields", "concept,label,2024-09-01"])
+    output = capsys.readouterr().out.strip().splitlines()
+
+    assert code == 0
+    assert output == [
+        "schema|entity|kind|period|timestamp|source|concept|label|2024-09-01",
+        "row|Costco|filings_statement_row|2024-09-01|2024-10-09|edgartools|us-gaap_CommonStockValue|Common Stock|2",
+    ]
+
+
+def test_cli_compact_output_renders_raw_filing_statement_rows(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.read_filing_statement",
+        lambda **_kwargs: {
+            "filing": {"company": "Costco", "filing_date": "2024-10-09", "period_of_report": "2024-09-01"},
+            "statement": "balance",
+            "view": "raw",
+            "rows": [{"label": "Common Stock", "values": {"2024-09-01": {"raw": 2000000, "reported": 2, "unit": "usd"}}}],
+            "source": "edgartools",
+        },
+    )
+
+    code = main(["filings.statement", "COST", "statement=balance", "view=raw", "--output", "compact", "--fields", "label,values"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == 'Costco|filings_statement_row|2024-09-01|2024-10-09|label=Common Stock|values={"2024-09-01":{"raw":2000000,"reported":2,"unit":"usd"}}|src=edgartools'
+
+
 def test_cli_schema_output_uses_data_driven_columns(capsys, monkeypatch):
     def fake_ohlcv(symbol, **kwargs):
         return {

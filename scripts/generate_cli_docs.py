@@ -117,8 +117,8 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
     },
     "fundamentals": {
         "side_effects": "network_read_only",
-        "agent_use": "Use for Yahoo financial statement tables outside SEC filing context.",
-        "rate_limit_notes": "Yahoo Finance responses can vary by symbol and session.",
+        "agent_use": "Use for provider financial statement rows and standard financial metrics outside SEC filing table extraction.",
+        "rate_limit_notes": "Yahoo Finance and SEC/edgartools responses can vary by symbol and session.",
     },
     "industry": {
         "side_effects": "network_read_only",
@@ -145,6 +145,12 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
         "agent_use": "Use for source-attributed news search and GDELT analysis windows.",
         "citation_fields": ["url", "source", "published_at", "seendate"],
         "rate_limit_notes": "News providers can rate limit and can return sparse windows.",
+    },
+    "ownership": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use for Yahoo major holder, institutional holder, fund holder, and insider tables.",
+        "citation_fields": ["symbol", "source", "date_reported", "start_date", "latest_transaction_date"],
+        "rate_limit_notes": "Yahoo holder fields and availability can vary by ticker and session.",
     },
     "price": {
         "side_effects": "network_read_only",
@@ -215,9 +221,16 @@ COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
         "next_steps": ["filings.sections", "filings.statement", "filings.report", "document.scan"],
     },
     "filings.statement": {
-        "agent_use": "Use when the user asks for structured XBRL financial statement rows such as income, balance, or cashflow items.",
+        "agent_use": "Use when the user asks for agent-friendly or raw XBRL rows from a specific SEC filing.",
         "avoid_when": "Do not use for narrative section text or non-XBRL table discovery.",
         "next_steps": ["filings.report", "document.scan", "formula.*"],
+    },
+    "fundamentals.statement": {
+        "agent_use": "Use for standard SEC/edgartools income, balance, or cashflow statement rows for a symbol, or Yahoo Finance statement tables when requested.",
+    },
+    "fundamentals.metrics": {
+        "agent_use": "Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.",
+        "avoid_when": "Do not use when the user needs multi-period YoY or CAGR rows; fetch statements or use explicit formulas for that.",
     },
     "filings.read": {
         "agent_use": "Use when the user asks for a canonical 10-K section such as business, risk factors, MD&A, or segments.",
@@ -244,6 +257,9 @@ COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
         "agent_use": "Use when the user asks what filings, news, or transcripts were near a dated price move.",
         "avoid_when": "Do not claim causality unless the evidence explicitly supports it.",
     },
+    "price.performance": {
+        "agent_use": "Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.",
+    },
     "research.plan": {
         "agent_use": "Use before executing a complex public-company research workflow.",
     },
@@ -269,9 +285,16 @@ PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
         "url": {"type": "string", "required": False, "format": "uri", "description": "Direct SEC filing URL."},
         "form": {"type": "string", "required": False, "default": "10-K", "description": "SEC form used when resolving by symbol."},
         "statement": {"type": "string", "required": False, "default": "income", "enum": ["income", "balance", "cashflow"], "description": "Statement family."},
+        "view": {"type": "string", "required": False, "default": "standard", "enum": ["standard", "raw"], "description": "standard returns flat agent-friendly rows; raw keeps XBRL unit/decimals metadata."},
         "query": {"type": "string", "required": False, "description": "Optional row label search."},
         "include_abstract": {"type": "boolean", "required": False, "default": False, "description": "Include abstract rows when true."},
         "max_rows": {"type": "integer", "required": False, "default": 0, "description": "Maximum rows; 0 means unlimited."},
+    },
+    "fundamentals.statement": {
+        "symbol": {"type": "string", "required": True, "description": "Ticker symbol."},
+        "statement": {"type": "string", "required": False, "default": "income", "enum": ["income", "balance", "cashflow"], "description": "Statement family."},
+        "period": {"type": "string", "required": False, "default": "annual", "enum": ["annual", "quarterly"], "description": "Statement period."},
+        "provider": {"type": "string", "required": False, "default": "sec", "enum": ["sec", "yahoo"], "description": "Statement provider."},
     },
     "document.scan": {
         "source": {"type": "string", "required": True, "aliases": ["path", "url"], "description": "Local path or URL."},
@@ -461,13 +484,13 @@ NAMESPACE_DATA_SCHEMAS: dict[str, dict[str, Any]] = {
     "estimates": {"type": "object", "description": "Consensus estimate or comparison result.", "additionalProperties": True},
     "filings": {"type": "object", "description": "SEC filing metadata, section text, reports, or XBRL rows.", "additionalProperties": True},
     "formula": {"type": "object", "description": "Deterministic calculation with inputs and method.", "additionalProperties": True},
-    "fundamentals": {"type": "object", "description": "Statement rows from Yahoo Finance.", "additionalProperties": True},
+    "fundamentals": {"type": "object", "description": "Financial statement rows or standard financial metrics.", "additionalProperties": True},
     "industry": {"type": "object", "description": "Yahoo industry key, overview, or table result.", "additionalProperties": True},
     "ir": {"type": "object", "description": "Investor-presentation discovery or text extraction result.", "additionalProperties": True},
     "kpi": {"type": "object", "description": "KPI evidence snippets and history rows.", "additionalProperties": True},
     "market": {"type": "object", "description": "Quote, bars, market status, regime, or sector heat data.", "additionalProperties": True},
     "news": {"type": "object", "description": "News records or analysis result.", "additionalProperties": True},
-    "price": {"type": "object", "description": "Price moves or dated evidence timeline.", "additionalProperties": True},
+    "price": {"type": "object", "description": "Price moves, performance rows, or dated evidence timeline.", "additionalProperties": True},
     "research": {"type": "object", "description": "Research checklist.", "additionalProperties": True},
     "screen": {"type": "object", "description": "Yahoo predefined screen metadata or quote rows.", "additionalProperties": True},
     "sector": {"type": "object", "description": "Yahoo sector key, overview, industries, or table result.", "additionalProperties": True},

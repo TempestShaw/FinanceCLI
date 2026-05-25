@@ -4,6 +4,7 @@ from __future__ import annotations
 from finance_cli.cli.args import KVArgs
 from finance_cli.cli.registry import FinanceCommand, register_command
 from finance_cli.schemas import FinanceCommandResult
+from finance_cli.services.market_data import price_performance
 from finance_cli.services.price import price_context, price_moves
 
 
@@ -49,6 +50,22 @@ def _price_context(args: list[str]) -> FinanceCommandResult:
     return FinanceCommandResult(ok=True, data=data, warnings=data.get("warnings", []))
 
 
+def _price_performance(args: list[str]) -> FinanceCommandResult:
+    if not args:
+        return FinanceCommandResult(
+            ok=False,
+            error="usage: price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
+        )
+    kv = KVArgs(args[1:])
+    data = price_performance(
+        args[0],
+        benchmark=kv.str("benchmark", "SPY"),
+        periods=kv.csv("periods") or None,
+        provider=kv.str("provider", "auto"),
+    )
+    return FinanceCommandResult(ok=True, data=data)
+
+
 def register_price_commands() -> None:
     register_command(FinanceCommand(
         "price.moves",
@@ -82,4 +99,12 @@ def register_price_commands() -> None:
             "Timeline roles are temporal only: before_move, same_day, after_move.",
             "Event/publication dates are explicit to avoid implied causal claims.",
         ),
+    ))
+    register_command(FinanceCommand(
+        "price.performance",
+        "Compute price returns and benchmark-relative performance",
+        _price_performance,
+        usage="price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
+        examples=("finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y",),
+        notes=("Uses normalized OHLCV rows and deterministic close-to-close return math.",),
     ))

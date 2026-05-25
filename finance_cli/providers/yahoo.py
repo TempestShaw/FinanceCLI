@@ -40,6 +40,8 @@ class YahooFinanceProvider:
         info = quiet_call(lambda: ticker.info or {})
         total_cash = info.get("totalCash")
         total_debt = info.get("totalDebt")
+        average_volume = info.get("averageVolume")
+        regular_market_volume = info.get("regularMarketVolume")
         return {
             "symbol": symbol,
             "company_name": info.get("longName") or info.get("shortName"),
@@ -51,6 +53,25 @@ class YahooFinanceProvider:
             "market_cap": info.get("marketCap"),
             "enterprise_value": info.get("enterpriseValue"),
             "shares_outstanding": info.get("sharesOutstanding") or info.get("impliedSharesOutstanding"),
+            "float_shares": info.get("floatShares"),
+            "average_volume": average_volume,
+            "average_volume_10d": info.get("averageVolume10days"),
+            "regular_market_volume": regular_market_volume,
+            "volume_vs_average": _ratio(regular_market_volume, average_volume),
+            "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
+            "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
+            "fifty_day_average": info.get("fiftyDayAverage"),
+            "two_hundred_day_average": info.get("twoHundredDayAverage"),
+            "trailing_eps": info.get("trailingEps"),
+            "forward_eps": info.get("forwardEps"),
+            "earnings_quarterly_growth": info.get("earningsQuarterlyGrowth"),
+            "profit_margins": info.get("profitMargins"),
+            "operating_margins": info.get("operatingMargins"),
+            "return_on_equity": info.get("returnOnEquity"),
+            "held_percent_institutions": info.get("heldPercentInstitutions"),
+            "held_percent_insiders": info.get("heldPercentInsiders"),
+            "short_ratio": info.get("shortRatio"),
+            "beta": info.get("beta"),
             "total_revenue": info.get("totalRevenue"),
             "cash": total_cash,
             "debt": total_debt,
@@ -275,6 +296,24 @@ class YahooFinanceProvider:
             "source": "yfinance",
         }
 
+    def holders(self, symbol: str, *, limit: int = 10) -> dict[str, Any]:
+        """Return Yahoo holder and insider tables for one symbol."""
+        yf = quiet_call(require_dependency, "yfinance", MARKET_INSTALL_HINT)
+        symbol = symbol.strip().upper()
+        ticker = quiet_call(yf.Ticker, symbol)
+        row_limit = _bounded_limit(limit)
+        return {
+            "symbol": symbol,
+            "major_holders": _holder_records_from_frame(quiet_call(lambda: ticker.major_holders))[:row_limit],
+            "institutional_holders": _holder_records_from_frame(quiet_call(lambda: ticker.institutional_holders))[:row_limit],
+            "mutualfund_holders": _holder_records_from_frame(quiet_call(lambda: ticker.mutualfund_holders))[:row_limit],
+            "insider_transactions": _holder_records_from_frame(quiet_call(lambda: ticker.insider_transactions))[:row_limit],
+            "insider_purchases": _holder_records_from_frame(quiet_call(lambda: ticker.insider_purchases))[:row_limit],
+            "insider_roster_holders": _holder_records_from_frame(quiet_call(lambda: ticker.insider_roster_holders))[:row_limit],
+            "limit": row_limit,
+            "source": "yfinance",
+        }
+
     def _sector(self, key: str) -> Any:
         yf = quiet_call(require_dependency, "yfinance", MARKET_INSTALL_HINT)
         return quiet_call(yf.Sector, _normalize_sector_key(key))
@@ -406,6 +445,23 @@ def _records_from_frame(frame: Any) -> list[dict[str, Any]]:
     reset = frame.reset_index() if hasattr(frame, "reset_index") else frame
     records = reset.to_dict(orient="records") if hasattr(reset, "to_dict") else []
     return [_normalize_record(record) for record in records]
+
+
+def _holder_records_from_frame(frame: Any) -> list[dict[str, Any]]:
+    rows = _records_from_frame(frame)
+    normalized = []
+    for row in rows:
+        clean = dict(row)
+        if "index" in clean:
+            index_value = clean.pop("index")
+            if "breakdown" not in clean and not isinstance(index_value, int):
+                clean["breakdown"] = index_value
+        if "pctheld" in clean and "pct_held" not in clean:
+            clean["pct_held"] = clean.pop("pctheld")
+        if "pctchange" in clean and "pct_change" not in clean:
+            clean["pct_change"] = clean.pop("pctchange")
+        normalized.append(clean)
+    return normalized
 
 
 def _normalize_record(record: dict[str, Any]) -> dict[str, Any]:
@@ -541,3 +597,11 @@ def _net_debt(total_debt: Any, total_cash: Any) -> float | int | None:
         return None
     value = float(debt) - float(cash)
     return int(value) if value.is_integer() else value
+
+
+def _ratio(numerator: Any, denominator: Any) -> float | None:
+    top = _number_or_none(numerator)
+    bottom = _number_or_none(denominator)
+    if top is None or bottom in (None, 0):
+        return None
+    return round(float(top) / float(bottom), 4)
