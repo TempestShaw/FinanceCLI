@@ -25,12 +25,10 @@ class SecEdgarProvider:
 
     TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
     SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
+    DEFAULT_USER_AGENT = "FinanceCLI/0.1 finance-cli@example.com"
 
     def __init__(self, *, user_agent: str | None = None, timeout: float = 30.0) -> None:
-        self.user_agent = user_agent or os.getenv(
-            "FINANCE_SEC_USER_AGENT",
-            "FinanceCLI/0.1 (+https://github.com/TempestShaw/FinanceCLI)",
-        )
+        self.user_agent = user_agent or os.getenv("FINANCE_SEC_USER_AGENT", self.DEFAULT_USER_AGENT)
         self.timeout = timeout
         self._ticker_cache: dict[str, dict[str, Any]] | None = None
         self._edgar_identity_set = False

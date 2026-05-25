@@ -38,7 +38,7 @@ Some provider-backed commands use environment variables:
 | `FMP_API_KEY` | Financial Modeling Prep consensus estimates. |
 | `ALPHAVANTAGE_API_KEY` or `ALPHA_VANTAGE_API_KEY` | Alpha Vantage market data fallback. |
 | `ALPACA_API_KEY` and `ALPACA_API_SECRET` | Alpaca market-data fallback. |
-| `FINANCE_SEC_USER_AGENT` | Optional SEC request identity string for EDGAR access. |
+| `FINANCE_SEC_USER_AGENT` | SEC request identity string for EDGAR access. Set this to a real contact string in CI or production. |
 
 Finance CLI reads these variables at runtime. It does not write API keys into project files or persistent config.
 
