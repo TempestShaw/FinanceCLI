@@ -45,20 +45,20 @@ class CompletionContext:
 
 
 def complete(line: str, point: int | None = None) -> list[str]:
-    context = _context(line, point)
-    command = _selected_command(context.words)
-    if _previous_word(context.words) == "--output":
-        return _prefix_filter(GLOBAL_OPTIONS["--output"], context.current)
-    if context.current.startswith("--"):
-        return _prefix_filter(list(GLOBAL_OPTIONS), context.current)
-    if "=" in context.current and command is not None:
-        return _complete_key_value(command, context.current)
+    state = _context(line, point)
+    command = _selected_command(state.words)
+    if _previous_word(state.words) == "--output":
+        return _prefix_filter(GLOBAL_OPTIONS["--output"], state.current)
+    if state.current.startswith("--"):
+        return _prefix_filter(list(GLOBAL_OPTIONS), state.current)
+    if "=" in state.current and command is not None:
+        return _complete_key_value(command, state.current)
     if command is not None:
-        command_args = _command_arg_suggestions(command, context.current)
+        command_args = _command_arg_suggestions(command, state.current)
         if command_args:
             return command_args
-        return _prefix_filter(list(GLOBAL_OPTIONS), context.current)
-    return _complete_command_or_namespace(context.current)
+        return _prefix_filter(list(GLOBAL_OPTIONS), state.current)
+    return _complete_command_or_namespace(state.current)
 
 
 def complete_from_env(shell: str, env: dict[str, str]) -> tuple[int, str]:
