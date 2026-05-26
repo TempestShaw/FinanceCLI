@@ -165,3 +165,13 @@ The CLI defaults to JSON for automation-friendly use. Add `--output text` when r
 finance --output text sources.status
 finance --output json formula.margin numerator=10 denominator=20
 ```
+
+## Shell Completion
+
+Print shell completion scripts and place them where your shell expects completion files:
+
+```bash
+finance completion bash > ~/.local/share/bash-completion/completions/finance
+finance completion zsh > ~/.zfunc/_finance
+finance completion fish > ~/.config/fish/completions/finance.fish
+```

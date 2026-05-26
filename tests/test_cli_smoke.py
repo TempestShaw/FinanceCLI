@@ -85,6 +85,11 @@ def test_generated_agent_schema_covers_registered_commands():
     assert "breadth" in market_trend["agent"]["avoid_when"]
     assert market_trend["args"]["symbols"]["default"] == "SPY,QQQ,DIA,IWM,^VIX"
 
+    completion = next(spec for spec in specs if spec["name"] == "completion")
+    assert completion["args"]["shell"]["required"] is True
+    assert "shell completion setup" in completion["description"].lower()
+    assert completion["side_effects"] == "pure_calculation"
+
 
 def test_generated_specs_use_package_usage_parser():
     from finance_cli.cli.usage import parse_usage_params

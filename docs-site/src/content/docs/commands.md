@@ -161,6 +161,31 @@ finance calendar.earnings SYMBOL [limit=12]
 finance calendar.earnings AAPL limit=8
 ```
 
+## `completion.*`
+
+### `completion`
+
+Print shell completion setup for bash, zsh, or fish
+
+**Usage**
+
+```bash
+finance completion SHELL
+```
+
+**Examples**
+
+```bash
+finance completion bash > ~/.local/share/bash-completion/completions/finance
+finance completion zsh > ~/.zfunc/_finance
+finance completion fish > ~/.config/fish/completions/finance.fish
+```
+
+**Details**
+
+- Prints shell code only; it does not modify shell startup files.
+- Completion candidates are generated from the live command registry and usage metadata.
+
 ## `document.*`
 
 ### `document.ocr`

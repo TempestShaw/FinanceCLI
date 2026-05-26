@@ -894,6 +894,88 @@
         }
       }
     },
+    "/commands/completion": {
+      "post": {
+        "operationId": "finance_completion",
+        "summary": "Print shell completion setup for bash, zsh, or fish",
+        "description": "Use to install local shell completion scripts for FinanceCLI.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shell": {
+                    "type": "string",
+                    "description": "Value supplied for `shell`."
+                  }
+                },
+                "required": [
+                  "shell"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "completion",
+          "usage": "finance completion SHELL",
+          "side_effects": "pure_calculation",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
     "/commands/document.ocr": {
       "post": {
         "operationId": "finance_document_ocr",

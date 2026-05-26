@@ -194,6 +194,11 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
 }
 
 COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
+    "completion": {
+        "side_effects": "pure_calculation",
+        "agent_use": "Use to install local shell completion scripts for FinanceCLI.",
+        "avoid_when": "Do not call during research workflows; this is an operator setup command.",
+    },
     "backtest.run": {
         "side_effects": "network_read_only",
         "agent_use": "Use when the user asks to run a named strategy over explicit symbols and dates.",

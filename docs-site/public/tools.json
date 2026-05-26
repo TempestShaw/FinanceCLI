@@ -1188,6 +1188,90 @@
       }
     },
     {
+      "name": "completion",
+      "namespace": "completion",
+      "description": "Print shell completion setup for bash, zsh, or fish",
+      "usage": "finance completion SHELL",
+      "examples": [
+        "finance completion bash > ~/.local/share/bash-completion/completions/finance",
+        "finance completion zsh > ~/.zfunc/_finance",
+        "finance completion fish > ~/.config/fish/completions/finance.fish"
+      ],
+      "notes": [
+        "Prints shell code only; it does not modify shell startup files.",
+        "Completion candidates are generated from the live command registry and usage metadata."
+      ],
+      "args": {
+        "shell": {
+          "type": "string",
+          "required": true,
+          "description": "Value supplied for `shell`."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "shell": {
+            "type": "string",
+            "description": "Value supplied for `shell`."
+          }
+        },
+        "required": [
+          "shell"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "pure_calculation",
+      "side_effects_description": "No network, no filesystem read, no mutation.",
+      "auth_required": "none",
+      "rate_limit_notes": null,
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use to install local shell completion scripts for FinanceCLI.",
+        "avoid_when": "Do not call during research workflows; this is an operator setup command.",
+        "next_steps": []
+      }
+    },
+    {
       "name": "document.ocr",
       "namespace": "document",
       "description": "Run PaddleOCR/PP-StructureV3 OCR fallback on a local or remote document",
@@ -1205,7 +1289,10 @@
         "source": {
           "type": "string",
           "description": "Source key, path, or URL depending on command.",
-          "required": true
+          "required": true,
+          "aliases": [
+            "SOURCE"
+          ]
         },
         "max_chars": {
           "type": "integer",
@@ -1321,7 +1408,10 @@
         "source": {
           "type": "string",
           "description": "Source key, path, or URL depending on command.",
-          "required": true
+          "required": true,
+          "aliases": [
+            "SOURCE"
+          ]
         },
         "format": {
           "type": "string",
@@ -1721,7 +1811,10 @@
         "source": {
           "type": "string",
           "description": "Source key, path, or URL depending on command.",
-          "required": true
+          "required": true,
+          "aliases": [
+            "SOURCE"
+          ]
         },
         "pages": {
           "type": "string",
@@ -8580,7 +8673,10 @@
         "source": {
           "type": "string",
           "description": "Source key, path, or URL depending on command.",
-          "required": false
+          "required": false,
+          "aliases": [
+            "SOURCE"
+          ]
         },
         "symbol": {
           "type": "string",

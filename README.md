@@ -83,6 +83,18 @@ Most commands return JSON by default:
 
 Use `--output text` for readable terminal output when a command supports it.
 
+### Shell Completion
+
+FinanceCLI can print shell completion scripts without modifying your shell files:
+
+```bash
+finance completion bash > ~/.local/share/bash-completion/completions/finance
+finance completion zsh > ~/.zfunc/_finance
+finance completion fish > ~/.config/fish/completions/finance.fish
+```
+
+Completions are generated from the live command registry and usage metadata, so command names, global options, and key=value argument enums stay aligned with the CLI.
+
 ## Mental Model
 
 ```mermaid
