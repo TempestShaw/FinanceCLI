@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://pypi.org/project/finresearch-cli/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-finresearch--cli-blue"></a>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-111827">
+  <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-111827">
 </p>
 
 Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.

@@ -22,6 +22,18 @@ def test_package_version_matches_project_metadata():
     assert finance_cli.__version__ == metadata["project"]["version"]
 
 
+def test_project_license_matches_apache_license_file_and_readme_badge():
+    metadata = tomllib.loads(Path("pyproject.toml").read_text())
+    license_text = Path("LICENSE").read_text()
+    readme = Path("README.md").read_text()
+
+    assert metadata["project"]["license"] == "Apache-2.0"
+    assert metadata["project"]["license-files"] == ["LICENSE"]
+    assert "Apache License" in license_text
+    assert "license-Apache--2.0" in readme
+    assert "license-MIT" not in readme
+
+
 def test_finance_cli_formula_command_outputs_json(capsys):
     code = main(["formula.margin", "numerator=10", "denominator=20"])
     payload = json.loads(capsys.readouterr().out)
