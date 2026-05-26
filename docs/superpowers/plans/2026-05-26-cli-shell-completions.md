@@ -980,4 +980,3 @@ git log --oneline -5
 ```
 
 Expected: branch contains only shell completion commits and intended generated artifacts.
-
