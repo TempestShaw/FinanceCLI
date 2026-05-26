@@ -9,6 +9,9 @@ from finance_cli.cli.registry import FinanceCommand, list_commands
 from finance_cli.cli.usage import parse_usage_params
 
 
+SUPPORTED_SHELLS = {"bash", "zsh", "fish"}
+
+
 @dataclass(frozen=True)
 class CompletionContext:
     words: tuple[str, ...]
@@ -30,6 +33,24 @@ def complete(line: str, point: int | None = None) -> list[str]:
             return command_args
         return _prefix_filter(list(GLOBAL_OPTIONS), context.current)
     return _complete_command_or_namespace(context.current)
+
+
+def complete_from_env(shell: str, env: dict[str, str]) -> tuple[int, str]:
+    if shell not in SUPPORTED_SHELLS:
+        return 2, f"unknown completion shell: {shell}"
+    line = env.get("COMP_LINE", "")
+    try:
+        point = int(env.get("COMP_POINT", str(len(line))))
+    except ValueError:
+        point = len(line)
+    suggestions = complete(line, point)
+    return 0, "\n".join(_format_suggestion(shell, suggestion) for suggestion in suggestions)
+
+
+def _format_suggestion(shell: str, suggestion: str) -> str:
+    if shell == "fish":
+        return suggestion.replace("\t", " ")
+    return suggestion
 
 
 def _context(line: str, point: int | None) -> CompletionContext:

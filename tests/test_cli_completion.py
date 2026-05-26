@@ -16,6 +16,7 @@ def test_parse_usage_params_extracts_keys_required_flags_and_enums():
 
 from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.completion import complete
+from finance_cli.cli.main import main
 from finance_cli.cli.registry import FinanceCommand, clear_commands, register_command
 from finance_cli.schemas import FinanceCommandResult
 
@@ -63,3 +64,25 @@ def test_completion_does_not_execute_command_handlers():
     register_command(FinanceCommand("custom.status", "Custom status", fail_if_called, usage="custom.status [mode=fast|full]"))
 
     assert complete("finance custom.status mode=", len("finance custom.status mode=")) == ["mode=fast", "mode=full"]
+
+
+def test_hidden_complete_entrypoint_prints_suggestions(capsys, monkeypatch):
+    monkeypatch.setenv("COMP_LINE", "finance sources.sta")
+    monkeypatch.setenv("COMP_POINT", str(len("finance sources.sta")))
+
+    code = main(["__complete", "bash"])
+    output = capsys.readouterr().out.strip().splitlines()
+
+    assert code == 0
+    assert "sources.status" in output
+
+
+def test_hidden_complete_entrypoint_rejects_unknown_shell(capsys, monkeypatch):
+    monkeypatch.setenv("COMP_LINE", "finance sources.")
+    monkeypatch.setenv("COMP_POINT", str(len("finance sources.")))
+
+    code = main(["__complete", "powershell"])
+    output = capsys.readouterr().out
+
+    assert code == 2
+    assert "unknown completion shell" in output

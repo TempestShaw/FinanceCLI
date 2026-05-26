@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 from finance_cli.cli.commands import register_builtin_commands
@@ -27,6 +28,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     register_builtin_commands()
     raw_args = list(sys.argv[1:] if argv is None else argv)
+    if raw_args and raw_args[0] == "__complete":
+        from finance_cli.cli.completion import complete_from_env
+
+        shell = raw_args[1] if len(raw_args) > 1 else "bash"
+        code, output = complete_from_env(shell, dict(os.environ))
+        if output:
+            print(output)
+        return code
     if raw_args:
         if raw_args[0] == "help":
             if len(raw_args) >= 2:
