@@ -350,6 +350,13 @@ Side effects: pure_calculation
 Args: operating_current_assets:number required, operating_current_liabilities:number required
 Usage: `finance formula.working_capital operating_current_assets=28191 operating_current_liabilities=35035`
 
+### fundamentals.growth
+Use when: Use for multi-period fundamental growth evidence: quarterly YoY rows, annual history, annual YoY, CAGR, margins, and ROE.
+Avoid when: Do not use as a framework scorer or investment recommendation; it returns facts and calculations only.
+Side effects: network_read_only
+Args: symbol:string required, metrics:string, periods:string, years:integer, provider:string
+Usage: `finance fundamentals.growth SYMBOL [metrics=revenue,eps,operating_margin,net_margin,roe periods=quarterly,annual years=5 provider=sec]`
+
 ### fundamentals.metrics
 Use when: Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.
 Avoid when: Do not use when the user needs multi-period YoY or CAGR rows; fetch statements or use explicit formulas for that.
@@ -448,6 +455,13 @@ Side effects: network_read_only
 Args: market:string
 Usage: `finance market.status [MARKET=US]`
 
+### market.trend
+Use when: Use for major-index and VIX trend evidence including moving averages and multi-period returns.
+Avoid when: Do not use for market breadth; breadth is intentionally not implemented until a reliable free/open source is selected.
+Side effects: network_read_only
+Args: market:string, symbols:string, periods:string, provider:string
+Usage: `finance market.trend [MARKET=US] [symbols=SPY,QQQ,DIA,IWM,^VIX periods=1M,3M,6M,1Y provider=auto]`
+
 ### news.analyze
 Use when: Use for source-attributed news search and GDELT analysis windows.
 Avoid when: Use the standard trust rules for this command.
@@ -489,6 +503,13 @@ Avoid when: Do not infer causality from price.context alone.
 Side effects: network_read_only
 Args: symbol:string required, benchmark:string, periods:string, provider:string
 Usage: `finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]`
+
+### price.relative
+Use when: Use for explicit relative strength comparisons against benchmarks, an auto or explicit sector ETF, and user-provided peers.
+Avoid when: Do not use for automatic peer discovery; peers must be supplied explicitly by the user or LLM.
+Side effects: network_read_only
+Args: symbol:string required, benchmarks:string, peers:string, sector_etfs:string, periods:string, market:string, provider:string
+Usage: `finance price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]`
 
 ### research.plan
 Use when: Use before executing a complex public-company research workflow.

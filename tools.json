@@ -4838,6 +4838,143 @@
       }
     },
     {
+      "name": "fundamentals.growth",
+      "namespace": "fundamentals",
+      "description": "Return raw fundamental history plus YoY and CAGR calculations",
+      "usage": "finance fundamentals.growth SYMBOL [metrics=revenue,eps,operating_margin,net_margin,roe periods=quarterly,annual years=5 provider=sec]",
+      "examples": [
+        "finance fundamentals.growth NVDA metrics=revenue,eps periods=quarterly,annual years=5"
+      ],
+      "notes": [
+        "Returns auditable raw period values together with deterministic YoY and CAGR calculations.",
+        "EPS prefers reported diluted EPS when available and otherwise uses net_income / diluted_shares.",
+        "CAGR is returned for positive revenue/EPS start and end values; margin and ROE comparisons are returned as deltas."
+      ],
+      "args": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Ticker symbol."
+        },
+        "metrics": {
+          "type": "string",
+          "required": false,
+          "default": "revenue,eps,operating_margin,net_margin,roe",
+          "description": "Comma-separated metrics to return as raw history and growth rows."
+        },
+        "periods": {
+          "type": "string",
+          "required": false,
+          "default": "quarterly,annual",
+          "description": "Comma-separated period types to inspect."
+        },
+        "years": {
+          "type": "integer",
+          "required": false,
+          "default": 5,
+          "description": "Number of annual years to include when available."
+        },
+        "provider": {
+          "type": "string",
+          "required": false,
+          "default": "sec",
+          "enum": [
+            "sec",
+            "yahoo"
+          ],
+          "description": "Statement provider."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          },
+          "metrics": {
+            "type": "string",
+            "default": "revenue,eps,operating_margin,net_margin,roe",
+            "description": "Comma-separated metrics to return as raw history and growth rows."
+          },
+          "periods": {
+            "type": "string",
+            "default": "quarterly,annual",
+            "description": "Comma-separated period types to inspect."
+          },
+          "years": {
+            "type": "integer",
+            "default": 5,
+            "description": "Number of annual years to include when available."
+          },
+          "provider": {
+            "type": "string",
+            "default": "sec",
+            "enum": [
+              "sec",
+              "yahoo"
+            ],
+            "description": "Statement provider."
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Financial statement rows or standard financial metrics.",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "optional_environment_or_public_provider",
+      "rate_limit_notes": "Yahoo Finance and SEC/edgartools responses can vary by symbol and session.",
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for multi-period fundamental growth evidence: quarterly YoY rows, annual history, annual YoY, CAGR, margins, and ROE.",
+        "avoid_when": "Do not use as a framework scorer or investment recommendation; it returns facts and calculations only.",
+        "next_steps": []
+      }
+    },
+    {
       "name": "fundamentals.metrics",
       "namespace": "fundamentals",
       "description": "Fetch standard SEC financial metrics with edgartools getters",
@@ -6423,6 +6560,122 @@
       }
     },
     {
+      "name": "market.trend",
+      "namespace": "market",
+      "description": "Show major-index and volatility trend evidence",
+      "usage": "finance market.trend [MARKET=US] [symbols=SPY,QQQ,DIA,IWM,^VIX periods=1M,3M,6M,1Y provider=auto]",
+      "examples": [
+        "finance market.trend US periods=1M,3M,6M,1Y"
+      ],
+      "notes": [
+        "Returns raw moving-average and return evidence only; it does not implement market breadth."
+      ],
+      "args": {
+        "market": {
+          "type": "string",
+          "required": false,
+          "default": "US",
+          "description": "Market code."
+        },
+        "symbols": {
+          "type": "string",
+          "required": false,
+          "default": "SPY,QQQ,DIA,IWM,^VIX",
+          "description": "Comma-separated symbols for trend evidence."
+        },
+        "periods": {
+          "type": "string",
+          "required": false,
+          "default": "1M,3M,6M,1Y",
+          "description": "Comma-separated return periods."
+        },
+        "provider": {
+          "type": "string",
+          "required": false,
+          "default": "auto",
+          "description": "Provider selection."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "market": {
+            "type": "string",
+            "default": "US",
+            "description": "Market code."
+          },
+          "symbols": {
+            "type": "string",
+            "default": "SPY,QQQ,DIA,IWM,^VIX",
+            "description": "Comma-separated symbols for trend evidence."
+          },
+          "periods": {
+            "type": "string",
+            "default": "1M,3M,6M,1Y",
+            "description": "Comma-separated return periods."
+          },
+          "provider": {
+            "type": "string",
+            "default": "auto",
+            "description": "Provider selection."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Quote, bars, market status, regime, or sector heat data.",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "optional_environment_or_public_provider",
+      "rate_limit_notes": "Market data is time-sensitive and provider-specific.",
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for major-index and VIX trend evidence including moving averages and multi-period returns.",
+        "avoid_when": "Do not use for market breadth; breadth is intentionally not implemented until a reliable free/open source is selected.",
+        "next_steps": []
+      }
+    },
+    {
       "name": "news.analyze",
       "namespace": "news",
       "description": "Analyze news volume, tone, context, or geography",
@@ -7382,6 +7635,158 @@
       "agent": {
         "use_when": "Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.",
         "avoid_when": "Do not infer causality from price.context alone.",
+        "next_steps": []
+      }
+    },
+    {
+      "name": "price.relative",
+      "namespace": "price",
+      "description": "Compare price returns against benchmarks, auto sector ETF, and explicit peers",
+      "usage": "finance price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]",
+      "examples": [
+        "finance price.relative NVDA periods=1M,3M,6M,1Y",
+        "finance price.relative NVDA peers=AMD,AVGO sector_etfs=SMH periods=1M,3M"
+      ],
+      "notes": [
+        "Defaults to SPY and QQQ plus an auto sector ETF when the symbol sector maps to a configured ETF.",
+        "Explicit sector_etfs replaces the auto sector ETF. Peers are explicit only."
+      ],
+      "args": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Ticker symbol."
+        },
+        "benchmarks": {
+          "type": "string",
+          "required": false,
+          "default": "SPY,QQQ",
+          "description": "Comma-separated benchmark symbols."
+        },
+        "peers": {
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated explicit peer symbols. No peers are added by default."
+        },
+        "sector_etfs": {
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated sector ETF symbols. When omitted, FinanceCLI attempts auto sector ETF mapping."
+        },
+        "periods": {
+          "type": "string",
+          "required": false,
+          "default": "1M,3M,6M,1Y",
+          "description": "Comma-separated return periods."
+        },
+        "market": {
+          "type": "string",
+          "required": false,
+          "default": "US",
+          "description": "Market code used for auto sector ETF mapping."
+        },
+        "provider": {
+          "type": "string",
+          "required": false,
+          "default": "auto",
+          "description": "Provider selection."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Ticker symbol."
+          },
+          "benchmarks": {
+            "type": "string",
+            "default": "SPY,QQQ",
+            "description": "Comma-separated benchmark symbols."
+          },
+          "peers": {
+            "type": "string",
+            "description": "Comma-separated explicit peer symbols. No peers are added by default."
+          },
+          "sector_etfs": {
+            "type": "string",
+            "description": "Comma-separated sector ETF symbols. When omitted, FinanceCLI attempts auto sector ETF mapping."
+          },
+          "periods": {
+            "type": "string",
+            "default": "1M,3M,6M,1Y",
+            "description": "Comma-separated return periods."
+          },
+          "market": {
+            "type": "string",
+            "default": "US",
+            "description": "Market code used for auto sector ETF mapping."
+          },
+          "provider": {
+            "type": "string",
+            "default": "auto",
+            "description": "Provider selection."
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Price moves, performance rows, or dated evidence timeline.",
+                "additionalProperties": true
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "optional_environment_or_public_provider",
+      "rate_limit_notes": null,
+      "citation_fields": [
+        "symbol",
+        "date",
+        "source",
+        "url"
+      ],
+      "agent": {
+        "use_when": "Use for explicit relative strength comparisons against benchmarks, an auto or explicit sector ETF, and user-provided peers.",
+        "avoid_when": "Do not use for automatic peer discovery; peers must be supplied explicitly by the user or LLM.",
         "next_steps": []
       }
     },

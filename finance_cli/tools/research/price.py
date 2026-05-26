@@ -2,8 +2,10 @@
 """
 from __future__ import annotations
 
+from finance_cli.services.market_data import relative_price_performance
 from finance_cli.services.price import price_context, price_moves
 from finance_cli.tools.formatting import as_tool_json
+from finance_cli.tools.research.common import _csv_list
 from finance_cli.tools.types import FinanceToolSpec
 
 
@@ -39,6 +41,21 @@ def _finance_price(params: dict, _config: dict) -> str:
     )
 
 
+def _finance_relative_price(params: dict, _config: dict) -> str:
+    sector_etfs = _csv_list(params.get("sector_etfs")) if "sector_etfs" in params else None
+    return as_tool_json(
+        relative_price_performance(
+            params["symbol"],
+            benchmarks=_csv_list(params.get("benchmarks")) or None,
+            peers=_csv_list(params.get("peers")) or None,
+            sector_etfs=sector_etfs,
+            periods=_csv_list(params.get("periods")) or None,
+            market=params.get("market", "US"),
+            provider=params.get("provider", "auto"),
+        )
+    )
+
+
 TOOL_DEFS = [
 FinanceToolSpec(
         name="FinancePrice",
@@ -68,5 +85,28 @@ FinanceToolSpec(
         handler=_finance_price,
         read_only=True,
         concurrent_safe=False,
+    ),
+FinanceToolSpec(
+        name="FinanceRelativePrice",
+        schema={
+            "name": "FinanceRelativePrice",
+            "description": "Compare close-to-close returns against benchmarks, auto or explicit sector ETFs, and explicit peers.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "symbol": {"type": "string"},
+                    "benchmarks": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "peers": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "sector_etfs": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "periods": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "market": {"type": "string"},
+                    "provider": {"type": "string"},
+                },
+                "required": ["symbol"],
+            },
+        },
+        handler=_finance_relative_price,
+        read_only=True,
+        concurrent_safe=True,
     )
 ]

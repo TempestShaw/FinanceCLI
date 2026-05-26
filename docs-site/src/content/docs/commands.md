@@ -700,6 +700,28 @@ finance formula.working_capital operating_current_assets=28191 operating_current
 
 ## `fundamentals.*`
 
+### `fundamentals.growth`
+
+Return raw fundamental history plus YoY and CAGR calculations
+
+**Usage**
+
+```bash
+finance fundamentals.growth SYMBOL [metrics=revenue,eps,operating_margin,net_margin,roe periods=quarterly,annual years=5 provider=sec]
+```
+
+**Examples**
+
+```bash
+finance fundamentals.growth NVDA metrics=revenue,eps periods=quarterly,annual years=5
+```
+
+**Details**
+
+- Returns auditable raw period values together with deterministic YoY and CAGR calculations.
+- EPS prefers reported diluted EPS when available and otherwise uses net_income / diluted_shares.
+- CAGR is returned for positive revenue/EPS start and end values; margin and ROE comparisons are returned as deltas.
+
 ### `fundamentals.metrics`
 
 Fetch standard SEC financial metrics with edgartools getters
@@ -976,6 +998,26 @@ finance market.status [MARKET=US]
 finance market.status US
 ```
 
+### `market.trend`
+
+Show major-index and volatility trend evidence
+
+**Usage**
+
+```bash
+finance market.trend [MARKET=US] [symbols=SPY,QQQ,DIA,IWM,^VIX periods=1M,3M,6M,1Y provider=auto]
+```
+
+**Examples**
+
+```bash
+finance market.trend US periods=1M,3M,6M,1Y
+```
+
+**Details**
+
+- Returns raw moving-average and return evidence only; it does not implement market breadth.
+
 ## `news.*`
 
 ### `news.analyze`
@@ -1124,6 +1166,28 @@ finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y
 **Details**
 
 - Uses normalized OHLCV rows and deterministic close-to-close return math.
+
+### `price.relative`
+
+Compare price returns against benchmarks, auto sector ETF, and explicit peers
+
+**Usage**
+
+```bash
+finance price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]
+```
+
+**Examples**
+
+```bash
+finance price.relative NVDA periods=1M,3M,6M,1Y
+finance price.relative NVDA peers=AMD,AVGO sector_etfs=SMH periods=1M,3M
+```
+
+**Details**
+
+- Defaults to SPY and QQQ plus an auto sector ETF when the symbol sector maps to a configured ETF.
+- Explicit sector_etfs replaces the auto sector ETF. Peers are explicit only.
 
 ## `research.*`
 

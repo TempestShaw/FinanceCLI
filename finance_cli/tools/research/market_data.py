@@ -2,7 +2,7 @@
 """
 from __future__ import annotations
 
-from finance_cli.services.fundamentals import fetch_financial_statement
+from finance_cli.services.fundamentals import fetch_financial_statement, fundamentals_growth
 from finance_cli.services.market_data import fetch_ohlcv, fetch_ohlcv_batch, fetch_realtime_quote
 from finance_cli.tools.formatting import as_tool_json
 from finance_cli.tools.research.common import _bool_value, _csv_list
@@ -36,6 +36,18 @@ def _finance_statement(params: dict, _config: dict) -> str:
             params["symbol"],
             statement=params.get("statement", "income"),
             period=params.get("period", "annual"),
+            provider=params.get("provider", "sec"),
+        )
+    )
+
+
+def _finance_fundamentals_growth(params: dict, _config: dict) -> str:
+    return as_tool_json(
+        fundamentals_growth(
+            params["symbol"],
+            metrics=_csv_list(params.get("metrics")) or None,
+            periods=_csv_list(params.get("periods")) or None,
+            years=int(params.get("years", 5)),
             provider=params.get("provider", "sec"),
         )
     )
@@ -98,6 +110,27 @@ FinanceToolSpec(
             },
         },
         handler=_finance_statement,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+FinanceToolSpec(
+        name="FinanceFundamentalsGrowth",
+        schema={
+            "name": "FinanceFundamentalsGrowth",
+            "description": "Return raw fundamental history with YoY, CAGR, margin, and ROE calculations.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "symbol": {"type": "string"},
+                    "metrics": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "periods": {"type": ["string", "array"], "items": {"type": "string"}},
+                    "years": {"type": "integer"},
+                    "provider": {"type": "string", "description": "sec or yahoo"},
+                },
+                "required": ["symbol"],
+            },
+        },
+        handler=_finance_fundamentals_growth,
         read_only=True,
         concurrent_safe=True,
     )

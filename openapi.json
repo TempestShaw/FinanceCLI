@@ -3974,6 +3974,114 @@
         }
       }
     },
+    "/commands/fundamentals.growth": {
+      "post": {
+        "operationId": "finance_fundamentals_growth",
+        "summary": "Return raw fundamental history plus YoY and CAGR calculations",
+        "description": "Use for multi-period fundamental growth evidence: quarterly YoY rows, annual history, annual YoY, CAGR, margins, and ROE.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "metrics": {
+                    "type": "string",
+                    "default": "revenue,eps,operating_margin,net_margin,roe",
+                    "description": "Comma-separated metrics to return as raw history and growth rows."
+                  },
+                  "periods": {
+                    "type": "string",
+                    "default": "quarterly,annual",
+                    "description": "Comma-separated period types to inspect."
+                  },
+                  "years": {
+                    "type": "integer",
+                    "default": 5,
+                    "description": "Number of annual years to include when available."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "default": "sec",
+                    "enum": [
+                      "sec",
+                      "yahoo"
+                    ],
+                    "description": "Statement provider."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Financial statement rows or standard financial metrics.",
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "fundamentals.growth",
+          "usage": "finance fundamentals.growth SYMBOL [metrics=revenue,eps,operating_margin,net_margin,roe periods=quarterly,annual years=5 provider=sec]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": []
+        }
+      }
+    },
     "/commands/fundamentals.metrics": {
       "post": {
         "operationId": "finance_fundamentals_metrics",
@@ -5359,6 +5467,104 @@
         }
       }
     },
+    "/commands/market.trend": {
+      "post": {
+        "operationId": "finance_market_trend",
+        "summary": "Show major-index and volatility trend evidence",
+        "description": "Use for major-index and VIX trend evidence including moving averages and multi-period returns.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "market": {
+                    "type": "string",
+                    "default": "US",
+                    "description": "Market code."
+                  },
+                  "symbols": {
+                    "type": "string",
+                    "default": "SPY,QQQ,DIA,IWM,^VIX",
+                    "description": "Comma-separated symbols for trend evidence."
+                  },
+                  "periods": {
+                    "type": "string",
+                    "default": "1M,3M,6M,1Y",
+                    "description": "Comma-separated return periods."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "default": "auto",
+                    "description": "Provider selection."
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Quote, bars, market status, regime, or sector heat data.",
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "market.trend",
+          "usage": "finance market.trend [MARKET=US] [symbols=SPY,QQQ,DIA,IWM,^VIX periods=1M,3M,6M,1Y provider=auto]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": []
+        }
+      }
+    },
     "/commands/news.analyze": {
       "post": {
         "operationId": "finance_news_analyze",
@@ -6070,6 +6276,123 @@
         "x-finance-cli": {
           "command": "price.performance",
           "usage": "finance price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "symbol",
+            "date",
+            "source",
+            "url"
+          ]
+        }
+      }
+    },
+    "/commands/price.relative": {
+      "post": {
+        "operationId": "finance_price_relative",
+        "summary": "Compare price returns against benchmarks, auto sector ETF, and explicit peers",
+        "description": "Use for explicit relative strength comparisons against benchmarks, an auto or explicit sector ETF, and user-provided peers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "benchmarks": {
+                    "type": "string",
+                    "default": "SPY,QQQ",
+                    "description": "Comma-separated benchmark symbols."
+                  },
+                  "peers": {
+                    "type": "string",
+                    "description": "Comma-separated explicit peer symbols. No peers are added by default."
+                  },
+                  "sector_etfs": {
+                    "type": "string",
+                    "description": "Comma-separated sector ETF symbols. When omitted, FinanceCLI attempts auto sector ETF mapping."
+                  },
+                  "periods": {
+                    "type": "string",
+                    "default": "1M,3M,6M,1Y",
+                    "description": "Comma-separated return periods."
+                  },
+                  "market": {
+                    "type": "string",
+                    "default": "US",
+                    "description": "Market code used for auto sector ETF mapping."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "default": "auto",
+                    "description": "Provider selection."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Price moves, performance rows, or dated evidence timeline.",
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "price.relative",
+          "usage": "finance price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [

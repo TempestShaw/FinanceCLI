@@ -232,6 +232,10 @@ COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
         "agent_use": "Use for latest annual or quarterly SEC/edgartools metrics such as revenue, EPS, income, margins, and ROE.",
         "avoid_when": "Do not use when the user needs multi-period YoY or CAGR rows; fetch statements or use explicit formulas for that.",
     },
+    "fundamentals.growth": {
+        "agent_use": "Use for multi-period fundamental growth evidence: quarterly YoY rows, annual history, annual YoY, CAGR, margins, and ROE.",
+        "avoid_when": "Do not use as a framework scorer or investment recommendation; it returns facts and calculations only.",
+    },
     "filings.read": {
         "agent_use": "Use when the user asks for a canonical 10-K section such as business, risk factors, MD&A, or segments.",
         "next_steps": ["document.scan", "document.window"],
@@ -253,12 +257,20 @@ COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
     "market.status": {
         "agent_use": "Use to check current market open/close state and major-index summary.",
     },
+    "market.trend": {
+        "agent_use": "Use for major-index and VIX trend evidence including moving averages and multi-period returns.",
+        "avoid_when": "Do not use for market breadth; breadth is intentionally not implemented until a reliable free/open source is selected.",
+    },
     "price.context": {
         "agent_use": "Use when the user asks what filings, news, or transcripts were near a dated price move.",
         "avoid_when": "Do not claim causality unless the evidence explicitly supports it.",
     },
     "price.performance": {
         "agent_use": "Use for close-to-close returns, benchmark-relative performance, and distance from 52-week high over requested periods.",
+    },
+    "price.relative": {
+        "agent_use": "Use for explicit relative strength comparisons against benchmarks, an auto or explicit sector ETF, and user-provided peers.",
+        "avoid_when": "Do not use for automatic peer discovery; peers must be supplied explicitly by the user or LLM.",
     },
     "research.plan": {
         "agent_use": "Use before executing a complex public-company research workflow.",
@@ -296,6 +308,13 @@ PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
         "period": {"type": "string", "required": False, "default": "annual", "enum": ["annual", "quarterly"], "description": "Statement period."},
         "provider": {"type": "string", "required": False, "default": "sec", "enum": ["sec", "yahoo"], "description": "Statement provider."},
     },
+    "fundamentals.growth": {
+        "symbol": {"type": "string", "required": True, "description": "Ticker symbol."},
+        "metrics": {"type": "string", "required": False, "default": "revenue,eps,operating_margin,net_margin,roe", "description": "Comma-separated metrics to return as raw history and growth rows."},
+        "periods": {"type": "string", "required": False, "default": "quarterly,annual", "description": "Comma-separated period types to inspect."},
+        "years": {"type": "integer", "required": False, "default": 5, "description": "Number of annual years to include when available."},
+        "provider": {"type": "string", "required": False, "default": "sec", "enum": ["sec", "yahoo"], "description": "Statement provider."},
+    },
     "document.scan": {
         "source": {"type": "string", "required": True, "aliases": ["path", "url"], "description": "Local path or URL."},
         "query": {"type": "string", "required": False, "description": "Literal phrase or table text to find."},
@@ -327,6 +346,12 @@ PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
         "provider": {"type": "string", "required": False, "default": "auto", "description": "Provider selection."},
         "include_attempts": {"type": "boolean", "required": False, "default": False, "description": "Include provider-attempt diagnostics."},
     },
+    "market.trend": {
+        "market": {"type": "string", "required": False, "default": "US", "description": "Market code."},
+        "symbols": {"type": "string", "required": False, "default": "SPY,QQQ,DIA,IWM,^VIX", "description": "Comma-separated symbols for trend evidence."},
+        "periods": {"type": "string", "required": False, "default": "1M,3M,6M,1Y", "description": "Comma-separated return periods."},
+        "provider": {"type": "string", "required": False, "default": "auto", "description": "Provider selection."},
+    },
     "news.search": {
         "query": {"type": "string", "required": False, "description": "Free-text news query."},
         "symbol": {"type": "string", "required": False, "description": "Ticker query."},
@@ -334,6 +359,15 @@ PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
     },
     "news.analyze": {
         "analysis": {"type": "string", "required": True, "enum": ["timeline", "tone", "context", "geo", "doc"], "description": "Analysis mode."},
+    },
+    "price.relative": {
+        "symbol": {"type": "string", "required": True, "description": "Ticker symbol."},
+        "benchmarks": {"type": "string", "required": False, "default": "SPY,QQQ", "description": "Comma-separated benchmark symbols."},
+        "peers": {"type": "string", "required": False, "description": "Comma-separated explicit peer symbols. No peers are added by default."},
+        "sector_etfs": {"type": "string", "required": False, "description": "Comma-separated sector ETF symbols. When omitted, FinanceCLI attempts auto sector ETF mapping."},
+        "periods": {"type": "string", "required": False, "default": "1M,3M,6M,1Y", "description": "Comma-separated return periods."},
+        "market": {"type": "string", "required": False, "default": "US", "description": "Market code used for auto sector ETF mapping."},
+        "provider": {"type": "string", "required": False, "default": "auto", "description": "Provider selection."},
     },
     "formula.adjusted_ebitda": {
         "addbacks": {"type": "array", "items": {"type": "number"}, "required": False, "default": [], "description": "Optional addback values."},

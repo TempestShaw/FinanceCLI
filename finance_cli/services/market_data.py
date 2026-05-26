@@ -6,6 +6,7 @@ from typing import Any
 
 from finance_cli.providers.alphavantage import AlphaVantageProvider
 from finance_cli.providers.base import ProviderError
+from finance_cli.providers.config import SECTOR_ETFS
 from finance_cli.providers.historical import HistoricalMarketDataService
 from finance_cli.providers.yahoo import YahooFinanceProvider
 
@@ -143,6 +144,227 @@ def price_performance(
     }
 
 
+def relative_price_performance(
+    symbol: str,
+    *,
+    benchmarks: list[str] | None = None,
+    peers: list[str] | None = None,
+    sector_etfs: list[str] | None = None,
+    periods: list[str] | None = None,
+    market: str = "US",
+    provider: str = "auto",
+    service: HistoricalMarketDataService | None = None,
+    quote_provider: YahooFinanceProvider | None = None,
+) -> dict[str, Any]:
+    """Compare a symbol's price returns against benchmarks, sector ETFs, and explicit peers."""
+    normalized_symbol = symbol.strip().upper()
+    period_keys = periods or ["1M", "3M", "6M", "1Y"]
+    comparison_specs = [(item.strip().upper(), "benchmark") for item in (benchmarks or ["SPY", "QQQ"]) if item.strip()]
+    warnings: list[str] = []
+
+    if sector_etfs is None:
+        sector_etf = _auto_sector_etf(normalized_symbol, market=market, quote_provider=quote_provider, warnings=warnings)
+        if sector_etf:
+            comparison_specs.append((sector_etf, "sector_etf"))
+    else:
+        comparison_specs.extend((item.strip().upper(), "sector_etf") for item in sector_etfs if item.strip())
+
+    comparison_specs.extend((item.strip().upper(), "peer") for item in (peers or []) if item.strip())
+    comparison_specs = _dedupe_comparison_specs(comparison_specs, excluded_symbol=normalized_symbol)
+
+    windows = {period: _performance_window(period) for period in period_keys}
+    max_window = max(windows.values())
+    limit = max_window + 5
+    start = date.today() - timedelta(days=int(max_window * 1.8) + 10)
+    common = {
+        "timeframe": "1d",
+        "start_date": start.isoformat(),
+        "limit": limit,
+        "provider": provider,
+        "service": service,
+    }
+    symbol_data = fetch_ohlcv(normalized_symbol, **common)
+    symbol_rows = _sorted_price_rows(symbol_data.get("rows") or [])
+    output_rows: list[dict[str, Any]] = []
+
+    for comparison, comparison_type in comparison_specs:
+        comparison_data = fetch_ohlcv(comparison, **common)
+        comparison_rows = _sorted_price_rows(comparison_data.get("rows") or [])
+        for period, window in windows.items():
+            symbol_return = _window_return(symbol_rows, window)
+            comparison_return = _window_return(comparison_rows, window)
+            output_rows.append({
+                "symbol": normalized_symbol,
+                "period": period,
+                **{f"symbol_{key}": value for key, value in symbol_return.items()},
+                "comparison": comparison,
+                "comparison_type": comparison_type,
+                **{f"comparison_{key}": value for key, value in comparison_return.items()},
+                "relative_return_pct": _return_gap(symbol_return.get("return_pct"), comparison_return.get("return_pct")),
+                "source": symbol_data.get("source"),
+                "comparison_source": comparison_data.get("source"),
+            })
+
+    return {
+        "symbol": normalized_symbol,
+        "market": market.upper(),
+        "periods": period_keys,
+        "relative_performance": output_rows,
+        "count": len(output_rows),
+        "source": symbol_data.get("source"),
+        "warnings": warnings,
+    }
+
+
+def market_trend(
+    market: str = "US",
+    *,
+    symbols: list[str] | None = None,
+    periods: list[str] | None = None,
+    provider: str = "auto",
+    service: HistoricalMarketDataService | None = None,
+) -> dict[str, Any]:
+    """Return raw major-index and volatility trend evidence."""
+    market_key = market.strip().upper() or "US"
+    period_keys = periods or ["1M", "3M", "6M", "1Y"]
+    role_symbols = _market_trend_symbols(symbols)
+    max_window = max([_performance_window(period) for period in period_keys] + [200])
+    limit = max_window + 5
+    market_data = service or HistoricalMarketDataService()
+    trend_rows: list[dict[str, Any]] = []
+
+    for symbol, role in role_symbols:
+        rows, attempt, _attempts = market_data.load_ohlcv(symbol, timeframe="1d", limit=limit, provider=provider)
+        price_rows = _sorted_price_rows(rows)
+        if role == "volatility":
+            trend_rows.append(_volatility_trend_row(symbol, role, price_rows, source=attempt.provider))
+        else:
+            trend_rows.append(_market_trend_row(symbol, role, price_rows, periods=period_keys, source=attempt.provider))
+
+    return {
+        "market": market_key,
+        "trend": trend_rows,
+        "market_direction_state": _market_direction_state(trend_rows),
+        "count": len(trend_rows),
+        "source": "historical_market_data",
+    }
+
+
+def _market_trend_symbols(symbols: list[str] | None) -> list[tuple[str, str]]:
+    if symbols:
+        default_roles = {
+            "SPY": "primary",
+            "QQQ": "growth",
+            "DIA": "dow",
+            "IWM": "small_caps",
+            "^VIX": "volatility",
+        }
+        return [(symbol.strip().upper(), default_roles.get(symbol.strip().upper(), "comparison")) for symbol in symbols if symbol.strip()]
+    return [
+        ("SPY", "primary"),
+        ("QQQ", "growth"),
+        ("DIA", "dow"),
+        ("IWM", "small_caps"),
+        ("^VIX", "volatility"),
+    ]
+
+
+def _market_trend_row(symbol: str, role: str, rows: list[dict[str, Any]], *, periods: list[str], source: str) -> dict[str, Any]:
+    prices = [_price(row) for row in rows]
+    prices = [price for price in prices if price is not None]
+    latest = prices[-1] if prices else None
+    sma_50 = _average(prices[-50:])
+    sma_200 = _average(prices[-200:])
+    period_returns = {}
+    for period in periods:
+        period_returns[f"return_{period.lower()}_pct"] = _window_return(rows, _performance_window(period)).get("return_pct")
+    return {
+        "kind": "market_trend",
+        "symbol": symbol,
+        "role": role,
+        "last_close": _round_number(latest),
+        "sma_50": _round_number(sma_50),
+        "sma_200": _round_number(sma_200),
+        "above_sma_50": bool(latest is not None and sma_50 is not None and latest >= sma_50),
+        "above_sma_200": bool(latest is not None and sma_200 is not None and latest >= sma_200),
+        **period_returns,
+        "source": source,
+    }
+
+
+def _volatility_trend_row(symbol: str, role: str, rows: list[dict[str, Any]], *, source: str) -> dict[str, Any]:
+    prices = [_price(row) for row in rows]
+    prices = [price for price in prices if price is not None]
+    latest = prices[-1] if prices else None
+    sma_20 = _average(prices[-20:])
+    sma_50 = _average(prices[-50:])
+    return {
+        "kind": "market_volatility",
+        "symbol": symbol,
+        "role": role,
+        "last_close": _round_number(latest),
+        "sma_20": _round_number(sma_20),
+        "sma_50": _round_number(sma_50),
+        "volatility_trend": "rising" if latest is not None and sma_20 is not None and latest > sma_20 else "falling_or_flat",
+        "volatility_state": _volatility_state(latest),
+        "source": source,
+    }
+
+
+def _market_direction_state(rows: list[dict[str, Any]]) -> str:
+    primary = next((row for row in rows if row.get("role") == "primary"), None)
+    growth = next((row for row in rows if row.get("role") == "growth"), None)
+    volatility = next((row for row in rows if row.get("role") == "volatility"), None)
+    if primary and primary.get("above_sma_50") and primary.get("above_sma_200") and growth and growth.get("above_sma_50"):
+        if not volatility or volatility.get("volatility_state") in {"contained", "unknown"}:
+            return "uptrend"
+    if primary and not primary.get("above_sma_200"):
+        return "correction"
+    return "under_pressure"
+
+
+def _volatility_state(value: float | None) -> str:
+    if value is None:
+        return "unknown"
+    if value < 20:
+        return "contained"
+    if value < 30:
+        return "elevated"
+    return "stressed"
+
+
+def _auto_sector_etf(
+    symbol: str,
+    *,
+    market: str,
+    quote_provider: YahooFinanceProvider | None,
+    warnings: list[str],
+) -> str | None:
+    client = quote_provider or YahooFinanceProvider()
+    try:
+        quote = client.quote(symbol)
+    except Exception as exc:
+        warnings.append(f"sector ETF unavailable: quote failed: {exc}")
+        return None
+    sector = quote.get("sector")
+    sector_map = SECTOR_ETFS.get(market.upper(), {})
+    etf = sector_map.get(str(sector)) if sector else None
+    if not etf:
+        warnings.append(f"sector ETF unavailable: no mapping for sector {sector!r}")
+    return etf
+
+
+def _dedupe_comparison_specs(specs: list[tuple[str, str]], *, excluded_symbol: str) -> list[tuple[str, str]]:
+    seen = {excluded_symbol}
+    deduped: list[tuple[str, str]] = []
+    for symbol, comparison_type in specs:
+        if not symbol or symbol in seen:
+            continue
+        seen.add(symbol)
+        deduped.append((symbol, comparison_type))
+    return deduped
+
+
 def fetch_realtime_quote(
     symbol: str,
     *,
@@ -266,3 +488,12 @@ def _return_gap(symbol_return: Any, benchmark_return: Any) -> float | None:
     if symbol_value is None or benchmark_value is None:
         return None
     return round(symbol_value - benchmark_value, 4)
+
+
+def _average(values: list[float]) -> float | None:
+    return sum(values) / len(values) if values else None
+
+
+def _round_number(value: Any) -> float | None:
+    number = _number(value)
+    return round(number, 4) if number is not None else None
