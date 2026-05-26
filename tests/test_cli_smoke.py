@@ -86,6 +86,15 @@ def test_generated_agent_schema_covers_registered_commands():
     assert market_trend["args"]["symbols"]["default"] == "SPY,QQQ,DIA,IWM,^VIX"
 
 
+def test_generated_specs_use_package_usage_parser():
+    from finance_cli.cli.usage import parse_usage_params
+
+    params = parse_usage_params("price.moves SYMBOL [window=1d|3d|1w|1m limit=20]")
+
+    assert params["window"]["enum"] == ["1d", "3d", "1w", "1m"]
+    assert params["limit"]["default"] == 20
+
+
 def test_filings_report_preserves_lookup_aliases(monkeypatch):
     captured = {}
 
