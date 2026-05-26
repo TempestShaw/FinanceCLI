@@ -59,3 +59,6 @@ Changelog = "https://github.com/TempestShaw/FinanceCLI/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["finance_cli*"]
+
+[tool.setuptools.package-data]
+"finance_cli.cli.completions" = ["finance.*"]

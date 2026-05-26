@@ -1,3 +1,5 @@
+from importlib import resources
+
 from finance_cli.cli.usage import parse_usage_params
 
 
@@ -121,3 +123,11 @@ def test_completion_command_prints_fish_script(capsys):
     assert code == 0
     assert "complete -c finance" in output
     assert "finance __complete fish" in output
+
+
+def test_completion_scripts_are_package_resources():
+    script_dir = resources.files("finance_cli.cli.completions")
+
+    assert (script_dir / "finance.bash").is_file()
+    assert (script_dir / "finance.zsh").is_file()
+    assert (script_dir / "finance.fish").is_file()
