@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import re
-import shlex
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
@@ -12,6 +11,7 @@ from typing import Any
 from finance_cli import __version__
 from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.registry import FinanceCommand, clear_commands, list_commands
+from finance_cli.cli.usage import parse_usage_params
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -194,6 +194,11 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
 }
 
 COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
+    "completion": {
+        "side_effects": "pure_calculation",
+        "agent_use": "Use to install local shell completion scripts for FinanceCLI.",
+        "avoid_when": "Do not call during research workflows; this is an operator setup command.",
+    },
     "backtest.run": {
         "side_effects": "network_read_only",
         "agent_use": "Use when the user asks to run a named strategy over explicit symbols and dates.",
@@ -650,7 +655,7 @@ def build_command_spec(command: FinanceCommand) -> dict[str, Any]:
     namespace = command.name.split(".", 1)[0]
     defaults = deepcopy(NAMESPACE_DEFAULTS.get(namespace, {}))
     overrides = deepcopy(COMMAND_OVERRIDES.get(command.name, {}))
-    params = _parse_usage_params(command.usage)
+    params = parse_usage_params(command.usage)
     params = _apply_common_param_metadata(params)
     for param_name in PARAM_REMOVALS.get(command.name, set()):
         params.pop(param_name, None)
@@ -946,152 +951,6 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
             "",
         ])
     return "\n".join(lines).rstrip() + "\n"
-
-
-def _parse_usage_params(usage: str) -> dict[str, dict[str, Any]]:
-    if not usage:
-        return {}
-    parts = _split_usage(usage)
-    tokens = parts[1:]
-    params: dict[str, dict[str, Any]] = {}
-    for token, optional in tokens:
-        for raw_part in _expand_token(token):
-            parsed = _parse_token(raw_part, optional=optional)
-            if parsed is None:
-                continue
-            name, meta = parsed
-            if name in params:
-                params[name] = {**params[name], **meta}
-                params[name]["required"] = params[name].get("required", False) or meta.get("required", False)
-            else:
-                params[name] = meta
-    return params
-
-
-def _split_usage(usage: str) -> list[tuple[str, bool]]:
-    tokens: list[tuple[str, bool]] = []
-    current: list[str] = []
-    optional = False
-    for char in usage:
-        if char == "[":
-            if current:
-                tokens.extend((part, optional) for part in _shell_split("".join(current)))
-                current = []
-            optional = True
-            continue
-        if char == "]":
-            if current:
-                tokens.extend((part, True) for part in _shell_split("".join(current)))
-                current = []
-            optional = False
-            continue
-        current.append(char)
-    if current:
-        tokens.extend((part, optional) for part in _shell_split("".join(current)))
-    return tokens
-
-
-def _shell_split(text: str) -> list[str]:
-    try:
-        return shlex.split(text)
-    except ValueError:
-        return text.split()
-
-
-def _expand_token(token: str) -> list[str]:
-    token = token.strip(",")
-    if not token or token.startswith("(") or token.endswith(")"):
-        return []
-    if "|" not in token:
-        return [token]
-    parts = [part for part in token.split("|") if part]
-    if all("=" in part for part in parts):
-        return parts
-    if any("=" in part for part in parts) and "=" not in parts[0]:
-        return [part for part in parts if "=" in part]
-    return [token]
-
-
-def _parse_token(token: str, *, optional: bool) -> tuple[str, dict[str, Any]] | None:
-    token = token.strip()
-    if not token or token.startswith("-"):
-        return None
-    if "=" in token:
-        name, raw_value = token.split("=", 1)
-        name = _normalize_param_name(name)
-        if not name:
-            return None
-        meta = _infer_schema_from_value(raw_value)
-        meta["required"] = not optional
-        if not optional:
-            meta.pop("default", None)
-        if optional and not _is_placeholder_value(raw_value) and "default" not in meta and "|" not in raw_value:
-            meta["default"] = _coerce_default(raw_value)
-        return name, meta
-    name = _normalize_param_name(token)
-    if not name:
-        return None
-    return name, {"type": "string", "required": not optional}
-
-
-def _normalize_param_name(name: str) -> str:
-    name = name.strip("<>[]'\"")
-    if not name:
-        return ""
-    if name == "SYMBOL[,SYMBOL...]":
-        return "symbols"
-    if name == "SOURCE|source":
-        return "source"
-    name = name.replace("PATH_OR_URL", "source")
-    name = re.sub(r"[^A-Za-z0-9_]+", "_", name).strip("_")
-    return name.lower()
-
-
-def _is_placeholder_value(value: str) -> bool:
-    return value == "..." or bool(re.fullmatch(r"[A-Z][A-Z0-9_]*", value))
-
-
-def _infer_schema_from_value(raw_value: str) -> dict[str, Any]:
-    value = raw_value.strip("'\"")
-    if "|" in value and not value.startswith("{"):
-        enum = [_coerce_default(part) for part in value.split("|") if part and part != "..."]
-        return {"type": _common_type_for_enum(enum), "enum": enum}
-    lowered = value.lower()
-    if lowered in {"true", "false"}:
-        return {"type": "boolean", "default": lowered == "true"}
-    if re.fullmatch(r"-?\d+", value):
-        return {"type": "integer", "default": int(value)}
-    if re.fullmatch(r"-?\d+\.\d+", value):
-        return {"type": "number", "default": float(value)}
-    if value == "YYYY-MM-DD":
-        return {"type": "string", "format": "date"}
-    if value in {"{}", "'{}'"}:
-        return {"type": "object"}
-    return {"type": "string"}
-
-
-def _coerce_default(value: str) -> Any:
-    value = value.strip("'\"")
-    lowered = value.lower()
-    if lowered == "true":
-        return True
-    if lowered == "false":
-        return False
-    if re.fullmatch(r"-?\d+", value):
-        return int(value)
-    if re.fullmatch(r"-?\d+\.\d+", value):
-        return float(value)
-    return value
-
-
-def _common_type_for_enum(enum: list[Any]) -> str:
-    if enum and all(isinstance(item, bool) for item in enum):
-        return "boolean"
-    if enum and all(isinstance(item, int) for item in enum):
-        return "integer"
-    if enum and all(isinstance(item, (int, float)) for item in enum):
-        return "number"
-    return "string"
 
 
 def _apply_common_param_metadata(params: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:

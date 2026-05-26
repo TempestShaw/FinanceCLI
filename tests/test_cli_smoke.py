@@ -22,6 +22,18 @@ def test_package_version_matches_project_metadata():
     assert finance_cli.__version__ == metadata["project"]["version"]
 
 
+def test_project_license_matches_apache_license_file_and_readme_badge():
+    metadata = tomllib.loads(Path("pyproject.toml").read_text())
+    license_text = Path("LICENSE").read_text()
+    readme = Path("README.md").read_text()
+
+    assert metadata["project"]["license"] == "Apache-2.0"
+    assert metadata["project"]["license-files"] == ["LICENSE"]
+    assert "Apache License" in license_text
+    assert "license-Apache--2.0" in readme
+    assert "license-MIT" not in readme
+
+
 def test_finance_cli_formula_command_outputs_json(capsys):
     code = main(["formula.margin", "numerator=10", "denominator=20"])
     payload = json.loads(capsys.readouterr().out)
@@ -84,6 +96,29 @@ def test_generated_agent_schema_covers_registered_commands():
     market_trend = next(spec for spec in specs if spec["name"] == "market.trend")
     assert "breadth" in market_trend["agent"]["avoid_when"]
     assert market_trend["args"]["symbols"]["default"] == "SPY,QQQ,DIA,IWM,^VIX"
+
+    completion = next(spec for spec in specs if spec["name"] == "completion")
+    assert completion["args"]["shell"]["required"] is True
+    assert "shell completion setup" in completion["description"].lower()
+    assert completion["side_effects"] == "pure_calculation"
+
+
+def test_generated_specs_use_package_usage_parser():
+    from finance_cli.cli.usage import parse_usage_params
+
+    params = parse_usage_params("price.moves SYMBOL [window=1d|3d|1w|1m limit=20]")
+
+    assert params["window"]["enum"] == ["1d", "3d", "1w", "1m"]
+    assert params["limit"]["default"] == 20
+
+
+def test_completion_command_is_registered():
+    clear_commands()
+    register_builtin_commands()
+
+    names = {command.name for command in list_commands()}
+
+    assert "completion" in names
 
 
 def test_filings_report_preserves_lookup_aliases(monkeypatch):

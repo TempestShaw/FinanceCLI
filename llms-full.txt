@@ -147,6 +147,13 @@ Side effects: network_read_only
 Args: symbol:string required, limit:integer
 Usage: `finance calendar.earnings SYMBOL [limit=12]`
 
+### completion
+Use when: Use to install local shell completion scripts for FinanceCLI.
+Avoid when: Do not call during research workflows; this is an operator setup command.
+Side effects: pure_calculation
+Args: shell:string required
+Usage: `finance completion SHELL`
+
 ### document.ocr
 Use when: Use as fallback for scanned or image-heavy PDFs after document.read/scan cannot extract text.
 Avoid when: Use the standard trust rules for this command.

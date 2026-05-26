@@ -15,6 +15,8 @@ def render_result(
     command: str | None = None,
     record_options: RecordRenderOptions | None = None,
 ) -> str:
+    if command == "completion" and result.ok and isinstance(result.data, dict) and isinstance(result.data.get("script"), str):
+        return result.data["script"].rstrip()
     if output == "json":
         return json.dumps(result.to_dict(), indent=2, ensure_ascii=False, default=str, allow_nan=False)
     if output == "text":

@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.formatting import render_result
+from finance_cli.cli.options import OUTPUT_FORMATS
 from finance_cli.cli.registry import FinanceCommand, get_command, list_commands
 from finance_cli.records import RecordRenderOptions
 from finance_cli.schemas import FinanceCommandResult
@@ -15,7 +17,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="finance", description="Finance research helper CLI")
     parser.add_argument("command", nargs="?", help="Command name, for example market.regime")
     parser.add_argument("args", nargs="*", help="Command arguments")
-    parser.add_argument("--output", choices=["json", "text", "compact", "schema"], default="json")
+    parser.add_argument("--output", choices=OUTPUT_FORMATS, default="json")
     parser.add_argument("--fields", help="Comma-separated record fields for compact or schema output")
     parser.add_argument("--max-records", type=_non_negative_int, help="Maximum normalized records to render")
     parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact or schema output")
@@ -26,6 +28,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     register_builtin_commands()
     raw_args = list(sys.argv[1:] if argv is None else argv)
+    if raw_args and raw_args[0] == "__complete":
+        from finance_cli.cli.completion import complete_from_env
+
+        shell = raw_args[1] if len(raw_args) > 1 else "bash"
+        code, output = complete_from_env(shell, dict(os.environ))
+        if output:
+            print(output, file=sys.stderr if code else sys.stdout)
+        return code
     if raw_args:
         if raw_args[0] == "help":
             if len(raw_args) >= 2:

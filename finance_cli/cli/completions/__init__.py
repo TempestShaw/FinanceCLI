@@ -1,0 +1,1 @@
+"""Packaged shell completion scripts."""
