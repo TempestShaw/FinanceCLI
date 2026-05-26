@@ -72,6 +72,19 @@ def test_generated_agent_schema_covers_registered_commands():
     assert valuation_dcf["side_effects"] == "pure_calculation"
     assert "investment advice" in valuation_dcf["agent"]["avoid_when"]
 
+    fundamentals_growth = next(spec for spec in specs if spec["name"] == "fundamentals.growth")
+    assert "YoY" in fundamentals_growth["agent"]["use_when"]
+    assert fundamentals_growth["args"]["metrics"]["default"] == "revenue,eps,operating_margin,net_margin,roe"
+
+    price_relative = next(spec for spec in specs if spec["name"] == "price.relative")
+    assert price_relative["args"]["benchmarks"]["default"] == "SPY,QQQ"
+    assert "default" not in price_relative["args"]["peers"]
+    assert "explicit" in price_relative["agent"]["use_when"]
+
+    market_trend = next(spec for spec in specs if spec["name"] == "market.trend")
+    assert "breadth" in market_trend["agent"]["avoid_when"]
+    assert market_trend["args"]["symbols"]["default"] == "SPY,QQQ,DIA,IWM,^VIX"
+
 
 def test_filings_report_preserves_lookup_aliases(monkeypatch):
     captured = {}

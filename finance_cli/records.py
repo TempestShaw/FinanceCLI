@@ -313,6 +313,66 @@ class OwnershipHoldersRecordAdapter:
         return records
 
 
+class FundamentalsGrowthRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records = []
+        source = _first_text(payload, SOURCE_KEYS)
+        for row in payload.get("rows") or []:
+            if not isinstance(row, dict):
+                continue
+            kind = {
+                "history": "fundamental_history",
+                "delta": "fundamental_delta",
+            }.get(row.get("kind"), "fundamental_growth")
+            records.append(Record(
+                entity=_entity_from_context({**payload, **row}),
+                kind=kind,
+                period=_text_or_none(row.get("period")),
+                fields=_fields_except(row, {"kind", "symbol", "ticker", "source", "provider"}),
+                source=_first_text(row, SOURCE_KEYS) or source,
+            ))
+        return records
+
+
+class PriceRelativeRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records = []
+        source = _first_text(payload, SOURCE_KEYS)
+        for row in payload.get("relative_performance") or []:
+            if not isinstance(row, dict):
+                continue
+            records.append(Record(
+                entity=_entity_from_context({**payload, **row}),
+                kind="relative_price",
+                period=_text_or_none(row.get("period")),
+                fields=_fields_except(row, {"symbol", "ticker", "period", "source", "provider"}),
+                source=_first_text(row, SOURCE_KEYS) or source,
+            ))
+        return records
+
+
+class MarketTrendRecordAdapter:
+    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
+        if not isinstance(payload, dict):
+            return DictRecordAdapter().to_records(payload, command=command)
+        records = []
+        source = _first_text(payload, SOURCE_KEYS)
+        for row in payload.get("trend") or []:
+            if not isinstance(row, dict):
+                continue
+            records.append(Record(
+                entity=_entity_from_context(row),
+                kind=str(row.get("kind") or "market_trend"),
+                fields=_fields_except(row, {"kind", "symbol", "ticker", "source", "provider"}),
+                source=_first_text(row, SOURCE_KEYS) or source,
+            ))
+        return records
+
+
 ENTITY_KEYS = ("entity", "symbol", "ticker", "market")
 PERIOD_KEYS = ("period",)
 TIMESTAMP_KEYS = ("timestamp",)
@@ -320,6 +380,8 @@ SOURCE_KEYS = ("source", "provider")
 COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
     "calendar.earnings": CalendarEarningsRecordAdapter(),
     "estimates.consensus": EstimatesConsensusRecordAdapter(),
+    "fundamentals.growth": FundamentalsGrowthRecordAdapter(),
+    "market.trend": MarketTrendRecordAdapter(),
     "market.quote": MarketQuoteRecordAdapter(),
     "market.ohlcv": MarketOhlcvRecordAdapter(),
     "news.search": NewsSearchRecordAdapter(),
@@ -330,6 +392,7 @@ COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
     "kpi.history": KpiRecordAdapter(),
     "price.context": PriceContextRecordAdapter(),
     "price.moves": PriceMovesRecordAdapter(),
+    "price.relative": PriceRelativeRecordAdapter(),
     "screen.run": ScreenRunRecordAdapter(),
     "transcripts.read": TranscriptReadRecordAdapter(),
     "transcripts.search": TranscriptSearchRecordAdapter(),

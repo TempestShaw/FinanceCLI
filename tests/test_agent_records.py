@@ -262,6 +262,64 @@ def test_cli_compact_output_renders_price_performance(capsys, monkeypatch):
     assert output == "NVDA|performance|1M|symbol_return_pct=12.5|benchmark_return_pct=5.0|relative_return_pct=7.5|src=test_provider"
 
 
+def test_cli_compact_output_renders_price_relative(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.price.relative_price_performance",
+        lambda *args, **_kwargs: {
+            "symbol": "NVDA",
+            "relative_performance": [
+                {
+                    "symbol": "NVDA",
+                    "period": "1M",
+                    "comparison": "SPY",
+                    "comparison_type": "benchmark",
+                    "symbol_return_pct": 30.0,
+                    "comparison_return_pct": 10.0,
+                    "relative_return_pct": 20.0,
+                    "source": "test_provider",
+                }
+            ],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["price.relative", "nvda", "--output", "compact", "--fields", "period,comparison,comparison_type,relative_return_pct"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "NVDA|relative_price|1M|comparison=SPY|comparison_type=benchmark|relative_return_pct=20.0|src=test_provider"
+
+
+def test_cli_compact_output_renders_market_trend(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market.market_trend",
+        lambda *args, **_kwargs: {
+            "market": "US",
+            "trend": [
+                {
+                    "kind": "market_trend",
+                    "symbol": "SPY",
+                    "role": "primary",
+                    "last_close": 500.0,
+                    "sma_50": 480.0,
+                    "sma_200": 450.0,
+                    "above_sma_50": True,
+                    "above_sma_200": True,
+                    "source": "test_provider",
+                }
+            ],
+            "market_direction_state": "uptrend",
+            "source": "historical_market_data",
+        },
+    )
+
+    code = main(["market.trend", "US", "--output", "compact", "--fields", "role,last_close,sma_50,sma_200,above_sma_50"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "SPY|market_trend|role=primary|last_close=500.0|sma_50=480.0|sma_200=450.0|above_sma_50=true|src=test_provider"
+
+
 def test_cli_compact_output_renders_fundamental_metrics(capsys, monkeypatch):
     monkeypatch.setattr(
         "finance_cli.cli.commands.fundamentals.fetch_financial_metrics",
@@ -281,6 +339,65 @@ def test_cli_compact_output_renders_fundamental_metrics(capsys, monkeypatch):
         "NVDA|metric|quarterly|metric=revenue|value=100.0|src=test_provider",
         "NVDA|metric|quarterly|metric=eps|value=2.5|src=test_provider",
     ]
+
+
+def test_cli_compact_output_renders_fundamentals_growth(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.fundamentals.fundamentals_growth",
+        lambda *args, **_kwargs: {
+            "symbol": "NVDA",
+            "rows": [
+                {
+                    "kind": "growth",
+                    "metric": "revenue",
+                    "period_type": "quarterly",
+                    "current_period": "2025Q1",
+                    "comparison_period": "2024Q1",
+                    "current_value": 75.0,
+                    "comparison_value": 50.0,
+                    "growth_type": "yoy",
+                    "growth_pct": 50.0,
+                    "source": "test_provider",
+                }
+            ],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["fundamentals.growth", "nvda", "--output", "compact", "--fields", "metric,growth_type,growth_pct"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "NVDA|fundamental_growth|metric=revenue|growth_type=yoy|growth_pct=50.0|src=test_provider"
+
+
+def test_cli_compact_output_renders_fundamental_delta(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.fundamentals.fundamentals_growth",
+        lambda *args, **_kwargs: {
+            "symbol": "NVDA",
+            "rows": [
+                {
+                    "kind": "delta",
+                    "metric": "net_margin",
+                    "period_type": "annual",
+                    "current_period": "2025",
+                    "comparison_period": "2024",
+                    "current_value": 0.2,
+                    "comparison_value": 0.1,
+                    "delta": 0.1,
+                    "source": "test_provider",
+                }
+            ],
+            "source": "test_provider",
+        },
+    )
+
+    code = main(["fundamentals.growth", "nvda", "--output", "compact", "--fields", "metric,current_period,comparison_period,delta"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "NVDA|fundamental_delta|metric=net_margin|current_period=2025|comparison_period=2024|delta=0.1|src=test_provider"
 
 
 def test_cli_schema_output_renders_standard_filing_statement_rows(capsys, monkeypatch):

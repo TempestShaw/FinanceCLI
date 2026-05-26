@@ -48,7 +48,7 @@ from finance_cli.services.formulas import (
     formula_working_capital,
 )
 from finance_cli.services.kpi import extract_kpi_evidence
-from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv, price_performance
+from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv, market_trend, price_performance, relative_price_performance
 from finance_cli.services.news import news_geo, normalize_news_timespan
 from finance_cli.services.ownership import fetch_holders
 from finance_cli.services.price import detect_price_moves, price_context
@@ -65,7 +65,7 @@ from finance_cli.services.sectors import (
 )
 from finance_cli.services.sources import list_sources, sources_status
 from finance_cli.services.symbols import fetch_symbol_profile
-from finance_cli.services.fundamentals import fetch_financial_metrics, fetch_financial_statement
+from finance_cli.services.fundamentals import fetch_financial_metrics, fetch_financial_statement, fundamentals_growth
 from finance_cli.services.valuation import valuation_dcf, valuation_irr, valuation_multiples, valuation_npv, valuation_scenario, valuation_wacc
 from finance_cli.tools import FINANCE_TOOL_SPECS
 
@@ -145,6 +145,7 @@ def test_cli_registry_registers_builtin_commands():
     assert "sources.test" in names
     assert "market.sector_heat" in names
     assert "market.status" in names
+    assert "market.trend" in names
     assert "symbol.snapshot" in names
     assert "symbol.profile" in names
     assert "news.search" in names
@@ -159,6 +160,7 @@ def test_cli_registry_registers_builtin_commands():
     assert "transcripts.read" in names
     assert "transcripts.qa" in names
     assert "fundamentals.metrics" in names
+    assert "fundamentals.growth" in names
     assert "fundamentals.statement" in names
     assert "kpi.extract" in names
     assert "kpi.history" in names
@@ -190,6 +192,7 @@ def test_cli_registry_registers_builtin_commands():
     assert "price.moves" in names
     assert "price.context" in names
     assert "price.performance" in names
+    assert "price.relative" in names
     assert "research.plan" in names
     assert "market.quote" in names
     assert "market.ohlcv" in names
@@ -213,6 +216,14 @@ def test_cli_registry_registers_builtin_commands():
     assert "document.tables" in names
     assert "document.ocr" in names
     assert get_command("symbol.snapshot") is not None
+
+
+def test_finance_tool_specs_include_canslim_primitives():
+    names = {spec.name for spec in FINANCE_TOOL_SPECS}
+
+    assert "FinanceFundamentalsGrowth" in names
+    assert "FinanceRelativePrice" in names
+    assert "FinanceMarketTrend" in names
 
 
 def test_cli_main_runs_symbol_snapshot(capsys, monkeypatch):
@@ -331,6 +342,78 @@ def test_price_performance_computes_benchmark_relative_returns():
     assert row["distance_from_52w_high_pct"] == 0.0
 
 
+def test_relative_price_performance_defaults_to_benchmarks_and_auto_sector_etf():
+    class ProviderAttempt:
+        provider = "test_provider"
+
+    class Service:
+        def load_ohlcv(self, symbol, **_kwargs):
+            end = {"NVDA": 130.0, "SPY": 110.0, "QQQ": 120.0, "XLK": 115.0}[symbol]
+            rows = [{"date": "2026-01-01", "close": 100.0}, {"date": "2026-02-01", "close": end}]
+            return rows, ProviderAttempt(), []
+
+    class QuoteProvider:
+        def quote(self, symbol):
+            return {"symbol": symbol.upper(), "sector": "Technology", "source": "test_quote"}
+
+    data = relative_price_performance(
+        "nvda",
+        periods=["1M"],
+        market="US",
+        service=Service(),
+        quote_provider=QuoteProvider(),
+    )
+
+    comparisons = {(row["comparison"], row["comparison_type"]) for row in data["relative_performance"]}
+    assert ("SPY", "benchmark") in comparisons
+    assert ("QQQ", "benchmark") in comparisons
+    assert ("XLK", "sector_etf") in comparisons
+
+
+def test_relative_price_performance_uses_explicit_sector_etf_and_peers():
+    class ProviderAttempt:
+        provider = "test_provider"
+
+    class Service:
+        def load_ohlcv(self, symbol, **_kwargs):
+            end = {"NVDA": 130.0, "SPY": 110.0, "SMH": 125.0, "AMD": 140.0}[symbol]
+            rows = [{"date": "2026-01-01", "close": 100.0}, {"date": "2026-02-01", "close": end}]
+            return rows, ProviderAttempt(), []
+
+    data = relative_price_performance(
+        "nvda",
+        benchmarks=["SPY"],
+        peers=["AMD"],
+        sector_etfs=["SMH"],
+        periods=["1M"],
+        service=Service(),
+    )
+
+    comparisons = {(row["comparison"], row["comparison_type"]) for row in data["relative_performance"]}
+    assert comparisons == {("SPY", "benchmark"), ("SMH", "sector_etf"), ("AMD", "peer")}
+
+
+def test_market_trend_returns_index_and_vix_trend_without_breadth_proxy():
+    class ProviderAttempt:
+        provider = "test_provider"
+
+    class Service:
+        def load_ohlcv(self, symbol, **_kwargs):
+            if symbol == "^VIX":
+                rows = [{"date": f"2026-01-{day:02d}", "close": 18.0 - day * 0.1} for day in range(1, 31)]
+                return rows, ProviderAttempt(), []
+            rows = [{"date": f"2026-01-{day:02d}", "close": 100.0 + day} for day in range(1, 31)]
+            return rows, ProviderAttempt(), []
+
+    data = market_trend("US", periods=["1M"], service=Service())
+
+    roles = {row["role"] for row in data["trend"]}
+    assert {"primary", "growth", "dow", "small_caps", "volatility"} <= roles
+    assert all(row["kind"] in {"market_trend", "market_volatility"} for row in data["trend"])
+    assert data["market_direction_state"] == "uptrend"
+    assert "breadth" not in json.dumps(data).lower()
+
+
 def test_financial_metrics_delegates_to_provider():
     class Provider:
         def financial_metrics(self, symbol, *, period, metrics):
@@ -396,6 +479,76 @@ def test_financial_statement_delegates_to_selected_provider():
         "period": "quarterly",
         "source": "test_provider",
     }
+
+
+def test_fundamentals_growth_returns_raw_history_yoy_and_cagr():
+    class Provider:
+        def financial_statement(self, symbol, *, statement, period):
+            assert statement == "income"
+            if period == "annual":
+                return {
+                    "symbol": symbol.upper(),
+                    "statement": statement,
+                    "period": period,
+                    "rows": [
+                        {"period": "2023", "revenue": 100.0, "net_income": 10.0, "diluted_shares": 10.0, "diluted_eps": 1.0},
+                        {"period": "2024", "revenue": 150.0, "net_income": 18.0, "diluted_shares": 10.0, "diluted_eps": 1.8},
+                        {"period": "2025", "revenue": 225.0, "net_income": 27.0, "diluted_shares": 10.0, "diluted_eps": 2.7},
+                    ],
+                    "source": "test_provider",
+                }
+            return {
+                "symbol": symbol.upper(),
+                "statement": statement,
+                "period": period,
+                "rows": [
+                    {"period": "2024Q1", "revenue": 50.0, "net_income": 5.0, "diluted_shares": 10.0, "diluted_eps": 0.5},
+                    {"period": "2025Q1", "revenue": 75.0, "net_income": 9.0, "diluted_shares": 10.0, "diluted_eps": 0.9},
+                ],
+                "source": "test_provider",
+            }
+
+    data = fundamentals_growth(
+        "nvda",
+        metrics=["revenue", "eps"],
+        periods=["quarterly", "annual"],
+        years=3,
+        provider=Provider(),
+    )
+
+    assert data["symbol"] == "NVDA"
+    assert any(row["kind"] == "history" and row["metric"] == "revenue" and row["period"] == "2025" for row in data["rows"])
+    assert any(row["kind"] == "growth" and row["metric"] == "revenue" and row["growth_type"] == "yoy" and row["growth_pct"] == 50.0 for row in data["rows"])
+    assert any(row["kind"] == "growth" and row["metric"] == "revenue" and row["growth_type"] == "cagr" and round(row["growth_pct"], 2) == 50.0 for row in data["rows"])
+    assert any(row["metric"] == "eps" and row["method"] == "reported_diluted_eps" for row in data["rows"])
+
+
+def test_fundamentals_growth_warns_for_short_history_and_sparse_quarter_yoy():
+    class Provider:
+        def financial_statement(self, symbol, *, statement, period):
+            if period == "annual":
+                return {
+                    "symbol": symbol.upper(),
+                    "rows": [
+                        {"period": "2024", "revenue": 100.0},
+                        {"period": "2025", "revenue": 125.0},
+                    ],
+                    "source": "test_provider",
+                }
+            return {
+                "symbol": symbol.upper(),
+                "rows": [
+                    {"period": "2023Q1", "revenue": 50.0},
+                    {"period": "2025Q1", "revenue": 75.0},
+                ],
+                "source": "test_provider",
+            }
+
+    data = fundamentals_growth("nvda", metrics=["revenue"], periods=["annual", "quarterly"], years=5, provider=Provider())
+
+    assert any("requested 5 annual years" in warning for warning in data["warnings"])
+    assert any("same-quarter prior-year comparison unavailable" in warning for warning in data["warnings"])
+    assert not any(row.get("period_type") == "quarterly" and row.get("growth_type") == "yoy" for row in data["rows"])
 
 
 def test_cli_main_shows_command_help(capsys):

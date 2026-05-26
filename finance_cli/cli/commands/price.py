@@ -4,7 +4,7 @@ from __future__ import annotations
 from finance_cli.cli.args import KVArgs
 from finance_cli.cli.registry import FinanceCommand, register_command
 from finance_cli.schemas import FinanceCommandResult
-from finance_cli.services.market_data import price_performance
+from finance_cli.services.market_data import price_performance, relative_price_performance
 from finance_cli.services.price import price_context, price_moves
 
 
@@ -66,6 +66,25 @@ def _price_performance(args: list[str]) -> FinanceCommandResult:
     return FinanceCommandResult(ok=True, data=data)
 
 
+def _price_relative(args: list[str]) -> FinanceCommandResult:
+    if not args:
+        return FinanceCommandResult(
+            ok=False,
+            error="usage: price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]",
+        )
+    kv = KVArgs(args[1:])
+    data = relative_price_performance(
+        args[0],
+        benchmarks=kv.csv("benchmarks") or None,
+        peers=kv.csv("peers") or None,
+        sector_etfs=kv.csv("sector_etfs") if "sector_etfs" in kv.values else None,
+        periods=kv.csv("periods") or None,
+        market=kv.str("market", "US") or "US",
+        provider=kv.str("provider", "auto") or "auto",
+    )
+    return FinanceCommandResult(ok=True, data=data, warnings=data.get("warnings", []))
+
+
 def register_price_commands() -> None:
     register_command(FinanceCommand(
         "price.moves",
@@ -107,4 +126,18 @@ def register_price_commands() -> None:
         usage="price.performance SYMBOL [benchmark=SPY periods=1M,3M,6M,1Y provider=auto]",
         examples=("finance price.performance NVDA benchmark=SPY periods=1M,3M,6M,1Y",),
         notes=("Uses normalized OHLCV rows and deterministic close-to-close return math.",),
+    ))
+    register_command(FinanceCommand(
+        "price.relative",
+        "Compare price returns against benchmarks, auto sector ETF, and explicit peers",
+        _price_relative,
+        usage="price.relative SYMBOL [benchmarks=SPY,QQQ peers=PEERS sector_etfs=SECTOR_ETFS periods=1M,3M,6M,1Y market=US provider=auto]",
+        examples=(
+            "finance price.relative NVDA periods=1M,3M,6M,1Y",
+            "finance price.relative NVDA peers=AMD,AVGO sector_etfs=SMH periods=1M,3M",
+        ),
+        notes=(
+            "Defaults to SPY and QQQ plus an auto sector ETF when the symbol sector maps to a configured ETF.",
+            "Explicit sector_etfs replaces the auto sector ETF. Peers are explicit only.",
+        ),
     ))

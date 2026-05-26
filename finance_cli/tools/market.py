@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from finance_cli.core.market import get_market_regime, get_sector_heat
+from finance_cli.services.market_data import market_trend
 from finance_cli.tools.formatting import as_tool_json
+from finance_cli.tools.research.common import _csv_list
 from finance_cli.tools.types import FinanceToolSpec
 
 
@@ -33,6 +35,21 @@ SECTOR_HEAT_SCHEMA = {
     },
 }
 
+MARKET_TREND_SCHEMA = {
+    "name": "FinanceMarketTrend",
+    "description": "Return major-index and VIX trend evidence without market breadth.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "market": {"type": "string", "description": "Market code, default US"},
+            "symbols": {"type": ["string", "array"], "items": {"type": "string"}},
+            "periods": {"type": ["string", "array"], "items": {"type": "string"}},
+            "provider": {"type": "string"},
+        },
+        "required": [],
+    },
+}
+
 
 def _finance_market_regime(params: dict, _config: dict) -> str:
     result = get_market_regime(
@@ -51,6 +68,17 @@ def _finance_sector_heat(params: dict, _config: dict) -> str:
     return as_tool_json(result.to_dict())
 
 
+def _finance_market_trend(params: dict, _config: dict) -> str:
+    return as_tool_json(
+        market_trend(
+            market=params.get("market", "US"),
+            symbols=_csv_list(params.get("symbols")) or None,
+            periods=_csv_list(params.get("periods")) or None,
+            provider=params.get("provider", "auto"),
+        )
+    )
+
+
 TOOL_DEFS = [
     FinanceToolSpec(
         name="FinanceMarketRegime",
@@ -63,6 +91,13 @@ TOOL_DEFS = [
         name="FinanceSectorHeat",
         schema=SECTOR_HEAT_SCHEMA,
         handler=_finance_sector_heat,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    FinanceToolSpec(
+        name="FinanceMarketTrend",
+        schema=MARKET_TREND_SCHEMA,
+        handler=_finance_market_trend,
         read_only=True,
         concurrent_safe=True,
     ),
