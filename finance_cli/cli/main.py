@@ -34,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
         shell = raw_args[1] if len(raw_args) > 1 else "bash"
         code, output = complete_from_env(shell, dict(os.environ))
         if output:
-            print(output)
+            print(output, file=sys.stderr if code else sys.stdout)
         return code
     if raw_args:
         if raw_args[0] == "help":

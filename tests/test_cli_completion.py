@@ -82,10 +82,18 @@ def test_hidden_complete_entrypoint_rejects_unknown_shell(capsys, monkeypatch):
     monkeypatch.setenv("COMP_POINT", str(len("finance sources.")))
 
     code = main(["__complete", "powershell"])
-    output = capsys.readouterr().out
+    captured = capsys.readouterr()
 
     assert code == 2
-    assert "unknown completion shell" in output
+    assert captured.out == ""
+    assert "unknown completion shell" in captured.err
+
+
+def test_completion_handles_quoted_positional_arguments():
+    suggestions = registered_completions('finance document.scan "sample report.pdf" format=')
+
+    assert "format=pdf" in suggestions
+    assert "format=html" in suggestions
 
 
 def test_completion_command_prints_bash_script(capsys):
