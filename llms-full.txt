@@ -32,6 +32,7 @@ Every command returns JSON shaped like:
 - Formula and valuation commands are deterministic calculators, not investment advice.
 - If `ok=false`, surface the error clearly and do not fabricate data.
 - Keep `--output json` for canonical audit output; use compact record renderers only for context compression.
+- Treat `table`, `report`, and `pretty-json` as human display formats, not stable tool contracts.
 
 ## Agent Playbooks
 
@@ -146,6 +147,34 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
 Args: symbol:string required, limit:integer
 Usage: `finance calendar.earnings SYMBOL [limit=12]`
+
+### config.path
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: none
+Usage: `finance config.path`
+
+### config.set
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: key:string required, value:string required
+Usage: `finance config.set KEY VALUE`
+
+### config.show
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: none
+Usage: `finance config.show`
+
+### config.unset
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: key:string required
+Usage: `finance config.unset KEY`
 
 ### document.ocr
 Use when: Use as fallback for scanned or image-heavy PDFs after document.read/scan cannot extract text.

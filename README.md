@@ -81,7 +81,14 @@ Most commands return JSON by default:
 }
 ```
 
-Use `--output text` for readable terminal output when a command supports it.
+Use `--output table`, `--output report`, or `--output pretty-json` for readable terminal output. To make a human format the default for interactive shells, configure it once:
+
+```bash
+finance config.set output.default table
+finance config.set output.non_interactive_default json
+```
+
+Explicit `--output` flags still override the config. Non-interactive output can stay JSON so pipes, CI, and agents keep a stable parser contract.
 
 ## Mental Model
 

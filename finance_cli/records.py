@@ -3,13 +3,17 @@ from __future__ import annotations
 
 import json
 import re
+from io import StringIO
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol
+
+from rich.console import Console
+from rich.table import Table
 
 from finance_cli.schemas import Record
 
 
-RecordFormat = Literal["json", "compact", "schema"]
+RecordFormat = Literal["json", "compact", "schema", "table"]
 
 
 @dataclass(frozen=True)
@@ -460,6 +464,8 @@ def render_records(records: list[Record], output: RecordFormat, options: RecordR
         rendered = _render_compact(selected, opts)
     elif output == "schema":
         rendered = _render_schema_rows(selected, opts)
+    elif output == "table":
+        rendered = _render_table(selected, opts)
     else:
         raise ValueError(f"unknown record output format: {output}")
     return _cap_chars(rendered, opts.max_chars)
@@ -766,6 +772,21 @@ def _render_schema_rows(records: list[Record], options: RecordRenderOptions) -> 
     return "\n".join(lines)
 
 
+def _render_table(records: list[Record], options: RecordRenderOptions) -> str:
+    if not records:
+        return ""
+    columns = _schema_columns(records, options)
+    table = Table(show_header=True, header_style="bold")
+    for column in columns:
+        table.add_column(_title_column(column), overflow="fold")
+    for record in records:
+        table.add_row(*_record_schema_row(record, columns, options))
+    buffer = StringIO()
+    console = Console(file=buffer, force_terminal=False, color_system=None, width=120)
+    console.print(table)
+    return buffer.getvalue().rstrip()
+
+
 def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list[str]:
     selected_structural = _selected_structural_fields(records, options)
     structural = ["entity", "kind"]
@@ -775,6 +796,10 @@ def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list
         if key not in selected_structural and any(getattr(record, key) for record in records)
     )
     return _dedupe_columns(structural + list(options.fields or _ordered_field_names(records, options)))
+
+
+def _title_column(column: str) -> str:
+    return column.replace("_", " ").title()
 
 
 def _record_schema_row(record: Record, columns: list[str], options: RecordRenderOptions) -> list[str]:

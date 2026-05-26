@@ -5,6 +5,7 @@ import argparse
 import sys
 
 from finance_cli.cli.commands import register_builtin_commands
+from finance_cli.cli.config import VALID_OUTPUT_FORMATS, resolve_output_format
 from finance_cli.cli.formatting import render_result
 from finance_cli.cli.registry import FinanceCommand, get_command, list_commands
 from finance_cli.records import RecordRenderOptions
@@ -15,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="finance", description="Finance research helper CLI")
     parser.add_argument("command", nargs="?", help="Command name, for example market.regime")
     parser.add_argument("args", nargs="*", help="Command arguments")
-    parser.add_argument("--output", choices=["json", "text", "compact", "schema"], default="json")
+    parser.add_argument("--output", choices=VALID_OUTPUT_FORMATS)
     parser.add_argument("--fields", help="Comma-separated record fields for compact or schema output")
     parser.add_argument("--max-records", type=_non_negative_int, help="Maximum normalized records to render")
     parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact or schema output")
@@ -38,6 +39,11 @@ def main(argv: list[str] | None = None) -> int:
 
     parser = build_parser()
     ns = parser.parse_args(raw_args)
+    try:
+        output = resolve_output_format(ns.output, is_interactive=sys.stdout.isatty())
+    except ValueError as exc:
+        print(render_result(FinanceCommandResult(ok=False, error=str(exc)), "json"))
+        return 2
     record_options = RecordRenderOptions(
         fields=_parse_fields(ns.fields),
         max_records=ns.max_records,
@@ -52,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     if command is None:
         print(render_result(
             FinanceCommandResult(ok=False, error=f"unknown command: {ns.command}"),
-            ns.output,
+            output,
             command=ns.command,
             record_options=record_options,
         ))
@@ -63,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         result = FinanceCommandResult(ok=False, error=str(exc))
 
-    print(render_result(result, ns.output, command=ns.command, record_options=record_options))
+    print(render_result(result, output, command=ns.command, record_options=record_options))
     return 0 if result.ok else 1
 
 

@@ -61,18 +61,44 @@ OUTPUT_FORMATS: dict[str, dict[str, Any]] = {
     "json": {
         "description": "Canonical command result envelope. Preserves ok, data, error, and warnings for audit and tool contracts.",
         "record_renderer": False,
+        "machine_readable": True,
+        "human_display": False,
     },
     "text": {
         "description": "Legacy plain text view for humans.",
         "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
     },
     "compact": {
         "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
         "record_renderer": True,
+        "machine_readable": True,
+        "human_display": False,
     },
     "schema": {
         "description": "Schema-once row format: one header line plus compact rows for repeated records.",
         "record_renderer": True,
+        "machine_readable": True,
+        "human_display": False,
+    },
+    "table": {
+        "description": "Rich table view for humans. Uses normalized records but is not a stable parser contract.",
+        "record_renderer": True,
+        "machine_readable": False,
+        "human_display": True,
+    },
+    "report": {
+        "description": "Rich paragraph/report view for humans, especially document and filing text.",
+        "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
+    },
+    "pretty-json": {
+        "description": "Indented JSON for human debugging. Use json for canonical automation output.",
+        "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
     },
 }
 
@@ -880,6 +906,7 @@ def build_llms_txt() -> str:
         "- Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.",
         "- Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.",
         "- Use --output compact or schema only when normalized token-efficient records are enough; keep --output json for audit trails.",
+        "- Human display formats (`table`, `report`, `pretty-json`) are for terminals, not parser contracts.",
         "- Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.",
     ]) + "\n"
 
@@ -915,6 +942,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "- Formula and valuation commands are deterministic calculators, not investment advice.",
         "- If `ok=false`, surface the error clearly and do not fabricate data.",
         "- Keep `--output json` for canonical audit output; use compact record renderers only for context compression.",
+        "- Treat `table`, `report`, and `pretty-json` as human display formats, not stable tool contracts.",
         "",
         "## Agent Playbooks",
         "",

@@ -30,6 +30,78 @@ def test_record_renderers_share_normalized_schema():
     ]
 
 
+def test_table_renderer_outputs_human_readable_columns():
+    record = Record(
+        entity="AAPL",
+        kind="financial_metric",
+        period="2024Q4",
+        fields={"revenue": "119.6B USD", "net_income": "36.3B USD"},
+        source="10-K",
+    )
+    options = RecordRenderOptions(fields=("revenue", "net_income"))
+
+    output = render_records([record], "table", options)
+
+    assert "Entity" in output
+    assert "Kind" in output
+    assert "Revenue" in output
+    assert "AAPL" in output
+    assert "119.6B USD" in output
+
+
+def test_pretty_json_output_is_indented_and_parseable(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+    monkeypatch.setattr("sys.stdout.isatty", lambda: False)
+
+    code = main(["market.quote", "aapl", "--output", "pretty-json"])
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+
+    assert code == 0
+    assert '\n  "ok": true' in output
+    assert payload["data"]["symbol"] == "AAPL"
+
+
+def test_pretty_json_interactive_output_uses_rich_highlighting(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+    monkeypatch.setenv("FORCE_COLOR", "1")
+
+    code = main(["market.quote", "aapl", "--output", "pretty-json"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "\x1b[" in output
+    assert '"AAPL"' in output
+
+
+def test_report_output_renders_document_text_as_paragraphs(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.document.read_document",
+        lambda source, **_kwargs: {
+            "source": source,
+            "format": "pdf",
+            "pages": 1,
+            "text": "Revenue increased year over year.\n\nMargins improved.",
+        },
+    )
+    monkeypatch.setattr("sys.stdout.isatty", lambda: False)
+
+    code = main(["document.read", "sample.pdf", "--output", "report"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "document.read" in output
+    assert "sample.pdf" in output
+    assert "Revenue increased year over year." in output
+    assert "Margins improved." in output
+
+
 def test_filings_statement_adapter_normalizes_sec_statement_rows():
     payload = {
         "symbol": "aapl",

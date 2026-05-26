@@ -161,6 +161,72 @@ finance calendar.earnings SYMBOL [limit=12]
 finance calendar.earnings AAPL limit=8
 ```
 
+## `config.*`
+
+### `config.path`
+
+Show the resolved FinanceCLI config file path
+
+**Usage**
+
+```bash
+finance config.path
+```
+
+**Examples**
+
+```bash
+finance config.path
+```
+
+### `config.set`
+
+Set a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.set KEY VALUE
+```
+
+**Examples**
+
+```bash
+finance config.set output.default table
+```
+
+### `config.show`
+
+Show the resolved FinanceCLI config
+
+**Usage**
+
+```bash
+finance config.show
+```
+
+**Examples**
+
+```bash
+finance config.show
+```
+
+### `config.unset`
+
+Unset a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.unset KEY
+```
+
+**Examples**
+
+```bash
+finance config.unset output.default
+```
+
 ## `document.*`
 
 ### `document.ocr`

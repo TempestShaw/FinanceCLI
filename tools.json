@@ -90,19 +90,45 @@
   "output_formats": {
     "json": {
       "description": "Canonical command result envelope. Preserves ok, data, error, and warnings for audit and tool contracts.",
-      "record_renderer": false
+      "record_renderer": false,
+      "machine_readable": true,
+      "human_display": false
     },
     "text": {
       "description": "Legacy plain text view for humans.",
-      "record_renderer": false
+      "record_renderer": false,
+      "machine_readable": false,
+      "human_display": true
     },
     "compact": {
       "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
-      "record_renderer": true
+      "record_renderer": true,
+      "machine_readable": true,
+      "human_display": false
     },
     "schema": {
       "description": "Schema-once row format: one header line plus compact rows for repeated records.",
-      "record_renderer": true
+      "record_renderer": true,
+      "machine_readable": true,
+      "human_display": false
+    },
+    "table": {
+      "description": "Rich table view for humans. Uses normalized records but is not a stable parser contract.",
+      "record_renderer": true,
+      "machine_readable": false,
+      "human_display": true
+    },
+    "report": {
+      "description": "Rich paragraph/report view for humans, especially document and filing text.",
+      "record_renderer": false,
+      "machine_readable": false,
+      "human_display": true
+    },
+    "pretty-json": {
+      "description": "Indented JSON for human debugging. Use json for canonical automation output.",
+      "record_renderer": false,
+      "machine_readable": false,
+      "human_display": true
     }
   },
   "side_effect_levels": {
@@ -1183,6 +1209,306 @@
       "citation_fields": [],
       "agent": {
         "use_when": "Use for company calendar fields and earnings-date rows.",
+        "avoid_when": null,
+        "next_steps": []
+      }
+    },
+    {
+      "name": "config.path",
+      "namespace": "config",
+      "description": "Show the resolved FinanceCLI config file path",
+      "usage": "finance config.path",
+      "examples": [
+        "finance config.path"
+      ],
+      "notes": [],
+      "args": {},
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "none",
+      "rate_limit_notes": null,
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for config workflows.",
+        "avoid_when": null,
+        "next_steps": []
+      }
+    },
+    {
+      "name": "config.set",
+      "namespace": "config",
+      "description": "Set a FinanceCLI config value",
+      "usage": "finance config.set KEY VALUE",
+      "examples": [
+        "finance config.set output.default table"
+      ],
+      "notes": [],
+      "args": {
+        "key": {
+          "type": "string",
+          "description": "Provider key returned by the corresponding list command.",
+          "required": true
+        },
+        "value": {
+          "type": "string",
+          "required": true,
+          "description": "Value supplied for `value`."
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Provider key returned by the corresponding list command."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value supplied for `value`."
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "none",
+      "rate_limit_notes": null,
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for config workflows.",
+        "avoid_when": null,
+        "next_steps": []
+      }
+    },
+    {
+      "name": "config.show",
+      "namespace": "config",
+      "description": "Show the resolved FinanceCLI config",
+      "usage": "finance config.show",
+      "examples": [
+        "finance config.show"
+      ],
+      "notes": [],
+      "args": {},
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "none",
+      "rate_limit_notes": null,
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for config workflows.",
+        "avoid_when": null,
+        "next_steps": []
+      }
+    },
+    {
+      "name": "config.unset",
+      "namespace": "config",
+      "description": "Unset a FinanceCLI config value",
+      "usage": "finance config.unset KEY",
+      "examples": [
+        "finance config.unset output.default"
+      ],
+      "notes": [],
+      "args": {
+        "key": {
+          "type": "string",
+          "description": "Provider key returned by the corresponding list command.",
+          "required": true
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Provider key returned by the corresponding list command."
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "additionalProperties": false
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "warnings"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "True when the command completed successfully."
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Human-readable error when ok is false."
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Non-fatal issues."
+          }
+        }
+      },
+      "side_effects": "network_read_only",
+      "side_effects_description": "Reads remote public/provider data. Does not mutate external state.",
+      "auth_required": "none",
+      "rate_limit_notes": null,
+      "citation_fields": [],
+      "agent": {
+        "use_when": "Use for config workflows.",
         "avoid_when": null,
         "next_steps": []
       }

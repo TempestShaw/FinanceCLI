@@ -894,6 +894,325 @@
         }
       }
     },
+    "/commands/config.path": {
+      "post": {
+        "operationId": "finance_config_path",
+        "summary": "Show the resolved FinanceCLI config file path",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.path",
+          "usage": "finance config.path",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.set": {
+      "post": {
+        "operationId": "finance_config_set",
+        "summary": "Set a FinanceCLI config value",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Provider key returned by the corresponding list command."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Value supplied for `value`."
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.set",
+          "usage": "finance config.set KEY VALUE",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.show": {
+      "post": {
+        "operationId": "finance_config_show",
+        "summary": "Show the resolved FinanceCLI config",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.show",
+          "usage": "finance config.show",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.unset": {
+      "post": {
+        "operationId": "finance_config_unset",
+        "summary": "Unset a FinanceCLI config value",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Provider key returned by the corresponding list command."
+                  }
+                },
+                "required": [
+                  "key"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.unset",
+          "usage": "finance config.unset KEY",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
     "/commands/document.ocr": {
       "post": {
         "operationId": "finance_document_ocr",

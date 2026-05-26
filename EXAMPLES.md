@@ -159,9 +159,17 @@ finance backtest.factor.weights rsi_14 scores='{"AAPL":1.1,"MSFT":0.3,"NVDA":2.0
 
 ## Output Format
 
-The CLI defaults to JSON for automation-friendly use. Add `--output text` when reading manually:
+The CLI defaults to JSON for automation-friendly use. Add `--output table`, `--output report`, or `--output pretty-json` when reading manually:
 
 ```bash
-finance --output text sources.status
+finance sources.status --output table
+finance document.read ./deck.pdf max_pages=3 --output report
 finance --output json formula.margin numerator=10 denominator=20
+```
+
+Set a human-friendly interactive default once and keep non-interactive output parser-safe:
+
+```bash
+finance config.set output.default table
+finance config.set output.non_interactive_default json
 ```

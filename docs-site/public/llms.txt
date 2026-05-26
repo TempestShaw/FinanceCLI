@@ -28,4 +28,5 @@
 - Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.
 - Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.
 - Use --output compact or schema only when normalized token-efficient records are enough; keep --output json for audit trails.
+- Human display formats (`table`, `report`, `pretty-json`) are for terminals, not parser contracts.
 - Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.

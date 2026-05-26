@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from finance_cli.cli.commands.backtest import register_backtest_commands
 from finance_cli.cli.commands.calendar import register_calendar_commands
+from finance_cli.cli.commands.config import register_config_commands
 from finance_cli.cli.commands.document import register_document_commands
 from finance_cli.cli.commands.estimates import register_estimates_commands
 from finance_cli.cli.commands.filings import register_filings_commands
@@ -26,6 +27,7 @@ from finance_cli.cli.commands.valuation import register_valuation_commands
 
 
 def register_builtin_commands() -> None:
+    register_config_commands()
     register_market_commands()
     register_sources_commands()
     register_calendar_commands()
