@@ -10,6 +10,32 @@ from finance_cli.cli.usage import parse_usage_params
 
 
 SUPPORTED_SHELLS = {"bash", "zsh", "fish"}
+BASH_SCRIPT = r'''
+_finance_complete() {
+  local IFS=$'\n'
+  COMPREPLY=($(COMP_LINE="$COMP_LINE" COMP_POINT="$COMP_POINT" finance __complete bash))
+}
+complete -o default -F _finance_complete finance
+'''
+
+ZSH_SCRIPT = r'''
+#compdef finance
+_finance_complete() {
+  local -a completions
+  completions=("${(@f)$(COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" finance __complete zsh)}")
+  compadd -- "${completions[@]}"
+}
+compdef _finance_complete finance
+'''
+
+FISH_SCRIPT = r'''
+function __finance_complete
+  set -lx COMP_LINE (commandline -cp)
+  set -lx COMP_POINT (string length -- $COMP_LINE)
+  finance __complete fish
+end
+complete -c finance -f -a "(__finance_complete)"
+'''
 
 
 @dataclass(frozen=True)
@@ -45,6 +71,16 @@ def complete_from_env(shell: str, env: dict[str, str]) -> tuple[int, str]:
         point = len(line)
     suggestions = complete(line, point)
     return 0, "\n".join(_format_suggestion(shell, suggestion) for suggestion in suggestions)
+
+
+def completion_script(shell: str) -> str:
+    if shell == "bash":
+        return BASH_SCRIPT.strip() + "\n"
+    if shell == "zsh":
+        return ZSH_SCRIPT.strip() + "\n"
+    if shell == "fish":
+        return FISH_SCRIPT.strip() + "\n"
+    raise ValueError(f"unknown completion shell: {shell}")
 
 
 def _format_suggestion(shell: str, suggestion: str) -> str:

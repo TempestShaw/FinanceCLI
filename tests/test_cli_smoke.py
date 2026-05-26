@@ -95,6 +95,15 @@ def test_generated_specs_use_package_usage_parser():
     assert params["limit"]["default"] == 20
 
 
+def test_completion_command_is_registered():
+    clear_commands()
+    register_builtin_commands()
+
+    names = {command.name for command in list_commands()}
+
+    assert "completion" in names
+
+
 def test_filings_report_preserves_lookup_aliases(monkeypatch):
     captured = {}
 

@@ -86,3 +86,30 @@ def test_hidden_complete_entrypoint_rejects_unknown_shell(capsys, monkeypatch):
 
     assert code == 2
     assert "unknown completion shell" in output
+
+
+def test_completion_command_prints_bash_script(capsys):
+    code = main(["completion", "bash"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "_finance_complete" in output
+    assert "finance __complete bash" in output
+
+
+def test_completion_command_prints_zsh_script(capsys):
+    code = main(["completion", "zsh"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "#compdef finance" in output
+    assert "finance __complete zsh" in output
+
+
+def test_completion_command_prints_fish_script(capsys):
+    code = main(["completion", "fish"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "complete -c finance" in output
+    assert "finance __complete fish" in output
