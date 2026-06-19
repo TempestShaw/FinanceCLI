@@ -32,6 +32,7 @@ Every command returns JSON shaped like:
 - Formula and valuation commands are deterministic calculators, not investment advice.
 - If `ok=false`, surface the error clearly and do not fabricate data.
 - Keep `--output json` for canonical audit output; use compact record renderers only for context compression.
+- Treat `table`, `report`, and `pretty-json` as human display formats, not stable tool contracts.
 
 ## Agent Playbooks
 
@@ -147,12 +148,47 @@ Side effects: network_read_only
 Args: symbol:string required, limit:integer
 Usage: `finance calendar.earnings SYMBOL [limit=12]`
 
+### compare
+Use when: Use for compare workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string, command:string required, key:string
+Usage: `finance compare SYMBOL [SYMBOL ...] COMMAND [key=value ...]`
+
 ### completion
 Use when: Use to install local shell completion scripts for FinanceCLI.
 Avoid when: Do not call during research workflows; this is an operator setup command.
 Side effects: pure_calculation
 Args: shell:string required
 Usage: `finance completion SHELL`
+
+### config.path
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: none
+Usage: `finance config.path`
+
+### config.set
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: key:string required, value:string required
+Usage: `finance config.set KEY VALUE`
+
+### config.show
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: none
+Usage: `finance config.show`
+
+### config.unset
+Use when: Use for config workflows.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: key:string required
+Usage: `finance config.unset KEY`
 
 ### document.ocr
 Use when: Use as fallback for scanned or image-heavy PDFs after document.read/scan cannot extract text.
@@ -207,8 +243,8 @@ Usage: `finance estimates.consensus SYMBOL [period=annual|quarter limit=10 page=
 Use when: Use when the user asks for a canonical 10-K section such as business, risk factors, MD&A, or segments.
 Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
-Args: symbol:string, accession:string, url:string, form:string, section:string, max_chars:integer
-Usage: `finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]`
+Args: symbol:string, accession:string, form:string, section:string, max_chars:integer
+Usage: `finance filings.read [SYMBOL] [ACCESSION|accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]`
 
 ### filings.recent
 Use when: Use first when the user names a ticker but not a filing URL or accession.
@@ -412,20 +448,6 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
 Args: url:string required, max_chars:integer, ocr:string
 Usage: `finance ir.read url=URL [max_chars=12000 ocr=off|auto|force]`
-
-### kpi.extract
-Use when: Use to collect KPI evidence from transcripts and filings with source snippets.
-Avoid when: Use the standard trust rules for this command.
-Side effects: network_read_only
-Args: symbol:string required, source:string, metrics:string, limit:integer, quarter:string, form:string
-Usage: `finance kpi.extract SYMBOL [source=transcripts|filings|both metrics=arr,nrr limit=30 quarter=latest form=10-K]`
-
-### kpi.history
-Use when: Use to collect KPI evidence from transcripts and filings with source snippets.
-Avoid when: Use the standard trust rules for this command.
-Side effects: network_read_only
-Args: symbol:string required, source:string, metrics:string, limit:integer, per_document_limit:integer
-Usage: `finance kpi.history SYMBOL [source=transcripts metrics=arr,nrr limit=4 per_document_limit=20]`
 
 ### market.ohlcv
 Use when: Use for historical bars needed by backtests, event windows, and price context.

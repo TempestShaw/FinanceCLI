@@ -161,6 +161,30 @@ finance calendar.earnings SYMBOL [limit=12]
 finance calendar.earnings AAPL limit=8
 ```
 
+## `compare.*`
+
+### `compare`
+
+Run one command across several symbols and align the results
+
+**Usage**
+
+```bash
+finance compare SYMBOL [SYMBOL ...] COMMAND [key=value ...]
+```
+
+**Examples**
+
+```bash
+finance compare AAPL MSFT GOOG market.quote
+finance compare AAPL MSFT valuation.multiples
+```
+
+**Details**
+
+- The first argument that names a registered command splits symbols from the command.
+- Comparison aligns the top-level scalar metrics each command returns; list-shaped results are reported per symbol as errors.
+
 ## `completion.*`
 
 ### `completion`
@@ -185,6 +209,72 @@ finance completion fish > ~/.config/fish/completions/finance.fish
 
 - Prints shell code only; it does not modify shell startup files.
 - Completion candidates are generated from the live command registry and usage metadata.
+
+## `config.*`
+
+### `config.path`
+
+Show the resolved FinanceCLI config file path
+
+**Usage**
+
+```bash
+finance config.path
+```
+
+**Examples**
+
+```bash
+finance config.path
+```
+
+### `config.set`
+
+Set a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.set KEY VALUE
+```
+
+**Examples**
+
+```bash
+finance config.set output.default table
+```
+
+### `config.show`
+
+Show the resolved FinanceCLI config
+
+**Usage**
+
+```bash
+finance config.show
+```
+
+**Examples**
+
+```bash
+finance config.show
+```
+
+### `config.unset`
+
+Unset a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.unset KEY
+```
+
+**Examples**
+
+```bash
+finance config.unset output.default
+```
 
 ## `document.*`
 
@@ -359,7 +449,7 @@ Read a canonical 10-K section with edgartools
 **Usage**
 
 ```bash
-finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
+finance filings.read [SYMBOL] [ACCESSION|accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
 ```
 
 **Examples**
@@ -892,45 +982,6 @@ finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/0000320193260
 - PDF extraction uses pypdf and returns page-level text when possible.
 - ocr=auto or ocr=force uses the default PaddleOCR/PP-StructureV3 stack.
 - Pass the url from ir.presentations output.
-
-## `kpi.*`
-
-### `kpi.extract`
-
-Extract KPI evidence from filings or transcripts
-
-**Usage**
-
-```bash
-finance kpi.extract SYMBOL [source=transcripts|filings|both metrics=arr,nrr limit=30 quarter=latest form=10-K]
-```
-
-**Examples**
-
-```bash
-finance kpi.extract IOT source=transcripts metrics=arr,net_new_arr,large_customers,nrr
-finance kpi.extract IOT source=both metrics=arr,emerging_products,rpo limit=20
-```
-
-**Details**
-
-- Returns evidence rows, not investment conclusions.
-
-### `kpi.history`
-
-Extract KPI evidence across recent transcripts
-
-**Usage**
-
-```bash
-finance kpi.history SYMBOL [source=transcripts metrics=arr,nrr limit=4 per_document_limit=20]
-```
-
-**Examples**
-
-```bash
-finance kpi.history IOT metrics=arr,large_customers,emerging_products limit=4
-```
 
 ## `market.*`
 
