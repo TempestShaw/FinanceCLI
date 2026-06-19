@@ -66,9 +66,15 @@ class FinanceCommandResult:
     data: dict[str, Any] | list[dict[str, Any]] | None = None
     error: str | None = None
     warnings: list[str] = field(default_factory=list)
+    display: Any | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {
+            "ok": self.ok,
+            "data": self.data,
+            "error": self.error,
+            "warnings": list(self.warnings),
+        }
 
 
 @dataclass(frozen=True)
