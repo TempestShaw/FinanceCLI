@@ -47,7 +47,6 @@ from finance_cli.services.formulas import (
     formula_wacc,
     formula_working_capital,
 )
-from finance_cli.services.kpi import extract_kpi_evidence
 from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv, market_trend, price_performance, relative_price_performance
 from finance_cli.services.news import news_geo, normalize_news_timespan
 from finance_cli.services.ownership import fetch_holders
@@ -162,8 +161,6 @@ def test_cli_registry_registers_builtin_commands():
     assert "fundamentals.metrics" in names
     assert "fundamentals.growth" in names
     assert "fundamentals.statement" in names
-    assert "kpi.extract" in names
-    assert "kpi.history" in names
     assert "valuation.multiples" in names
     assert "valuation.scenario" in names
     assert "valuation.npv" in names
@@ -523,6 +520,51 @@ def test_fundamentals_growth_returns_raw_history_yoy_and_cagr():
     assert any(row["metric"] == "eps" and row["method"] == "reported_diluted_eps" for row in data["rows"])
 
 
+def test_fundamentals_growth_handles_statement_rows_with_period_columns():
+    class Provider:
+        def financial_statement(self, symbol, *, statement, period):
+            assert statement == "income"
+            if period == "annual":
+                return {
+                    "symbol": symbol.upper(),
+                    "statement": statement,
+                    "period": period,
+                    "periods": ["2024", "2025"],
+                    "rows": [
+                        {"concept": "us-gaap_Revenues", "label": "Revenue", "2024": 100.0, "2025": 150.0},
+                        {"concept": "us-gaap_OperatingIncomeLoss", "label": "Operating income", "2024": 20.0, "2025": 45.0},
+                        {"concept": "us-gaap_NetIncomeLoss", "label": "Net income", "2024": 10.0, "2025": 30.0},
+                        {"concept": "us-gaap_EarningsPerShareDiluted", "label": "Diluted", "2024": 1.0, "2025": 3.0},
+                    ],
+                    "source": "test_provider",
+                }
+            return {
+                "symbol": symbol.upper(),
+                "statement": statement,
+                "period": period,
+                "periods": ["2024-04-01 (Q1)", "2025-04-01 (Q1)"],
+                "rows": [
+                    {"concept": "us-gaap_Revenues", "label": "Revenue", "2024-04-01 (Q1)": 50.0, "2025-04-01 (Q1)": 75.0},
+                    {"concept": "us-gaap_NetIncomeLoss", "label": "Net income", "2024-04-01 (Q1)": 5.0, "2025-04-01 (Q1)": 9.0},
+                    {"concept": "us-gaap_EarningsPerShareDiluted", "label": "Diluted", "2024-04-01 (Q1)": 0.5, "2025-04-01 (Q1)": 0.9},
+                ],
+                "source": "test_provider",
+            }
+
+    data = fundamentals_growth(
+        "nvda",
+        metrics=["revenue", "eps", "operating_margin", "net_margin"],
+        periods=["quarterly", "annual"],
+        years=2,
+        provider=Provider(),
+    )
+
+    assert any(row["kind"] == "history" and row["metric"] == "revenue" and row["period"] == "2025" for row in data["rows"])
+    assert any(row["kind"] == "growth" and row["metric"] == "revenue" and row["period_type"] == "quarterly" and row["growth_pct"] == 50.0 for row in data["rows"])
+    assert any(row["kind"] == "growth" and row["metric"] == "eps" and row["growth_pct"] == 80.0 for row in data["rows"])
+    assert any(row["kind"] == "delta" and row["metric"] == "operating_margin" and round(row["delta"], 2) == 0.1 for row in data["rows"])
+
+
 def test_fundamentals_growth_warns_for_short_history_and_sparse_quarter_yoy():
     class Provider:
         def financial_statement(self, symbol, *, statement, period):
@@ -606,6 +648,17 @@ def test_cli_sources_help_and_status(capsys):
     assert any(row["name"] == "yfinance" for row in payload["data"]["sources"])
 
 
+def test_cli_sources_status_table_output_is_readable(capsys):
+    code = main(["sources.status", "--output", "table"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert not output.lstrip().startswith("{")
+    assert "Provider status" in output
+    assert "yfinance" in output
+    assert "OK" in output or "✅" in output
+
+
 def test_cli_namespace_help_lists_child_commands(capsys):
     code = main(["market", "--help"])
     output = capsys.readouterr().out
@@ -615,6 +668,17 @@ def test_cli_namespace_help_lists_child_commands(capsys):
     assert "quote" in output
     assert "ohlcv" in output
     assert "finance market.COMMAND --help" in output
+
+
+def test_cli_namespace_without_help_lists_child_commands(capsys):
+    code = main(["backtest"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "Commands under `backtest`" in output
+    assert "run" in output
+    assert "factor.payload" in output
+    assert "unknown command" not in output
 
 
 def test_cli_valuation_help_documents_new_commands(capsys):
@@ -840,6 +904,73 @@ def test_cli_filings_read_passes_accession_and_section(capsys, monkeypatch):
     assert payload["data"]["section"]["key"] == "business"
 
 
+def test_cli_filings_read_accepts_positional_accession(monkeypatch):
+    captured = {}
+
+    def fake_read_filing_section(**kwargs):
+        captured.update(kwargs)
+        return {"text": "Business text"}
+
+    monkeypatch.setattr("finance_cli.cli.commands.filings.read_filing_section", fake_read_filing_section)
+
+    result = get_command("filings.read")
+    if result is None:
+        register_builtin_commands()
+        result = get_command("filings.read")
+    command_result = result.handler(["AAPL", "0001921094-26-000555"])
+
+    assert command_result.ok is True
+    assert captured["symbol"] == "AAPL"
+    assert captured["accession_no"] == "0001921094-26-000555"
+    assert captured["section"] is None
+
+
+def test_cli_filings_read_table_displays_section_text(capsys, monkeypatch):
+    def fake_read_filing_section(**kwargs):
+        return {
+            "filing": {"company": "Apple Inc.", "form": "8-K", "accession_no": kwargs["accession_no"]},
+            "section": {"key": "business", "title": "Business"},
+            "text": "This is the filing section body.",
+            "char_count": 32,
+            "returned_chars": 32,
+            "truncated": False,
+            "source": "edgartools",
+        }
+
+    monkeypatch.setattr("finance_cli.cli.commands.filings.read_filing_section", fake_read_filing_section)
+    code = main(["filings.read", "AAPL", "0001921094-26-000555", "--output", "table"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "This is the filing section body." in output
+    assert "Char Count" not in output
+
+
+def test_sec_edgar_read_filing_without_section_returns_document_text(monkeypatch):
+    class Filing:
+        company = "Apple Inc."
+        cik = 320193
+        form = "144"
+        filing_date = "2026-05-27"
+        period_of_report = ""
+        accession_no = "0001921094-26-000555"
+        filing_url = "https://example.test/filing"
+        homepage_url = "https://example.test/home"
+        text_url = "https://example.test/text"
+
+        def text(self):
+            return "Full filing body"
+
+    provider = SecEdgarProvider()
+    monkeypatch.setattr(provider, "_get_filing", lambda **_kwargs: Filing())
+
+    data = provider.read_filing_section(accession_no="0001921094-26-000555", section=None)
+
+    assert data["section"]["key"] == "document"
+    assert data["text"] == "Full filing body"
+    assert data["char_count"] == len("Full filing body")
+
+
 def test_cli_filings_sections_passes_symbol(capsys, monkeypatch):
     def fake_list_filing_sections(**kwargs):
         return {
@@ -859,18 +990,76 @@ def test_cli_filings_sections_passes_symbol(capsys, monkeypatch):
     assert payload["data"]["supported_sections"][0]["available"] is True
 
 
+def test_cli_filings_recent_prefers_native_display_for_table(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.fetch_filings_with_display",
+        lambda **_kwargs: ({
+            "symbol": "COST",
+            "filings": [{"form": "10-K"}],
+            "source": "sec_edgar",
+        }, "NATIVE RECENT RICH"),
+    )
+
+    code = main(["filings.recent", "COST", "--output", "table"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert output.strip() == "NATIVE RECENT RICH"
+
+
+def test_cli_filings_recent_json_does_not_render_lazy_display(capsys, monkeypatch):
+    def fail_if_rendered():
+        raise AssertionError("display should not render for json output")
+
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.fetch_filings_with_display",
+        lambda **_kwargs: ({
+            "symbol": "COST",
+            "filings": [{"form": "10-K"}],
+            "source": "sec_edgar",
+        }, fail_if_rendered),
+    )
+
+    code = main(["filings.recent", "COST", "--output", "json"])
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+
+    assert code == 0
+    assert payload["data"]["symbol"] == "COST"
+
+
+def test_cli_filings_recent_classified_has_no_native_display(monkeypatch):
+    captured = {}
+
+    def fake_fetch_filings_with_display(**kwargs):
+        captured.update(kwargs)
+        return {"symbol": "COST", "events": []}, None
+
+    monkeypatch.setattr("finance_cli.cli.commands.filings.fetch_filings_with_display", fake_fetch_filings_with_display)
+
+    result = get_command("filings.recent")
+    if result is None:
+        register_builtin_commands()
+        result = get_command("filings.recent")
+    command_result = result.handler(["COST", "classify=true"])
+
+    assert command_result.ok is True
+    assert command_result.display is None
+    assert captured["classify"] is True
+
+
 def test_cli_filings_statement_passes_url_and_query(capsys, monkeypatch):
     def fake_read_filing_statement(**kwargs):
-        return {
+        return ({
             "filing": {"accession_no": "0000909832-24-000049"},
             "statement": kwargs["statement"],
             "query": kwargs["query"],
             "max_rows": kwargs["max_rows"],
             "view": kwargs["view"],
             "url": kwargs["url"],
-        }
+        }, None)
 
-    monkeypatch.setattr("finance_cli.cli.commands.filings.read_filing_statement", fake_read_filing_statement)
+    monkeypatch.setattr("finance_cli.cli.commands.filings.read_filing_statement_with_display", fake_read_filing_statement)
     code = main([
         "filings.statement",
         "url=https://www.sec.gov/Archives/edgar/data/909832/000090983224000049/cost-20240901.htm",
@@ -920,12 +1109,12 @@ def test_cli_filings_report_passes_report_name(capsys, monkeypatch):
 
 def test_cli_filings_reports_passes_query(capsys, monkeypatch):
     def fake_list_filing_reports(**kwargs):
-        return {
+        return ({
             "reports": [{"short_name": "Leases"}],
             "query": kwargs["query"],
-        }
+        }, None)
 
-    monkeypatch.setattr("finance_cli.cli.commands.filings.list_filing_reports", fake_list_filing_reports)
+    monkeypatch.setattr("finance_cli.cli.commands.filings.list_filing_reports_with_display", fake_list_filing_reports)
     code = main(["filings.reports", "COST", "query=lease"])
     output = capsys.readouterr().out
     payload = json.loads(output)
@@ -933,6 +1122,41 @@ def test_cli_filings_reports_passes_query(capsys, monkeypatch):
     assert code == 0
     assert payload["ok"] is True
     assert payload["data"]["query"] == "lease"
+
+
+def test_cli_filings_reports_prefers_native_display_when_unfiltered(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.list_filing_reports_with_display",
+        lambda **_kwargs: ({
+            "reports": [{"short_name": "Balance Sheets"}],
+            "query": None,
+            "source": "edgartools",
+        }, "NATIVE REPORTS RICH"),
+    )
+
+    code = main(["filings.reports", "COST", "--output", "table"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert output.strip() == "NATIVE REPORTS RICH"
+
+
+def test_cli_filings_reports_table_uses_filtered_rows_when_query_is_present(capsys, monkeypatch):
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.filings.list_filing_reports_with_display",
+        lambda **_kwargs: ({
+            "reports": [{"short_name": "Leases", "category": "Tables", "file_name": "R2.htm"}],
+            "query": "lease",
+            "source": "edgartools",
+        }, None),
+    )
+
+    code = main(["filings.reports", "COST", "query=lease", "--output", "table"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "Leases" in output
+    assert "NATIVE REPORTS RICH" not in output
 
 
 def test_sec_edgar_filing_statement_raw_view_scales_reported_values(monkeypatch):
@@ -1423,72 +1647,6 @@ def test_transcript_parser_uses_fuzzy_qa_markers():
     assert len(data["prepared_remarks"]) == 1
     assert len(data["qa_pairs"]) == 2
     assert data["qa_pairs"][1]["questioner"] == "Analyst Two"
-
-
-def test_kpi_evidence_extractor_finds_saas_metrics():
-    text = (
-        "We ended the year with $1.9 billion in ARR, growing 30% year over year. "
-        "Our $432 million of net new ARR drove this performance. "
-        "We added 204 new $100K+ ARR customers and achieved net retention of approximately 115%. "
-        "Emerging products contributed 23% of net new ACV in Q4."
-    )
-    rows = extract_kpi_evidence(
-        text,
-        metrics=["arr", "net_new_arr", "large_customers", "nrr", "emerging_products"],
-        source_document={"kind": "transcript", "quarter": "Q4 2026"},
-    )
-
-    metrics = {row["metric"] for row in rows}
-    assert {"arr", "net_new_arr", "large_customers", "nrr", "emerging_products"}.issubset(metrics)
-    arr = next(row for row in rows if row["metric"] == "arr")
-    assert arr["value"]["raw"] == "$1.9 billion"
-    assert arr["period"] == "Q4 2026"
-    assert arr["match_method"] == "exact"
-    assert arr["match_score"] == 100.0
-
-
-def test_kpi_evidence_extractor_uses_high_confidence_fuzzy_terms():
-    text = (
-        "Annual recurring rev reached $2.0 billion in Q4 FY2026. "
-        "Large custmers reached 204. "
-        "Free cashflow margin was 25%."
-    )
-    rows = extract_kpi_evidence(
-        text,
-        metrics=["arr", "large_customers", "fcf_margin"],
-        source_document={"kind": "transcript", "quarter": "Q4 2026"},
-    )
-
-    by_metric = {row["metric"]: row for row in rows}
-    assert by_metric["arr"]["value"]["raw"] == "$2.0 billion"
-    assert by_metric["arr"]["match_method"].startswith("fuzzy:")
-    assert by_metric["arr"]["match_score"] >= 90
-    assert by_metric["large_customers"]["value"]["raw"] == "204"
-    assert by_metric["large_customers"]["match_method"].startswith("fuzzy:")
-    assert by_metric["fcf_margin"]["value"]["raw"] == "25%"
-
-
-def test_kpi_evidence_extractor_does_not_match_low_confidence_noise():
-    text = "The company discussed retention hiring and recurring meetings with 115 employees."
-    rows = extract_kpi_evidence(text, metrics=["nrr", "arr"])
-
-    assert rows == []
-
-
-def test_kpi_evidence_extractor_preserves_financial_abbreviations():
-    text = (
-        "U.S. enterprise customers expanded vs. last year as we ended FY 2026 "
-        "with $1.9 billion in ARR, growing 30% year over year."
-    )
-    rows = extract_kpi_evidence(
-        text,
-        metrics=["arr"],
-        source_document={"kind": "transcript", "quarter": "Q4 2026"},
-    )
-
-    assert len(rows) == 1
-    assert rows[0]["value"]["raw"] == "$1.9 billion"
-    assert rows[0]["evidence"].startswith("U.S. enterprise customers expanded vs. last year")
 
 
 def test_valuation_multiples_calculates_sales_multiples(monkeypatch):

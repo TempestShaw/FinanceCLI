@@ -87,12 +87,13 @@ This output was generated with `finance research.plan IOT style=fundamental --ou
         ]
       },
       {
-        "id": "kpis",
+        "id": "operating_metrics",
         "status": "supported",
-        "objective": "Extract KPI evidence without forcing a normalized conclusion.",
+        "objective": "Use transcripts and filings to identify company-specific operating metrics with source text.",
         "commands": [
-          "finance kpi.extract IOT source=both metrics=arr,net_new_arr,large_customers,nrr,rpo,revenue_growth,operating_margin,fcf_margin limit=40",
-          "finance kpi.history IOT metrics=arr,large_customers,nrr,revenue_growth limit=4 per_document_limit=12"
+          "finance transcripts.read IOT quarter=latest max_chars=20000",
+          "finance transcripts.qa IOT quarter=latest limit=15",
+          "finance filings.read IOT form=10-K section=mda max_chars=20000"
         ]
       },
       {

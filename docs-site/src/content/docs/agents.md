@@ -37,7 +37,7 @@ Use `--output json` for canonical audit output. Use `--output compact` or `--out
 | Sector, industry, or Yahoo screen discovery | `sector.*`, `industry.*`, `screen.*` | Discovers supported keys and runs predefined market views. |
 | Earnings calendar fields | `calendar.*` | Company calendar and earnings-date rows. |
 | News/event context | `news.*`, `price.context` | Source-attributed event windows and dated context. |
-| Transcripts and KPI evidence | `transcripts.*`, `kpi.*` | Preserves transcript URLs, quarters, snippets, and metric labels. |
+| Transcripts and call evidence | `transcripts.*` | Preserves transcript URLs, quarters, prepared remarks, and Q&A turns. |
 | Reproducible strategy check | `backtest.*` | Uses explicit symbols, dates, strategy names, and parameters. |
 | Provider setup/debugging | `sources.*` | Lists capabilities and probes configured providers. |
 

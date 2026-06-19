@@ -96,8 +96,6 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "industry.table": ["software-infrastructure", "table=top_companies", "limit=3"],
     "ir.presentations": ["IOT", "limit=3", "source=sec"],
     "ir.read": ["url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm", "max_chars=500", "ocr=off"],
-    "kpi.extract": ["IOT", "source=transcripts", "metrics=arr,nrr", "limit=2"],
-    "kpi.history": ["IOT", "source=transcripts", "metrics=arr,nrr", "limit=2", "per_document_limit=3"],
     "market.ohlcv": ["AAPL", "timeframe=1d", "limit=3"],
     "market.quote": ["AAPL"],
     "market.regime": ["US", "swing"],

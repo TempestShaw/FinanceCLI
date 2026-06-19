@@ -62,11 +62,12 @@ def _fundamental_steps(symbol: str) -> list[dict[str, Any]]:
             ],
         ),
         _step(
-            "kpis",
-            "Extract KPI evidence without forcing a normalized conclusion.",
+            "operating_metrics",
+            "Use transcripts and filings to identify company-specific operating metrics with source text.",
             [
-                f"finance kpi.extract {symbol} source=both metrics=arr,net_new_arr,large_customers,nrr,rpo,revenue_growth,operating_margin,fcf_margin limit=40",
-                f"finance kpi.history {symbol} metrics=arr,large_customers,nrr,revenue_growth limit=4 per_document_limit=12",
+                f"finance transcripts.read {symbol} quarter=latest max_chars=20000",
+                f"finance transcripts.qa {symbol} quarter=latest limit=15",
+                f"finance filings.read {symbol} form=10-K section=mda max_chars=20000",
             ],
         ),
         _step(
