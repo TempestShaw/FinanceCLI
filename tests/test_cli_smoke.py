@@ -43,6 +43,131 @@ def test_finance_cli_formula_command_outputs_json(capsys):
     assert payload["data"]["margin"] == 0.5
 
 
+def test_cli_uses_configured_interactive_output_default(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('[output]\ndefault = "compact"\n', encoding="utf-8")
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+    monkeypatch.delenv("FINANCECLI_OUTPUT", raising=False)
+    monkeypatch.setattr("sys.stdout.isatty", lambda: True)
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+
+    code = main(["market.quote", "aapl", "--fields", "last_price"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "AAPL|market_quote|last_price=190.12|src=test_provider"
+
+
+def test_cli_non_interactive_config_default_can_stay_json(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    config_path.write_text(
+        '[output]\ndefault = "compact"\nnon_interactive_default = "json"\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+    monkeypatch.delenv("FINANCECLI_OUTPUT", raising=False)
+    monkeypatch.setattr("sys.stdout.isatty", lambda: False)
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+
+    code = main(["market.quote", "aapl", "--fields", "last_price"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 0
+    assert payload["data"]["symbol"] == "AAPL"
+    assert payload["data"]["last_price"] == 190.12
+
+
+def test_cli_output_flag_overrides_config_default(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('[output]\ndefault = "compact"\n', encoding="utf-8")
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+    monkeypatch.setattr("sys.stdout.isatty", lambda: True)
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+
+    code = main(["market.quote", "aapl", "--output", "json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 0
+    assert payload["ok"] is True
+    assert payload["data"]["symbol"] == "AAPL"
+
+
+def test_cli_output_env_overrides_config_default(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('[output]\ndefault = "json"\n', encoding="utf-8")
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+    monkeypatch.setenv("FINANCECLI_OUTPUT", "compact")
+    monkeypatch.setattr("sys.stdout.isatty", lambda: False)
+    monkeypatch.setattr(
+        "finance_cli.cli.commands.market_data.fetch_realtime_quote",
+        lambda symbol: {"symbol": symbol.upper(), "last_price": 190.12, "source": "test_provider"},
+    )
+
+    code = main(["market.quote", "aapl", "--fields", "last_price"])
+    output = capsys.readouterr().out.strip()
+
+    assert code == 0
+    assert output == "AAPL|market_quote|last_price=190.12|src=test_provider"
+
+
+def test_config_commands_show_path_set_and_unset(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+    monkeypatch.delenv("FINANCECLI_OUTPUT", raising=False)
+
+    set_code = main(["config.set", "output.default", "compact", "--output", "json"])
+    set_payload = json.loads(capsys.readouterr().out)
+    show_code = main(["config.show", "--output", "json"])
+    show_payload = json.loads(capsys.readouterr().out)
+    path_code = main(["config.path", "--output", "json"])
+    path_payload = json.loads(capsys.readouterr().out)
+    unset_code = main(["config.unset", "output.default", "--output", "json"])
+    unset_payload = json.loads(capsys.readouterr().out)
+
+    assert set_code == 0
+    assert set_payload["data"]["key"] == "output.default"
+    assert set_payload["data"]["value"] == "compact"
+    assert show_code == 0
+    assert show_payload["data"]["config"]["output"]["default"] == "compact"
+    assert path_code == 0
+    assert path_payload["data"]["path"] == str(config_path)
+    assert unset_code == 0
+    assert unset_payload["data"]["removed"] is True
+    assert "default" not in tomllib.loads(config_path.read_text(encoding="utf-8")).get("output", {})
+
+
+def test_config_set_rejects_invalid_output_default(capsys, monkeypatch, tmp_path):
+    config_path = tmp_path / "config.toml"
+    monkeypatch.setenv("FINANCECLI_CONFIG", str(config_path))
+
+    code = main(["config.set", "output.default", "csv", "--output", "json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 1
+    assert "unknown output format" in payload["error"]
+    assert not config_path.exists()
+
+
+def test_invalid_output_env_returns_cli_error(capsys, monkeypatch):
+    monkeypatch.setenv("FINANCECLI_OUTPUT", "csv")
+
+    code = main(["formula.margin", "numerator=10", "denominator=20"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert code == 2
+    assert payload["ok"] is False
+    assert "unknown output format" in payload["error"]
+
+
 def test_finance_cli_lists_commands(capsys):
     code = main(["--list"])
     output = capsys.readouterr().out
@@ -50,6 +175,19 @@ def test_finance_cli_lists_commands(capsys):
     assert code == 0
     assert "formula.margin" in output
     assert "sources.status" in output
+
+
+def test_finance_cli_without_args_shows_module_overview(capsys):
+    code = main([])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "Finance modules" in output
+    assert "market" in output
+    assert "config" in output
+    assert "Market data, status, trend, regime, and sector heat." in output
+    assert "formula.margin" not in output
+    assert "sources.status" not in output
 
 
 def test_generated_agent_schema_covers_registered_commands():
@@ -66,6 +204,9 @@ def test_generated_agent_schema_covers_registered_commands():
     assert tools_doc["$schema"] == tools_schema["$id"]
     assert tools_doc["record_schema"]["required"] == ["entity", "kind", "fields"]
     assert tools_doc["output_formats"]["compact"]["record_renderer"] is True
+    assert tools_doc["output_formats"]["table"]["human_display"] is True
+    assert tools_doc["output_formats"]["report"]["human_display"] is True
+    assert tools_doc["output_formats"]["pretty-json"]["machine_readable"] is False
     assert tools_schema["properties"]["record_schema"]["type"] == "object"
     assert "/commands/filings.statement" in openapi_doc["paths"]
 
@@ -160,9 +301,9 @@ def test_filings_statement_still_accepts_positional_symbol(monkeypatch):
 
     def fake_read_filing_statement(**kwargs):
         captured.update(kwargs)
-        return {"rows": []}
+        return {"rows": []}, None
 
-    monkeypatch.setattr(filings_commands, "read_filing_statement", fake_read_filing_statement)
+    monkeypatch.setattr(filings_commands, "read_filing_statement_with_display", fake_read_filing_statement)
 
     result = filings_commands._filings_statement(["COST", "statement=balance", "max_rows=2"])
 
