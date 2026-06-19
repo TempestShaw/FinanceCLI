@@ -17,7 +17,6 @@ from finance_cli.providers.company_ir import _registrable_domain as _company_ir_
 from finance_cli.providers.config import PRESENTATION_RULES
 from finance_cli.providers.camelot_tables import CamelotTableProvider
 from finance_cli.providers.fmp import FMPProvider
-from finance_cli.providers.gdelt import GdeltNewsProvider
 from finance_cli.providers.historical import HistoricalMarketDataService
 from finance_cli.providers.html_document import HTMLDocumentProvider, _text_blocks
 from finance_cli.providers.native_pdf import NativePDFProvider, reconstruct_reading_order
@@ -48,7 +47,6 @@ from finance_cli.services.formulas import (
     formula_working_capital,
 )
 from finance_cli.services.market_data import fetch_market_status, fetch_ohlcv, market_trend, price_performance, relative_price_performance
-from finance_cli.services.news import news_geo, normalize_news_timespan
 from finance_cli.services.ownership import fetch_holders
 from finance_cli.services.price import detect_price_moves, price_context
 from finance_cli.services.research import research_plan
@@ -147,8 +145,6 @@ def test_cli_registry_registers_builtin_commands():
     assert "market.trend" in names
     assert "symbol.snapshot" in names
     assert "symbol.profile" in names
-    assert "news.search" in names
-    assert "news.analyze" in names
     assert "filings.recent" in names
     assert "filings.read" in names
     assert "filings.sections" in names
@@ -594,25 +590,15 @@ def test_fundamentals_growth_warns_for_short_history_and_sparse_quarter_yoy():
 
 
 def test_cli_main_shows_command_help(capsys):
-    code = main(["news.analyze", "--help"])
+    code = main(["filings.recent", "--help"])
     output = capsys.readouterr().out
 
     assert code == 0
-    assert "Usage: news.analyze" in output
-    assert "analysis=timeline|tone|context|geo|doc" in output
-    assert "timespan=30D|1W|1M|24H" in output
-    assert "date=YYYY-MM-DD" in output
-    assert "start_date=YYYY-MM-DD" in output
+    assert "Usage: filings.recent" in output
+    assert "forms=8-K,10-Q" in output
+    assert "limit=20" in output
+    assert "classify=false" in output
     assert "Examples:" in output
-
-
-def test_news_timespan_accepts_human_friendly_lookbacks():
-    assert normalize_news_timespan("30D") == "30d"
-    assert normalize_news_timespan("1W") == "1w"
-    assert normalize_news_timespan("1M") == "1m"
-    assert normalize_news_timespan("24H") == "24h"
-    assert normalize_news_timespan("90min") == "90min"
-    assert normalize_news_timespan("2 weeks") == "2w"
 
 
 def test_provider_presentation_rules_are_configured_once():
@@ -736,7 +722,6 @@ def test_sources_inventory_and_status_are_non_network_diagnostics():
     assert inventory["count"] >= 4
     assert any(row["name"] == "sec" for row in inventory["sources"])
     assert any(row["name"] == "fmp" for row in inventory["sources"])
-    assert any(row["name"] == "gdelt" for row in status["sources"])
     assert "summary" in status
 
 
@@ -793,18 +778,6 @@ def test_price_context_returns_temporal_timeline_without_causality(monkeypatch):
         },
     )
     monkeypatch.setattr(
-        "finance_cli.services.price._news_rows",
-        lambda *args, **kwargs: [
-            {
-                "title": "Company reports results",
-                "url": "https://news.example/story",
-                "seendate": "20260102T120000Z",
-                "domain": "news.example",
-                "language": "English",
-            }
-        ],
-    )
-    monkeypatch.setattr(
         "finance_cli.services.price.search_transcripts",
         lambda *args, **kwargs: {
             "transcripts": [
@@ -821,9 +794,9 @@ def test_price_context_returns_temporal_timeline_without_causality(monkeypatch):
 
     result = price_context("IOT", target_date="2026-01-03", lookback="1D")
 
-    assert result["count"] == 3
+    assert result["count"] == 2
     roles = {row["source_type"]: row["evidence_role"] for row in result["timeline"]}
-    assert roles == {"news": "before_move", "filing": "same_day", "transcript": "after_move"}
+    assert roles == {"filing": "same_day", "transcript": "after_move"}
     assert "caused_by" not in json.dumps(result)
 
 
@@ -835,7 +808,6 @@ def test_parse_date_handles_compact_datetimes_on_python_310():
 
 def test_price_context_accepts_calendar_window_strings(monkeypatch):
     monkeypatch.setattr("finance_cli.services.price.list_recent_filings", lambda *args, **kwargs: {"filings": []})
-    monkeypatch.setattr("finance_cli.services.price._news_rows", lambda *args, **kwargs: [])
     monkeypatch.setattr("finance_cli.services.price.search_transcripts", lambda *args, **kwargs: {"transcripts": []})
 
     result = price_context("IOT", target_date="2026-01-03", lookback="1W")
@@ -2403,199 +2375,6 @@ def test_symbol_profile_exposes_canslim_quote_fields():
     assert profile["return_on_equity"] == 0.25
     assert profile["held_percent_institutions"] == 0.7
 
-
-def test_gdelt_news_provider_uses_doc_api_without_lang_query(monkeypatch):
-    class Response:
-        status_code = 200
-        text = '{"articles":[]}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {
-                "articles": [
-                    {"title": "NVIDIA news", "language": "English"},
-                    {"title": "Other language", "language": "Spanish"},
-                ]
-            }
-
-    calls = []
-
-    def fake_get(url, params, headers, timeout, **kwargs):
-        calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout, **kwargs})
-        return Response()
-
-    monkeypatch.setattr("finance_cli.providers.gdelt.httpx.get", fake_get)
-    rows = GdeltNewsProvider(min_interval_seconds=0, retry_count=0).symbol_news("NVDA", max_records=2)
-
-    assert calls[0]["url"] == "https://api.gdeltproject.org/api/v2/doc/doc"
-    assert calls[0]["params"]["query"] == '"NVDA" stock sourcelang:english'
-    assert calls[0]["params"]["mode"] == "artlist"
-    assert calls[0]["params"]["format"] == "json"
-    assert calls[0]["params"]["timespan"] == "1d"
-    assert calls[0]["trust_env"] is False
-    assert "lang:english" not in calls[0]["params"]["query"].split()
-    assert "sourcelang:english" in calls[0]["params"]["query"]
-    assert len(rows) == 1
-    assert rows[0]["title"] == "NVIDIA news"
-
-
-def test_gdelt_news_provider_retries_rate_limit_text(monkeypatch):
-    class RateLimitedResponse:
-        status_code = 200
-        text = "Rate limit exceeded. Please slow down."
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {}
-
-    class SuccessResponse:
-        status_code = 200
-        text = '{"articles":[{"title":"NVIDIA rebound","language":"English"}]}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {"articles": [{"title": "NVIDIA rebound", "language": "English"}]}
-
-    calls = []
-
-    def fake_get(url, params, headers, timeout, **kwargs):
-        calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout, **kwargs})
-        return RateLimitedResponse() if len(calls) == 1 else SuccessResponse()
-
-    monkeypatch.setattr("finance_cli.providers.gdelt.httpx.get", fake_get)
-    monkeypatch.setattr("finance_cli.providers.gdelt.time.sleep", lambda _: None)
-
-    rows = GdeltNewsProvider(min_interval_seconds=0, retry_count=1, retry_delay_seconds=0).search("NVIDIA")
-
-    assert len(calls) == 2
-    assert rows == [{"title": "NVIDIA rebound", "language": "English"}]
-
-
-def test_gdelt_doc_timeline_uses_supported_doc_mode(monkeypatch):
-    class Response:
-        status_code = 200
-        text = '{"timeline":[{"date":"20260425","value":2}]}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {"timeline": [{"date": "20260425", "value": 2}]}
-
-    calls = []
-
-    def fake_get(url, params, headers, timeout, **kwargs):
-        calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout, **kwargs})
-        return Response()
-
-    monkeypatch.setattr("finance_cli.providers.gdelt.httpx.get", fake_get)
-
-    payload = GdeltNewsProvider(min_interval_seconds=0, retry_count=0).timeline(
-        "NVIDIA",
-        mode="timeline_vol_raw",
-        timespan="2d",
-        timeline_smooth=3,
-    )
-
-    assert calls[0]["url"] == "https://api.gdeltproject.org/api/v2/doc/doc"
-    assert calls[0]["params"]["mode"] == "timelinevolraw"
-    assert calls[0]["params"]["query"] == "NVIDIA sourcelang:english"
-    assert calls[0]["params"]["timespan"] == "2d"
-    assert calls[0]["params"]["timelinesmooth"] == 3
-    assert payload["timeline"][0]["value"] == 2
-
-
-def test_gdelt_context_uses_context_endpoint_without_source_language(monkeypatch):
-    class Response:
-        status_code = 200
-        text = '{"articles":[{"title":"NVIDIA", "context":"AI chip sentence"}]}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {"articles": [{"title": "NVIDIA", "context": "AI chip sentence"}]}
-
-    calls = []
-
-    def fake_get(url, params, headers, timeout, **kwargs):
-        calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout, **kwargs})
-        return Response()
-
-    monkeypatch.setattr("finance_cli.providers.gdelt.httpx.get", fake_get)
-
-    payload = GdeltNewsProvider(min_interval_seconds=0, retry_count=0).context(
-        "NVIDIA export controls",
-        max_records=5,
-        timespan="24h",
-        is_quote=True,
-    )
-
-    assert calls[0]["url"] == "https://api.gdeltproject.org/api/v2/context/context"
-    assert calls[0]["params"]["mode"] == "artlist"
-    assert calls[0]["params"]["format"] == "json"
-    assert calls[0]["params"]["query"] == "NVIDIA export controls"
-    assert calls[0]["params"]["isquote"] == 1
-    assert payload["articles"][0]["context"] == "AI chip sentence"
-
-
-def test_gdelt_geo_uses_gkg_geojson_endpoint(monkeypatch):
-    class Response:
-        status_code = 200
-        text = '{"type":"FeatureCollection","features":[{"type":"Feature"}]}'
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return {"type": "FeatureCollection", "features": [{"type": "Feature"}]}
-
-    calls = []
-
-    def fake_get(url, params, headers, timeout, **kwargs):
-        calls.append({"url": url, "params": params, "headers": headers, "timeout": timeout, **kwargs})
-        return Response()
-
-    monkeypatch.setattr("finance_cli.providers.gdelt.httpx.get", fake_get)
-
-    payload = GdeltNewsProvider(min_interval_seconds=0, retry_count=0).geo(
-        "NVIDIA",
-        mode="pointdata",
-        max_points=10,
-    )
-
-    assert calls[0]["url"] == "https://api.gdeltproject.org/api/v1/gkg_geojson"
-    assert calls[0]["params"]["QUERY"] == "NVIDIA"
-    assert calls[0]["params"]["TIMESPAN"] == 1440
-    assert calls[0]["params"]["OUTPUTTYPE"] == 1
-    assert calls[0]["params"]["MAXROWS"] == 10
-    assert payload["type"] == "FeatureCollection"
-
-
-def test_gdelt_geo_timespan_accepts_human_friendly_values():
-    assert GdeltNewsProvider._timespan_to_minutes("90min") == 90
-    assert GdeltNewsProvider._timespan_to_minutes("2 hours") == 120
-    assert GdeltNewsProvider._timespan_to_minutes("30D") == 1440
-
-
-def test_news_geo_returns_empty_geojson_without_enrichment():
-    class Provider:
-        SECTOR_QUERY_EXPANSIONS = {}
-
-        def geo(self, query, mode, timespan, max_points):
-            return {"type": "FeatureCollection", "features": []}
-
-    result = news_geo(symbol="NVDA", max_points=3, provider=Provider())
-
-    assert result["count"] == 0
-    assert result["payload"] == {"type": "FeatureCollection", "features": []}
-    assert "enrichment" not in result
 
 
 def test_cli_main_builds_factor_backtest_payload(capsys):
