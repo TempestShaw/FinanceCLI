@@ -2,14 +2,19 @@
 from __future__ import annotations
 
 import json
+import math
 import re
+from io import StringIO
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol
+
+from rich.console import Console
+from rich.table import Table
 
 from finance_cli.schemas import Record
 
 
-RecordFormat = Literal["json", "compact", "schema"]
+RecordFormat = Literal["json", "compact", "schema", "table", "md"]
 
 
 @dataclass(frozen=True)
@@ -177,25 +182,6 @@ class TranscriptReadRecordAdapter:
             source=_first_text(payload, SOURCE_KEYS) or _first_text(transcript, SOURCE_KEYS),
             metadata=_adapter_metadata({"quarter": "period", "published_at": "timestamp", "date": "timestamp"}),
         )]
-
-
-class KpiRecordAdapter:
-    def to_records(self, payload: Any, *, command: str | None = None) -> list[Record]:
-        if not isinstance(payload, dict):
-            return DictRecordAdapter().to_records(payload, command=command)
-        records: list[Record] = []
-        document_lookup = _document_lookup(payload.get("documents"))
-        for row in payload.get("kpis") or []:
-            if isinstance(row, dict):
-                records.append(_kpi_record(payload, row, document_lookup))
-        for group in payload.get("history") or []:
-            if not isinstance(group, dict):
-                continue
-            group_lookup = _document_lookup(group.get("documents")) or document_lookup
-            for row in group.get("kpis") or []:
-                if isinstance(row, dict):
-                    records.append(_kpi_record(payload, row, group_lookup))
-        return records
 
 
 class PriceMovesRecordAdapter:
@@ -388,8 +374,6 @@ COMMAND_RECORD_ADAPTERS: dict[str, RecordAdapter] = {
     "ownership.holders": OwnershipHoldersRecordAdapter(),
     "filings.recent": FilingsRecentRecordAdapter(),
     "filings.statement": FilingsStatementRecordAdapter(),
-    "kpi.extract": KpiRecordAdapter(),
-    "kpi.history": KpiRecordAdapter(),
     "price.context": PriceContextRecordAdapter(),
     "price.moves": PriceMovesRecordAdapter(),
     "price.relative": PriceRelativeRecordAdapter(),
@@ -460,6 +444,10 @@ def render_records(records: list[Record], output: RecordFormat, options: RecordR
         rendered = _render_compact(selected, opts)
     elif output == "schema":
         rendered = _render_schema_rows(selected, opts)
+    elif output == "table":
+        rendered = _render_table(selected, opts)
+    elif output == "md":
+        rendered = _render_markdown(selected, opts)
     else:
         raise ValueError(f"unknown record output format: {output}")
     return _cap_chars(rendered, opts.max_chars)
@@ -528,26 +516,6 @@ def _document_lookup(documents: Any) -> dict[Any, dict[str, Any]]:
         if doc_ref is not None:
             lookup[doc_ref] = document
     return lookup
-
-
-def _kpi_record(payload: dict[str, Any], row: dict[str, Any], document_lookup: dict[Any, dict[str, Any]]) -> Record:
-    document = document_lookup.get(row.get("doc_ref"), {})
-    value = row.get("value") if isinstance(row.get("value"), dict) else {}
-    document_fields = {f"document_{key}": value for key, value in document.items() if key != "doc_ref"}
-    fields = {**document_fields, **row}
-    if value:
-        fields.setdefault("value_raw", value.get("raw"))
-        fields.setdefault("value_number", value.get("number"))
-        fields.setdefault("currency", value.get("currency"))
-    return Record(
-        entity=_entity_from_context({**payload, **document}),
-        kind="kpi",
-        period=_text_or_none(row.get("period") or document.get("period") or document.get("quarter")),
-        timestamp=_text_or_none(document.get("published_at")),
-        fields=fields,
-        source=_first_text(document, SOURCE_KEYS) or _first_text(payload, SOURCE_KEYS),
-        metadata=_adapter_metadata({"period": "period", "quarter": "period", "published_at": "timestamp"}),
-    )
 
 
 def _fields_except(mapping: dict[str, Any], excluded: set[str]) -> dict[str, Any]:
@@ -766,6 +734,38 @@ def _render_schema_rows(records: list[Record], options: RecordRenderOptions) -> 
     return "\n".join(lines)
 
 
+def _render_table(records: list[Record], options: RecordRenderOptions) -> str:
+    if not records:
+        return ""
+    columns = _schema_columns(records, options)
+    table = Table(show_header=True, header_style="bold")
+    for column in columns:
+        table.add_column(_title_column(column), overflow="fold")
+    for record in records:
+        table.add_row(*_record_schema_row(record, columns, options))
+    buffer = StringIO()
+    console = Console(file=buffer, force_terminal=False, color_system=None, width=120)
+    console.print(table)
+    return buffer.getvalue().rstrip()
+
+
+def _render_markdown(records: list[Record], options: RecordRenderOptions) -> str:
+    if not records:
+        return ""
+    columns = _schema_columns(records, options)
+    header = "| " + " | ".join(_title_column(column) for column in columns) + " |"
+    divider = "| " + " | ".join("---" for _ in columns) + " |"
+    lines = [header, divider]
+    for record in records:
+        cells = (_md_cell(value) for value in _record_schema_row(record, columns, options))
+        lines.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines)
+
+
+def _md_cell(value: str) -> str:
+    return str(value).replace("|", "\\|").replace("\n", " ")
+
+
 def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list[str]:
     selected_structural = _selected_structural_fields(records, options)
     structural = ["entity", "kind"]
@@ -775,6 +775,10 @@ def _schema_columns(records: list[Record], options: RecordRenderOptions) -> list
         if key not in selected_structural and any(getattr(record, key) for record in records)
     )
     return _dedupe_columns(structural + list(options.fields or _ordered_field_names(records, options)))
+
+
+def _title_column(column: str) -> str:
+    return column.replace("_", " ").title()
 
 
 def _record_schema_row(record: Record, columns: list[str], options: RecordRenderOptions) -> list[str]:
@@ -861,11 +865,35 @@ def _value_text(value: Any) -> str:
         return ""
     if isinstance(value, bool):
         return "true" if value else "false"
+    if isinstance(value, float):
+        return _clean_text(_display_float(value))
     if isinstance(value, (dict, list)):
-        text = json.dumps(value, ensure_ascii=False, default=str, allow_nan=False, separators=(",", ":"))
+        text = json.dumps(_display_value(value), ensure_ascii=False, default=str, allow_nan=False, separators=(",", ":"))
     else:
         text = str(value)
     return _clean_text(text)
+
+
+def _display_value(value: Any) -> Any:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return _display_float(value)
+    if isinstance(value, list):
+        return [_display_value(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _display_value(item) for key, item in value.items()}
+    return value
+
+
+def _display_float(value: float) -> str:
+    if not math.isfinite(value):
+        return str(value)
+    text = str(value)
+    if "e" not in text.lower() and "." in text and len(text.rsplit(".", 1)[1]) <= 4:
+        return text
+    rounded = f"{value:.4f}".rstrip("0").rstrip(".")
+    return rounded or "0"
 
 
 def _clean_text(value: Any) -> str:

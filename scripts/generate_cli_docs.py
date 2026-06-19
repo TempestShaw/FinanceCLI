@@ -61,18 +61,50 @@ OUTPUT_FORMATS: dict[str, dict[str, Any]] = {
     "json": {
         "description": "Canonical command result envelope. Preserves ok, data, error, and warnings for audit and tool contracts.",
         "record_renderer": False,
+        "machine_readable": True,
+        "human_display": False,
+    },
+    "md": {
+        "description": "Markdown view: a one-line headline answer plus supporting tables and provenance. Readable by humans and token-efficient for LLMs.",
+        "record_renderer": True,
+        "machine_readable": False,
+        "human_display": True,
     },
     "text": {
         "description": "Legacy plain text view for humans.",
         "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
     },
     "compact": {
         "description": "Pipe-delimited normalized records with repeated keys removed where practical.",
         "record_renderer": True,
+        "machine_readable": True,
+        "human_display": False,
     },
     "schema": {
         "description": "Schema-once row format: one header line plus compact rows for repeated records.",
         "record_renderer": True,
+        "machine_readable": True,
+        "human_display": False,
+    },
+    "table": {
+        "description": "Rich table view for humans. Uses normalized records but is not a stable parser contract.",
+        "record_renderer": True,
+        "machine_readable": False,
+        "human_display": True,
+    },
+    "report": {
+        "description": "Rich paragraph/report view for humans, especially document and filing text.",
+        "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
+    },
+    "pretty-json": {
+        "description": "Indented JSON for human debugging. Use json for canonical automation output.",
+        "record_renderer": False,
+        "machine_readable": False,
+        "human_display": True,
     },
 }
 
@@ -129,11 +161,6 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
         "side_effects": "network_read_only",
         "agent_use": "Use to discover or read investor presentations from SEC exhibits and company IR pages.",
         "citation_fields": ["symbol", "url", "filing_url", "accession_no", "source"],
-    },
-    "kpi": {
-        "side_effects": "network_read_only",
-        "agent_use": "Use to collect KPI evidence from transcripts and filings with source snippets.",
-        "citation_fields": ["symbol", "url", "accession_no", "quarter", "metric"],
     },
     "market": {
         "side_effects": "network_read_only",
@@ -457,7 +484,7 @@ COMMON_PARAM_OVERRIDES: dict[str, dict[str, Any]] = {
     "max_runs": {"type": "integer", "description": "Maximum parameter combinations to evaluate."},
     "max_tables": {"type": "integer", "description": "Maximum extracted tables to return."},
     "metric": {"type": "string", "description": "Metric used to rank tuning results."},
-    "metrics": {"type": "string", "description": "Comma-separated KPI or metric names to search for."},
+    "metrics": {"type": "string", "description": "Comma-separated metric names to return."},
     "mode": {"type": "string", "description": "Analysis mode."},
     "name": {"type": "string", "description": "Report, section, or table name selected by the caller."},
     "news_limit": {"type": "integer", "description": "Maximum news records to include."},
@@ -466,7 +493,7 @@ COMMON_PARAM_OVERRIDES: dict[str, dict[str, Any]] = {
     "pages": {"type": "string", "description": "PDF page selection passed to the table extractor."},
     "parameters": {"type": "object", "description": "Strategy parameter object included in the payload."},
     "params": {"type": "object", "description": "Strategy parameters supplied as JSON or key-value pairs."},
-    "per_document_limit": {"type": "integer", "description": "Maximum KPI evidence rows per source document."},
+    "per_document_limit": {"type": "integer", "description": "Maximum rows per source document."},
     "period": {"type": "string", "description": "Financial statement period, such as annual or quarterly."},
     "provider": {"type": "string", "description": "Provider selection."},
     "quarter": {"type": "string", "description": "Fiscal quarter label, such as Q1 or Q4."},
@@ -526,7 +553,6 @@ NAMESPACE_DATA_SCHEMAS: dict[str, dict[str, Any]] = {
     "fundamentals": {"type": "object", "description": "Financial statement rows or standard financial metrics.", "additionalProperties": True},
     "industry": {"type": "object", "description": "Yahoo industry key, overview, or table result.", "additionalProperties": True},
     "ir": {"type": "object", "description": "Investor-presentation discovery or text extraction result.", "additionalProperties": True},
-    "kpi": {"type": "object", "description": "KPI evidence snippets and history rows.", "additionalProperties": True},
     "market": {"type": "object", "description": "Quote, bars, market status, regime, or sector heat data.", "additionalProperties": True},
     "news": {"type": "object", "description": "News records or analysis result.", "additionalProperties": True},
     "price": {"type": "object", "description": "Price moves, performance rows, or dated evidence timeline.", "additionalProperties": True},
@@ -885,6 +911,7 @@ def build_llms_txt() -> str:
         "- Use valuation.* only for deterministic math with explicit assumptions; do not present it as investment advice.",
         "- Use market.*, sector.*, industry.*, screen.*, and calendar.* for provider-attributed market context.",
         "- Use --output compact or schema only when normalized token-efficient records are enough; keep --output json for audit trails.",
+        "- Human display formats (`table`, `report`, `pretty-json`) are for terminals, not parser contracts.",
         "- Preserve source fields, accessions, URLs, report names, page numbers, offsets, providers, and warnings.",
     ]) + "\n"
 
@@ -920,6 +947,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "- Formula and valuation commands are deterministic calculators, not investment advice.",
         "- If `ok=false`, surface the error clearly and do not fabricate data.",
         "- Keep `--output json` for canonical audit output; use compact record renderers only for context compression.",
+        "- Treat `table`, `report`, and `pretty-json` as human display formats, not stable tool contracts.",
         "",
         "## Agent Playbooks",
         "",
@@ -1013,7 +1041,7 @@ def _input_schema(params: dict[str, dict[str, Any]]) -> dict[str, Any]:
 def _auth_required(namespace: str, command_name: str) -> str:
     if command_name.startswith("sources."):
         return "optional_environment"
-    if namespace in {"news", "market", "price", "symbol", "fundamentals", "calendar", "sector", "industry", "screen", "filings", "transcripts", "ir", "kpi"}:
+    if namespace in {"news", "market", "price", "symbol", "fundamentals", "calendar", "sector", "industry", "screen", "filings", "transcripts", "ir"}:
         return "optional_environment_or_public_provider"
     return "none"
 
