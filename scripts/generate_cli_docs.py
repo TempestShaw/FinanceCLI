@@ -167,12 +167,6 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
         "agent_use": "Use for quotes, OHLCV, market status, broad regime, and sector heat context.",
         "rate_limit_notes": "Market data is time-sensitive and provider-specific.",
     },
-    "news": {
-        "side_effects": "network_read_only",
-        "agent_use": "Use for source-attributed news search and GDELT analysis windows.",
-        "citation_fields": ["url", "source", "published_at", "seendate"],
-        "rate_limit_notes": "News providers can rate limit and can return sparse windows.",
-    },
     "ownership": {
         "side_effects": "network_read_only",
         "agent_use": "Use for Yahoo major holder, institutional holder, fund holder, and insider tables.",
@@ -737,7 +731,7 @@ def build_tools_document(specs: list[dict[str, Any]]) -> dict[str, Any]:
         "trust_policy": {
             "cite_when_available": ["accession", "accession_no", "url", "report_name", "section", "page", "start_char", "end_char", "source", "provider", "timestamp"],
             "market_data": "Never present market data without provider/source and timestamp/date fields when available.",
-            "source_truth": "Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.",
+            "source_truth": "Treat Yahoo, FMP, SEC, transcripts, and company IR as source-specific records, not ground truth.",
             "credentials": "API keys are read from environment variables at runtime and are not written by the CLI.",
         },
         "playbooks": PLAYBOOKS,
@@ -943,7 +937,7 @@ def build_llms_full_txt(specs: list[dict[str, Any]]) -> str:
         "",
         "- Cite accession, URL, report_name, section, page, start_char/end_char, source, provider, and timestamp when available.",
         "- Never present market data without provider/source and timestamp/date fields when available.",
-        "- Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.",
+        "- Treat Yahoo, FMP, SEC, transcripts, and company IR as source-specific records, not ground truth.",
         "- Formula and valuation commands are deterministic calculators, not investment advice.",
         "- If `ok=false`, surface the error clearly and do not fabricate data.",
         "- Keep `--output json` for canonical audit output; use compact record renderers only for context compression.",

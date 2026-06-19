@@ -25,7 +25,7 @@ These areas work from the default package install, subject to normal provider av
 | SEC filings | Filing discovery, filing sections, XBRL statement rows, and filing reports through `filings.*`. |
 | Documents | Native PDF/HTML text extraction, document scanning, windows, table extraction, and OCR through `document.*`. |
 | Yahoo Finance | Quotes, OHLCV, fundamentals, calendars, sectors, industries, and screens through `market.*`, `fundamentals.*`, `calendar.*`, `sector.*`, `industry.*`, and `screen.*`. |
-| News and transcripts | Public GDELT news search/analysis and public transcript pages through `news.*` and `transcripts.*`. |
+| News and transcripts | Public transcript pages through `transcripts.*`. |
 | Calculators | Deterministic finance formulas and valuation math through `formula.*` and `valuation.*`. |
 | Backtests | Built-in VectorBT strategy runs, tuning, and factor payload helpers through `backtest.*`. |
 

@@ -80,11 +80,10 @@ finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto
 finance market.regime US swing
 finance market.sector_heat US 20 sector
 
-finance news.search symbol=NVDA timespan=30D max_records=10
-finance news.search query="NVIDIA export controls" timespan=24h
-finance news.analyze symbol=NVDA analysis=timeline timespan=1M
 finance price.context NVDA date=2025-01-27 lookback=2D news_limit=5
 ```
+
+Note: The GDELT-backed news search/analyze commands have been removed because the public API consistently timed out. News evidence is now derived from classified 8-K filings and earnings transcripts.
 
 ## Transcripts And IR
 

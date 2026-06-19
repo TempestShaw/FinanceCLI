@@ -25,7 +25,7 @@ The agent-oriented path adds one internal step:
 provider response -> service/command payload -> normalized Record[] -> generic renderer
 ```
 
-Adapters should only normalize provider-specific shapes into `Record` objects. Renderers should not know whether a row came from SEC, Yahoo, GDELT, FMP, transcripts, or a future provider.
+Adapters should only normalize provider-specific shapes into `Record` objects. Renderers should not know whether a row came from SEC, Yahoo, FMP, transcripts, or a future provider.
 
 ## Folder Shape
 
@@ -184,10 +184,10 @@ News article:
 ```python
 Record(
     entity="NVDA",
-    kind="news_article",
+    kind="filing_8k_item",
     timestamp="2026-05-20T12:15:00Z",
-    fields={"title": "NVIDIA supplier shares rise", "domain": "example.com", "url": "https://example.com/a"},
-    source="gdelt",
+    fields={"title": "NVIDIA supplier shares rise", "domain": "sec.gov", "url": "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000123/nvda-20260520.htm"},
+    source="sec",
 )
 ```
 

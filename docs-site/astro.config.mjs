@@ -77,7 +77,6 @@ export default defineConfig({
               label: "News & Evidence",
               collapsed: true,
               items: [
-                { label: "News", slug: "namespaces/news" },
                 { label: "Price", slug: "namespaces/price" },
                 { label: "Transcripts", slug: "namespaces/transcripts" },
               ],

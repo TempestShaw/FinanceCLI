@@ -27,7 +27,7 @@ FinanceCLI exposes small reusable primitives rather than a CANSLIM-specific comm
 | A | Annual revenue 3-5y | Fully supported where annual rows are available | SEC/edgartools, yfinance | `fundamentals.growth`, `fundamentals.statement statement=income period=annual provider=sec` | Same as above. |
 | A | CAGR | Fully supported for positive revenue/EPS start/end values | SEC/edgartools, yfinance, local formula | `fundamentals.growth`, `formula.cagr` | `fundamentals.growth` computes CAGR from returned annual history rows and warns if fewer annual rows are available than requested. |
 | A | ROE | Partially supported | SEC/edgartools, yfinance | `fundamentals.growth`, `fundamentals.metrics`, `market.quote`, `symbol.profile` | Latest ROE is available when equity is available; multi-period ROE comparisons are returned as deltas when the source rows include enough inputs. |
-| N | Recent news | Partially supported | GDELT | `news.search`, `news.analyze` | Compact works, but GDELT can return duplicate/low-specificity articles. |
+| N | Recent news | Not supported | (removed) | (removed) | The GDELT-backed news provider was removed because the public API consistently timed out; news evidence now relies on SEC filings + transcripts. |
 | N | 8-K filings | Fully supported | SEC EDGAR | `filings.recent forms=8-K classify=true` | Compact is strong for agent use. |
 | N | Press releases | Partially supported | SEC EDGAR / IR pages | `filings.recent`, `ir.presentations` | Earnings releases appear via 8-K Item 2.02; broader press releases need better IR/news handling. |
 | N | Earnings call commentary | Fully supported where public transcript exists | Motley Fool | `transcripts.search`, `transcripts.read`, `transcripts.qa` | Compact search rows are good. |
@@ -96,11 +96,7 @@ This is one of the strongest outputs. It returns classified events such as earni
 
 ### News
 
-```bash
-finance news.search symbol=NVDA max_records=3 timespan=7D --output compact
-```
-
-This works, but quality depends on GDELT. In testing it returned duplicate syndicated articles that mentioned large tech companies rather than NVDA-specific catalyst news.
+The GDELT-backed news provider has been removed because the public API consistently timed out. Recent news is now sourced from classified 8-K filings and earnings-call transcripts instead.
 
 ### Transcripts
 

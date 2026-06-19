@@ -7,7 +7,6 @@ from typing import Any
 from finance_cli.core.common import parse_date, parse_rate, parse_window
 from finance_cli.services.filings import list_recent_filings
 from finance_cli.services.market_data import fetch_ohlcv
-from finance_cli.services.news import search_news
 from finance_cli.services.transcripts import search_transcripts
 
 
@@ -130,6 +129,9 @@ def price_context(
     warnings: list[str] = []
     timeline: list[dict[str, Any]] = []
 
+    if news_limit > 0:
+        warnings.append("news context is unavailable (GDELT provider removed)")
+
     try:
         filings = list_recent_filings(symbol, forms=["8-K", "10-Q", "10-K"], limit=filing_limit).get("filings") or []
         for filing in filings:
@@ -150,26 +152,6 @@ def price_context(
                 ))
     except Exception as exc:
         warnings.append(f"filings unavailable: {exc}")
-
-    try:
-        for article in _news_rows(symbol, start=start, end=end, limit=news_limit):
-            published = parse_date(article.get("seendate") or article.get("date"))
-            timeline.append(_timeline_row(
-                move_date=move_date,
-                event_date=published or move_date,
-                source_type="news",
-                title=article.get("title") or article.get("name") or "News article",
-                url=article.get("url"),
-                metadata={
-                    "domain": article.get("domain"),
-                    "source_country": article.get("sourcecountry"),
-                    "language": article.get("language"),
-                    "published_at": article.get("seendate") or article.get("date"),
-                },
-                excerpt=article.get("seendate"),
-            ))
-    except Exception as exc:
-        warnings.append(f"news unavailable: {exc}")
 
     try:
         transcripts = search_transcripts(symbol, limit=transcript_limit).get("transcripts") or []
@@ -207,17 +189,6 @@ def price_context(
             "Event/publication dates are shown explicitly to avoid implied causality.",
         ],
     }
-
-
-def _news_rows(symbol: str, *, start: date, end: date, limit: int) -> list[dict[str, Any]]:
-    payload = search_news(
-        symbol=symbol,
-        max_records=limit,
-        start_date=start.isoformat(),
-        end_date=end.isoformat(),
-    )
-    rows = payload.get("articles") or []
-    return [row for row in rows if isinstance(row, dict)][: max(1, int(limit))]
 
 
 def _timeline_row(

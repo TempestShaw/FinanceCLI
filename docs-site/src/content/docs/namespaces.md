@@ -46,9 +46,8 @@ Finance CLI commands are grouped by the research job they support. Use this page
   <article class="fc-namespace-card">
     <span>News & Evidence</span>
     <h2>Collect attributed evidence</h2>
-    <p>Search news, gather price-event context, and read transcript evidence.</p>
+    <p>Gather price-event context and read transcript evidence.</p>
     <div class="fc-chip-row">
-      <a href="/FinanceCLI/namespaces/news/">news</a>
       <a href="/FinanceCLI/namespaces/price/">price</a>
       <a href="/FinanceCLI/namespaces/transcripts/">transcripts</a>
     </div>

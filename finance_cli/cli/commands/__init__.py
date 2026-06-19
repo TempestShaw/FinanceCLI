@@ -15,7 +15,6 @@ from finance_cli.cli.commands.fundamentals import register_fundamentals_commands
 from finance_cli.cli.commands.industry import register_industry_commands
 from finance_cli.cli.commands.market import register_market_commands
 from finance_cli.cli.commands.market_data import register_market_data_commands
-from finance_cli.cli.commands.news import register_news_commands
 from finance_cli.cli.commands.ownership import register_ownership_commands
 from finance_cli.cli.commands.price import register_price_commands
 from finance_cli.cli.commands.research import register_research_commands
@@ -39,7 +38,6 @@ def register_builtin_commands() -> None:
     register_sector_commands()
     register_industry_commands()
     register_screen_commands()
-    register_news_commands()
     register_ownership_commands()
     register_price_commands()
     register_estimates_commands()

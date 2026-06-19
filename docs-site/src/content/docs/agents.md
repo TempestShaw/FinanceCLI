@@ -36,7 +36,7 @@ Use `--output json` for canonical audit output. Use `--output compact` or `--out
 | Current quote, bars, market status, broad context | `market.*` | Provider-attributed market data and summaries. |
 | Sector, industry, or Yahoo screen discovery | `sector.*`, `industry.*`, `screen.*` | Discovers supported keys and runs predefined market views. |
 | Earnings calendar fields | `calendar.*` | Company calendar and earnings-date rows. |
-| News/event context | `news.*`, `price.context` | Source-attributed event windows and dated context. |
+| News/event context | `price.context`, `filings.recent` | Source-attributed event windows and dated context from filings and price events. |
 | Transcripts and call evidence | `transcripts.*` | Preserves transcript URLs, quarters, prepared remarks, and Q&A turns. |
 | Reproducible strategy check | `backtest.*` | Uses explicit symbols, dates, strategy names, and parameters. |
 | Provider setup/debugging | `sources.*` | Lists capabilities and probes configured providers. |
@@ -50,7 +50,7 @@ Use `--output json` for canonical audit output. Use `--output compact` or `--out
 ## Evidence Rules
 
 - Cite `accession`, `url`, `report_name`, `section`, `page`, `start_char`, `end_char`, `match_id`, `source`, `provider`, and `timestamp` when available.
-- Treat Yahoo, FMP, SEC, GDELT, transcripts, and company IR as source-specific records, not ground truth.
+- Treat Yahoo, FMP, SEC, transcripts, and company IR as source-specific records, not ground truth.
 - Never present market data without source/provider and date/timestamp fields when available.
 - Preserve `warnings`; they are part of the result.
 
