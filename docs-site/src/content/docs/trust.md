@@ -24,7 +24,7 @@ Agents should preserve citation fields whenever a command returns them:
 | News/transcripts/IR | `url`, `source`, `published_at`, `quarter`, `speaker`, `filing_url` |
 | Calculations | command name, explicit inputs, and `method` |
 
-Never present market data without provider/source and date/timestamp fields when available. Treat Yahoo, FMP, SEC, GDELT, transcript pages, and company IR pages as source-specific records, not ground truth.
+Never present market data without provider/source and date/timestamp fields when available. Treat Yahoo, FMP, SEC, transcript pages, and company IR pages as source-specific records, not ground truth.
 
 ## Agent Failure Policy
 

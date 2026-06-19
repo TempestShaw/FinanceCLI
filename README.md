@@ -81,9 +81,42 @@ Most commands return JSON by default:
 }
 ```
 
-Use `--output text` for readable terminal output when a command supports it.
+For output that is readable by **both humans and LLMs**, use `--output md`. It leads with a one-line headline answer, follows with humanized tables (percentages, thousands separators), and ends with a source line:
+
+```bash
+finance formula.margin numerator=11969 denominator=254453 --output md
+```
+
+```text
+**margin = 4.70%**
+
+_Inputs_
+| Field | Value |
+| --- | --- |
+| numerator | 11,969 |
+| denominator | 254,453 |
+
+method: numerator / denominator
+```
+
+`--output table` and `--output report` give rich terminal views; `--output pretty-json` is for debugging. To make a human format the default for interactive shells, configure it once:
+
+```bash
+finance config.set output.default md
+finance config.set output.non_interactive_default json
+```
+
+Explicit `--output` flags still override the config. Non-interactive output can stay JSON so pipes, CI, and agents keep a stable parser contract.
 
 ### Shell Completion
+
+Install completion automatically for your current shell:
+
+```bash
+scripts/install_completion.sh zsh
+```
+
+When installed from a wheel, the same helper is available as `install_completion.sh`.
 
 FinanceCLI can print shell completion scripts without modifying your shell files:
 
@@ -118,7 +151,7 @@ Commands are grouped by research job:
 | `filings.*` | SEC filings, filing sections, XBRL statements, and filing reports. |
 | `document.*` | PDF/HTML reading, text search, windows, table extraction, and OCR. |
 | `market.*`, `price.*`, `news.*` | Quotes, OHLCV, market moves, regimes, sectors, and news context. |
-| `transcripts.*`, `kpi.*`, `ir.*` | Earnings transcripts, KPI evidence, and investor presentations. |
+| `transcripts.*`, `ir.*` | Earnings transcripts, analyst Q&A, and investor presentations. |
 | `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
 | `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
 
@@ -155,6 +188,7 @@ A typical automated research workflow is:
 | Pull market data | `finance market.ohlcv NVDA timeframe=1d limit=20` |
 | Calculate finance metrics | `finance formula.net_debt debt=11415 cash=11144 operating_cash=5089` |
 | Run a backtest | `finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31 fast=20 slow=100` |
+| Compare symbols side by side | `finance compare AAPL MSFT GOOG market.quote --output md` |
 
 More examples are in [EXAMPLES.md](EXAMPLES.md).
 

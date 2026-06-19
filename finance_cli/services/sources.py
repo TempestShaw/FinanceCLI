@@ -11,7 +11,6 @@ from finance_cli.providers.alpaca import AlpacaMarketDataProvider
 from finance_cli.providers.base import ProviderHealth, ProviderMetadata
 from finance_cli.providers.company_ir import CompanyIRProvider
 from finance_cli.providers.fmp import FMPProvider
-from finance_cli.providers.gdelt import GdeltNewsProvider
 from finance_cli.providers.sec_edgar import SecEdgarProvider
 from finance_cli.providers.transcripts import MotleyFoolTranscriptProvider
 from finance_cli.providers.yahoo import YahooFinanceProvider
@@ -34,12 +33,6 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
         capabilities=("filings", "filing_sections", "company_metadata", "financial_statements", "financial_metrics"),
         optional_env=("FINANCE_SEC_USER_AGENT",),
         notes="Public SEC JSON plus edgartools for filing reads, XBRL statements, and standard financial metrics.",
-    ),
-    ProviderMetadata(
-        name="gdelt",
-        label="GDELT",
-        capabilities=("news", "timeline", "tone", "geo"),
-        notes="Public global news APIs with article and timeline metadata.",
     ),
     ProviderMetadata(
         name="motley_fool",
@@ -203,12 +196,6 @@ def _probe_for(name: str, *, symbol: str, timeout: float) -> Probe:
         return lambda: YahooFinanceProvider(timeout=int(timeout)).quote(normalized)
     if name == "sec":
         return lambda: SecEdgarProvider(timeout=timeout).get_company(normalized)
-    if name == "gdelt":
-        return lambda: GdeltNewsProvider(max_records=1, timeout=timeout, min_interval_seconds=0, retry_count=0).search(
-            f"{normalized} stock",
-            max_records=1,
-            timespan="1d",
-        )
     if name == "motley_fool":
         return lambda: MotleyFoolTranscriptProvider(timeout=timeout).search(normalized, limit=1)
     if name == "company_ir":

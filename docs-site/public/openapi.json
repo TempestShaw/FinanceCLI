@@ -894,6 +894,97 @@
         }
       }
     },
+    "/commands/compare": {
+      "post": {
+        "operationId": "finance_compare",
+        "summary": "Run one command across several symbols and align the results",
+        "description": "Use for compare workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "command": {
+                    "type": "string",
+                    "description": "Value supplied for `command`."
+                  },
+                  "key": {
+                    "type": "string",
+                    "description": "Provider key returned by the corresponding list command.",
+                    "default": "value"
+                  }
+                },
+                "required": [
+                  "command"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "compare",
+          "usage": "finance compare SYMBOL [SYMBOL ...] COMMAND [key=value ...]",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
     "/commands/completion": {
       "post": {
         "operationId": "finance_completion",
@@ -971,6 +1062,325 @@
           "command": "completion",
           "usage": "finance completion SHELL",
           "side_effects": "pure_calculation",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.path": {
+      "post": {
+        "operationId": "finance_config_path",
+        "summary": "Show the resolved FinanceCLI config file path",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.path",
+          "usage": "finance config.path",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.set": {
+      "post": {
+        "operationId": "finance_config_set",
+        "summary": "Set a FinanceCLI config value",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Provider key returned by the corresponding list command."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Value supplied for `value`."
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.set",
+          "usage": "finance config.set KEY VALUE",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.show": {
+      "post": {
+        "operationId": "finance_config_show",
+        "summary": "Show the resolved FinanceCLI config",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.show",
+          "usage": "finance config.show",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": []
+        }
+      }
+    },
+    "/commands/config.unset": {
+      "post": {
+        "operationId": "finance_config_unset",
+        "summary": "Unset a FinanceCLI config value",
+        "description": "Use for config workflows.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Provider key returned by the corresponding list command."
+                  }
+                },
+                "required": [
+                  "key"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "config.unset",
+          "usage": "finance config.unset KEY",
+          "side_effects": "network_read_only",
           "auth_required": "none",
           "citation_fields": []
         }
@@ -1829,12 +2239,11 @@
                   },
                   "accession": {
                     "type": "string",
-                    "description": "SEC accession number."
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Remote URL."
+                    "description": "SEC accession number.",
+                    "enum": [
+                      "ACCESSION",
+                      "url=URL"
+                    ]
                   },
                   "form": {
                     "type": "string",
@@ -1915,7 +2324,7 @@
         },
         "x-finance-cli": {
           "command": "filings.read",
-          "usage": "finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
+          "usage": "finance filings.read [SYMBOL] [ACCESSION|accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]",
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": [
@@ -4190,7 +4599,7 @@
                   },
                   "metrics": {
                     "type": "string",
-                    "description": "Comma-separated KPI or metric names to search for.",
+                    "description": "Comma-separated metric names to return.",
                     "default": "revenue,eps,net_income,operating_income"
                   }
                 },
@@ -4848,235 +5257,6 @@
         }
       }
     },
-    "/commands/kpi.extract": {
-      "post": {
-        "operationId": "finance_kpi_extract",
-        "summary": "Extract KPI evidence from filings or transcripts",
-        "description": "Use to collect KPI evidence from transcripts and filings with source snippets.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "symbol": {
-                    "type": "string",
-                    "description": "Ticker symbol."
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "Source key, path, or URL depending on command.",
-                    "enum": [
-                      "transcripts",
-                      "filings",
-                      "both"
-                    ]
-                  },
-                  "metrics": {
-                    "type": "string",
-                    "description": "Comma-separated KPI or metric names to search for.",
-                    "default": "arr,nrr"
-                  },
-                  "limit": {
-                    "type": "integer",
-                    "description": "Maximum records to return.",
-                    "default": 30
-                  },
-                  "quarter": {
-                    "type": "string",
-                    "description": "Fiscal quarter label, such as Q1 or Q4.",
-                    "default": "latest"
-                  },
-                  "form": {
-                    "type": "string",
-                    "description": "SEC form type.",
-                    "default": "10-K"
-                  }
-                },
-                "required": [
-                  "symbol"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Finance CLI result envelope.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "ok",
-                    "data",
-                    "error",
-                    "warnings"
-                  ],
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "True when the command completed successfully."
-                    },
-                    "data": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "description": "KPI evidence snippets and history rows.",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "error": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "description": "Human-readable error when ok is false."
-                    },
-                    "warnings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Non-fatal issues."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-finance-cli": {
-          "command": "kpi.extract",
-          "usage": "finance kpi.extract SYMBOL [source=transcripts|filings|both metrics=arr,nrr limit=30 quarter=latest form=10-K]",
-          "side_effects": "network_read_only",
-          "auth_required": "optional_environment_or_public_provider",
-          "citation_fields": [
-            "symbol",
-            "url",
-            "accession_no",
-            "quarter",
-            "metric"
-          ]
-        }
-      }
-    },
-    "/commands/kpi.history": {
-      "post": {
-        "operationId": "finance_kpi_history",
-        "summary": "Extract KPI evidence across recent transcripts",
-        "description": "Use to collect KPI evidence from transcripts and filings with source snippets.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "symbol": {
-                    "type": "string",
-                    "description": "Ticker symbol."
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "Source key, path, or URL depending on command.",
-                    "default": "transcripts"
-                  },
-                  "metrics": {
-                    "type": "string",
-                    "description": "Comma-separated KPI or metric names to search for.",
-                    "default": "arr,nrr"
-                  },
-                  "limit": {
-                    "type": "integer",
-                    "description": "Maximum records to return.",
-                    "default": 4
-                  },
-                  "per_document_limit": {
-                    "type": "integer",
-                    "description": "Maximum KPI evidence rows per source document.",
-                    "default": 20
-                  }
-                },
-                "required": [
-                  "symbol"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Finance CLI result envelope.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "ok",
-                    "data",
-                    "error",
-                    "warnings"
-                  ],
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "True when the command completed successfully."
-                    },
-                    "data": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "description": "KPI evidence snippets and history rows.",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "error": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "description": "Human-readable error when ok is false."
-                    },
-                    "warnings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Non-fatal issues."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-finance-cli": {
-          "command": "kpi.history",
-          "usage": "finance kpi.history SYMBOL [source=transcripts metrics=arr,nrr limit=4 per_document_limit=20]",
-          "side_effects": "network_read_only",
-          "auth_required": "optional_environment_or_public_provider",
-          "citation_fields": [
-            "symbol",
-            "url",
-            "accession_no",
-            "quarter",
-            "metric"
-          ]
-        }
-      }
-    },
     "/commands/market.ohlcv": {
       "post": {
         "operationId": "finance_market_ohlcv",
@@ -5644,295 +5824,6 @@
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": []
-        }
-      }
-    },
-    "/commands/news.analyze": {
-      "post": {
-        "operationId": "finance_news_analyze",
-        "summary": "Analyze news volume, tone, context, or geography",
-        "description": "Use for source-attributed news search and GDELT analysis windows.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "analysis": {
-                    "type": "string",
-                    "enum": [
-                      "timeline",
-                      "tone",
-                      "context",
-                      "geo",
-                      "doc"
-                    ],
-                    "description": "Analysis mode."
-                  },
-                  "query": {
-                    "type": "string",
-                    "description": "Search query."
-                  },
-                  "symbol": {
-                    "type": "string",
-                    "description": "Ticker symbol."
-                  },
-                  "sector": {
-                    "type": "string",
-                    "description": "Sector key or sector name to query."
-                  },
-                  "mode": {
-                    "type": "string",
-                    "description": "Analysis mode."
-                  },
-                  "max_records": {
-                    "type": "integer",
-                    "description": "Maximum records to return.",
-                    "default": 50
-                  },
-                  "timespan": {
-                    "type": "string",
-                    "description": "Relative provider lookback window such as 24H, 7D, or 1M.",
-                    "enum": [
-                      "30D",
-                      "1W",
-                      "1M",
-                      "24H"
-                    ]
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "start_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Start date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "end_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "End date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "start_datetime": {
-                    "type": "string",
-                    "description": "Inclusive start timestamp for precise provider queries."
-                  },
-                  "end_datetime": {
-                    "type": "string",
-                    "description": "Inclusive end timestamp for precise provider queries."
-                  }
-                },
-                "required": [
-                  "analysis"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Finance CLI result envelope.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "ok",
-                    "data",
-                    "error",
-                    "warnings"
-                  ],
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "True when the command completed successfully."
-                    },
-                    "data": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "description": "News records or analysis result.",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "error": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "description": "Human-readable error when ok is false."
-                    },
-                    "warnings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Non-fatal issues."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-finance-cli": {
-          "command": "news.analyze",
-          "usage": "finance news.analyze analysis=timeline|tone|context|geo|doc [query=TEXT | symbol=SYMBOL | sector=SECTOR] [mode=MODE max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]",
-          "side_effects": "network_read_only",
-          "auth_required": "optional_environment_or_public_provider",
-          "citation_fields": [
-            "url",
-            "source",
-            "published_at",
-            "seendate"
-          ]
-        }
-      }
-    },
-    "/commands/news.search": {
-      "post": {
-        "operationId": "finance_news_search",
-        "summary": "Search finance news through GDELT",
-        "description": "Use for source-attributed news search and GDELT analysis windows.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": {
-                    "type": "string",
-                    "description": "Free-text news query."
-                  },
-                  "symbol": {
-                    "type": "string",
-                    "description": "Ticker query."
-                  },
-                  "sector": {
-                    "type": "string",
-                    "description": "Sector query."
-                  },
-                  "max_records": {
-                    "type": "integer",
-                    "description": "Maximum records to return.",
-                    "default": 50
-                  },
-                  "timespan": {
-                    "type": "string",
-                    "description": "Relative provider lookback window such as 24H, 7D, or 1M.",
-                    "enum": [
-                      "30D",
-                      "1W",
-                      "1M",
-                      "24H"
-                    ]
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "start_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Start date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "end_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "End date.",
-                    "default": "YYYY-MM-DD"
-                  },
-                  "start_datetime": {
-                    "type": "string",
-                    "description": "Inclusive start timestamp for precise provider queries."
-                  },
-                  "end_datetime": {
-                    "type": "string",
-                    "description": "Inclusive end timestamp for precise provider queries."
-                  }
-                },
-                "required": [],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Finance CLI result envelope.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "ok",
-                    "data",
-                    "error",
-                    "warnings"
-                  ],
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "True when the command completed successfully."
-                    },
-                    "data": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "description": "News records or analysis result.",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "error": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "description": "Human-readable error when ok is false."
-                    },
-                    "warnings": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Non-fatal issues."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-finance-cli": {
-          "command": "news.search",
-          "usage": "finance news.search [query=TEXT | symbol=SYMBOL | sector=SECTOR] [max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]",
-          "side_effects": "network_read_only",
-          "auth_required": "optional_environment_or_public_provider",
-          "citation_fields": [
-            "url",
-            "source",
-            "published_at",
-            "seendate"
-          ]
         }
       }
     },

@@ -21,7 +21,7 @@ This command does not contact remote providers. It only checks whether package-b
 
 ### When to use it
 
-Use this command when you want to see what Finance CLI can route to before running a workflow. It is the fastest way to discover provider names such as `yfinance`, `sec`, `gdelt`, `fmp`, `pymupdf`, `camelot`, and `paddleocr`.
+Use this command when you want to see what Finance CLI can route to before running a workflow. It is the fastest way to discover provider names such as `yfinance`, `sec`, `motley_fool`, `fmp`, `pymupdf`, `camelot`, and `paddleocr`.
 
 ### Usage
 
@@ -83,22 +83,20 @@ This output was generated with `finance sources.list --output json`.
         "package_installed": true
       },
       {
-        "name": "gdelt",
-        "label": "GDELT",
+        "name": "motley_fool",
+        "label": "Motley Fool transcripts",
         "capabilities": [
-          "news",
-          "timeline",
-          "tone",
-          "geo"
+          "transcripts",
+          "earnings_call_qa"
         ],
         "required_env": [],
         "optional_env": [],
         "package": null,
-        "notes": "Public global news APIs with article and timeline metadata.",
+        "notes": "Public transcript pages for earnings-call research.",
         "package_installed": true
       }
     ],
-    "count": 11
+    "count": 10
   },
   "error": null,
   "warnings": []
@@ -267,7 +265,7 @@ finance sources.test [SOURCE|source=SOURCE] [symbol=SYMBOL] [timeout=SECONDS]
 
 | Argument | Required | Default | Accepted values | Description |
 | --- | --- | --- | --- | --- |
-| `SOURCE` | No | all providers | `yfinance`, `sec`, `gdelt`, `motley_fool`, `company_ir`, `fmp`, `pymupdf`, `camelot`, `paddleocr`, `alphavantage`, `alpaca`, `all` | Positional provider key. Omit it or pass `all` to test every provider. |
+| `SOURCE` | No | all providers | `yfinance`, `sec`, `motley_fool`, `company_ir`, `fmp`, `pymupdf`, `camelot`, `paddleocr`, `alphavantage`, `alpaca`, `all` | Positional provider key. Omit it or pass `all` to test every provider. |
 | `source` | No | all providers | Same as `SOURCE` | Keyword form of the provider key. Use either `SOURCE` or `source=SOURCE`, not both. |
 | `symbol` | No | `AAPL` | Public ticker symbol | Symbol used by probes that need a ticker. The value is uppercased in the result. |
 | `timeout` | No | `30` | Seconds as a number | Timeout passed to provider probes. Some providers can still take most of the timeout window. |

@@ -106,44 +106,6 @@ SECTOR_QUERY_EXPANSIONS: dict[str, str] = {
 }
 
 
-GDELT_GEO_MODE_ALIASES: dict[str, str] = {
-    "animation": "locationtime",
-    "article": "article",
-    "locationtime": "locationtime",
-    "pointanimation": "locationtime",
-    "pointdata": "article",
-}
-
-
-GDELT_TIMESPAN_UNIT_MINUTES: dict[str, int] = {
-    "min": 1,
-    "minute": 1,
-    "minutes": 1,
-    "mins": 1,
-    "h": 60,
-    "hr": 60,
-    "hrs": 60,
-    "hour": 60,
-    "hours": 60,
-    "d": 1440,
-    "day": 1440,
-    "days": 1440,
-    "w": 10080,
-    "wk": 10080,
-    "wks": 10080,
-    "week": 10080,
-    "weeks": 10080,
-    "m": 43200,
-    "mo": 43200,
-    "mon": 43200,
-    "month": 43200,
-    "months": 43200,
-}
-
-GDELT_GEO_MIN_TIMESPAN_MINUTES = 15
-GDELT_GEO_MAX_TIMESPAN_MINUTES = 1440
-
-
 MARKET_BENCHMARKS: dict[str, dict[str, str]] = {
     "US": {
         "primary": "SPY",

@@ -25,7 +25,7 @@ The agent-oriented path adds one internal step:
 provider response -> service/command payload -> normalized Record[] -> generic renderer
 ```
 
-Adapters should only normalize provider-specific shapes into `Record` objects. Renderers should not know whether a row came from SEC, Yahoo, GDELT, FMP, transcripts, or a future provider.
+Adapters should only normalize provider-specific shapes into `Record` objects. Renderers should not know whether a row came from SEC, Yahoo, FMP, transcripts, or a future provider.
 
 ## Folder Shape
 
@@ -73,9 +73,9 @@ class RecordAdapter(Protocol):
         """Normalize a provider or command payload into records."""
 ```
 
-Command adapters own source semantics. For example, the filings adapter decides that `filing_date` is the filing timestamp and `report_date` is the reporting period; the OHLCV adapter decides that `date` is the bar timestamp; KPI and transcript adapters preserve document/source fields while mapping period and published timestamps. The fallback dict adapter is only best-effort for already record-like payloads. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
+Command adapters own source semantics. For example, the filings adapter decides that `filing_date` is the filing timestamp and `report_date` is the reporting period; the OHLCV adapter decides that `date` is the bar timestamp; transcript adapters preserve document/source fields while mapping period and published timestamps. The fallback dict adapter is only best-effort for already record-like payloads. For a new provider with an unusual shape, write a small adapter that returns `Record[]`; do not add a provider-specific renderer.
 
-Current command-specific adapters cover high-value repeated facts from `market.quote`, `market.ohlcv`, `news.search`, `filings.recent`, `filings.statement`, `calendar.earnings`, `transcripts.search`, `transcripts.read`, `kpi.extract`, `kpi.history`, `price.moves`, `price.context`, `estimates.consensus`, and `screen.run`.
+Current command-specific adapters cover high-value repeated facts from `market.quote`, `market.ohlcv`, `news.search`, `filings.recent`, `filings.statement`, `calendar.earnings`, `transcripts.search`, `transcripts.read`, `price.moves`, `price.context`, `estimates.consensus`, and `screen.run`.
 
 ## Renderer Controls
 
@@ -184,10 +184,10 @@ News article:
 ```python
 Record(
     entity="NVDA",
-    kind="news_article",
+    kind="filing_8k_item",
     timestamp="2026-05-20T12:15:00Z",
-    fields={"title": "NVIDIA supplier shares rise", "domain": "example.com", "url": "https://example.com/a"},
-    source="gdelt",
+    fields={"title": "NVIDIA supplier shares rise", "domain": "sec.gov", "url": "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000123/nvda-20260520.htm"},
+    source="sec",
 )
 ```
 

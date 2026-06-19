@@ -24,7 +24,7 @@ Cite fields when present:
 - Documents: `source`, `path`, `url`, `page`, `start_char`, `end_char`, `match_id`.
 - Market/news/providers: `source`, `provider`, `timestamp`, `date`, `published_at`, `url`.
 
-Treat provider output as source-specific records. Do not merge Yahoo, FMP, SEC, GDELT, transcripts, and company IR into a single unstated ground truth.
+Treat provider output as source-specific records. Do not merge Yahoo, FMP, SEC, transcripts, and company IR into a single unstated ground truth.
 
 ## Credentials And Local State
 

@@ -161,6 +161,30 @@ finance calendar.earnings SYMBOL [limit=12]
 finance calendar.earnings AAPL limit=8
 ```
 
+## `compare.*`
+
+### `compare`
+
+Run one command across several symbols and align the results
+
+**Usage**
+
+```bash
+finance compare SYMBOL [SYMBOL ...] COMMAND [key=value ...]
+```
+
+**Examples**
+
+```bash
+finance compare AAPL MSFT GOOG market.quote
+finance compare AAPL MSFT valuation.multiples
+```
+
+**Details**
+
+- The first argument that names a registered command splits symbols from the command.
+- Comparison aligns the top-level scalar metrics each command returns; list-shaped results are reported per symbol as errors.
+
 ## `completion.*`
 
 ### `completion`
@@ -185,6 +209,72 @@ finance completion fish > ~/.config/fish/completions/finance.fish
 
 - Prints shell code only; it does not modify shell startup files.
 - Completion candidates are generated from the live command registry and usage metadata.
+
+## `config.*`
+
+### `config.path`
+
+Show the resolved FinanceCLI config file path
+
+**Usage**
+
+```bash
+finance config.path
+```
+
+**Examples**
+
+```bash
+finance config.path
+```
+
+### `config.set`
+
+Set a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.set KEY VALUE
+```
+
+**Examples**
+
+```bash
+finance config.set output.default table
+```
+
+### `config.show`
+
+Show the resolved FinanceCLI config
+
+**Usage**
+
+```bash
+finance config.show
+```
+
+**Examples**
+
+```bash
+finance config.show
+```
+
+### `config.unset`
+
+Unset a FinanceCLI config value
+
+**Usage**
+
+```bash
+finance config.unset KEY
+```
+
+**Examples**
+
+```bash
+finance config.unset output.default
+```
 
 ## `document.*`
 
@@ -359,7 +449,7 @@ Read a canonical 10-K section with edgartools
 **Usage**
 
 ```bash
-finance filings.read [SYMBOL] [accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
+finance filings.read [SYMBOL] [ACCESSION|accession=ACCESSION|url=URL] [form=10-K section=business|risk_factors|mda|segments max_chars=8000]
 ```
 
 **Examples**
@@ -893,45 +983,6 @@ finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/0000320193260
 - ocr=auto or ocr=force uses the default PaddleOCR/PP-StructureV3 stack.
 - Pass the url from ir.presentations output.
 
-## `kpi.*`
-
-### `kpi.extract`
-
-Extract KPI evidence from filings or transcripts
-
-**Usage**
-
-```bash
-finance kpi.extract SYMBOL [source=transcripts|filings|both metrics=arr,nrr limit=30 quarter=latest form=10-K]
-```
-
-**Examples**
-
-```bash
-finance kpi.extract IOT source=transcripts metrics=arr,net_new_arr,large_customers,nrr
-finance kpi.extract IOT source=both metrics=arr,emerging_products,rpo limit=20
-```
-
-**Details**
-
-- Returns evidence rows, not investment conclusions.
-
-### `kpi.history`
-
-Extract KPI evidence across recent transcripts
-
-**Usage**
-
-```bash
-finance kpi.history SYMBOL [source=transcripts metrics=arr,nrr limit=4 per_document_limit=20]
-```
-
-**Examples**
-
-```bash
-finance kpi.history IOT metrics=arr,large_customers,emerging_products limit=4
-```
-
 ## `market.*`
 
 ### `market.ohlcv`
@@ -1042,62 +1093,6 @@ finance market.trend US periods=1M,3M,6M,1Y
 **Details**
 
 - Returns raw moving-average and return evidence only; it does not implement market breadth.
-
-## `news.*`
-
-### `news.analyze`
-
-Analyze news volume, tone, context, or geography
-
-**Usage**
-
-```bash
-finance news.analyze analysis=timeline|tone|context|geo|doc [query=TEXT | symbol=SYMBOL | sector=SECTOR] [mode=MODE max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]
-```
-
-**Examples**
-
-```bash
-finance news.analyze symbol=NVDA analysis=timeline timespan=1d
-finance news.analyze symbol=NVDA analysis=timeline timespan=1M
-finance news.analyze query='NVIDIA export controls' analysis=context max_records=5 timespan=24h
-finance news.analyze symbol=IOT analysis=timeline start_date=2026-03-03 end_date=2026-03-09
-finance news.analyze query=FOOD_SECURITY analysis=geo max_records=3 timespan=1h
-```
-
-**Details**
-
-- Use this only when you need trend, tone, context, geo, or raw DOC analysis.
-- Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.
-- date/start_date/end_date are preferred for routine use; datetime inputs provide precision controls.
-
-### `news.search`
-
-Search finance news through GDELT
-
-**Usage**
-
-```bash
-finance news.search [query=TEXT | symbol=SYMBOL | sector=SECTOR] [max_records=50 timespan=30D|1W|1M|24H date=YYYY-MM-DD start_date=YYYY-MM-DD end_date=YYYY-MM-DD start_datetime=YYYYMMDDHHMMSS end_datetime=YYYYMMDDHHMMSS]
-```
-
-**Examples**
-
-```bash
-finance news.search symbol=NVDA max_records=5
-finance news.search symbol=NVDA timespan=30D max_records=10
-finance news.search symbol=NVDA timespan=1W max_records=10
-finance news.search query='NVIDIA export controls' timespan=24h
-finance news.search symbol=IOT date=2026-03-06 max_records=5
-finance news.search symbol=IOT start_date=2026-03-03 end_date=2026-03-09 max_records=5
-```
-
-**Details**
-
-- Use date for one full day, or start_date/end_date for a full-day range.
-- Use timespan for relative lookback from now, such as 30D, 1W, 1M, 24H, or 90min.
-- Use start_datetime/end_datetime only when you need second-level precision.
-- Use either timespan or fixed date/date-time inputs, not both.
 
 ## `ownership.*`
 

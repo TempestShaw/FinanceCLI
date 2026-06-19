@@ -1,3 +1,4 @@
 include scripts/generate_cli_docs.py
+include scripts/install_completion.sh
 include scripts/package_skills.py
 recursive-include skills/finance-cli *.md

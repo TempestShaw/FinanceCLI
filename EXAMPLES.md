@@ -21,7 +21,7 @@ finance research.plan IOT style=fundamental
 finance symbol.profile IOT
 finance filings.recent IOT forms=10-K,10-Q,8-K limit=10 classify=true
 finance transcripts.search IOT limit=4
-finance kpi.history IOT metrics=arr,large_customers,emerging_products limit=4
+finance transcripts.read IOT quarter=latest max_chars=12000
 finance price.moves IOT years=3 threshold=8% limit=10
 ```
 
@@ -80,23 +80,18 @@ finance market.ohlcv AAPL,MSFT,NVDA timeframe=1d limit=5 provider=auto
 finance market.regime US swing
 finance market.sector_heat US 20 sector
 
-finance news.search symbol=NVDA timespan=30D max_records=10
-finance news.search query="NVIDIA export controls" timespan=24h
-finance news.analyze symbol=NVDA analysis=timeline timespan=1M
 finance price.context NVDA date=2025-01-27 lookback=2D news_limit=5
 ```
 
-## Transcripts, KPIs, And IR
+Note: The GDELT-backed news search/analyze commands have been removed because the public API consistently timed out. News evidence is now derived from classified 8-K filings and earnings transcripts.
+
+## Transcripts And IR
 
 ```bash
 finance transcripts.search IOT limit=4
 finance transcripts.read IOT quarter=latest max_chars=4000
 finance transcripts.read IOT include_turns=true max_chars=2000
 finance transcripts.qa IOT quarter=latest limit=5
-
-finance kpi.extract IOT source=transcripts metrics=arr,net_new_arr,large_customers,nrr
-finance kpi.extract IOT source=both metrics=arr,emerging_products,rpo limit=20
-finance kpi.history IOT metrics=arr,large_customers,emerging_products limit=4
 
 finance ir.presentations IOT limit=10 source=all
 finance ir.presentations NVDA limit=5 source=sec
@@ -159,14 +154,32 @@ finance backtest.factor.weights rsi_14 scores='{"AAPL":1.1,"MSFT":0.3,"NVDA":2.0
 
 ## Output Format
 
-The CLI defaults to JSON for automation-friendly use. Add `--output text` when reading manually:
+The CLI defaults to JSON for automation-friendly use. Add `--output table`, `--output report`, or `--output pretty-json` when reading manually:
 
 ```bash
-finance --output text sources.status
+finance sources.status --output table
+finance document.read ./deck.pdf max_pages=3 --output report
 finance --output json formula.margin numerator=10 denominator=20
 ```
 
+Set a human-friendly interactive default once and keep non-interactive output parser-safe:
+
+```bash
+finance config.set output.default table
+finance config.set output.non_interactive_default json
+```
+
 ## Shell Completion
+
+Install completion automatically for your shell:
+
+```bash
+scripts/install_completion.sh zsh
+scripts/install_completion.sh bash
+scripts/install_completion.sh fish
+```
+
+Wheel installs also expose `install_completion.sh zsh`.
 
 Print shell completion scripts and place them where your shell expects completion files:
 

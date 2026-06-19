@@ -1,6 +1,7 @@
 """Backtest request builders and VectorBT service wrappers."""
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 from finance_cli.backtesting.portfolio import build_quantile_weights, build_rebalance_events, build_rebalance_snapshot
@@ -13,7 +14,14 @@ BACKTEST_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip insta
 
 def _vectorbt_engine() -> Any:
     try:
-        from finance_cli.backtesting import vectorbt_engine
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=r"pkg_resources is deprecated as an API.*",
+                category=UserWarning,
+                module=r"apscheduler.*",
+            )
+            from finance_cli.backtesting import vectorbt_engine
     except ImportError as exc:
         raise ProviderError(f"Missing backtest dependency 'vectorbt'. {BACKTEST_INSTALL_HINT}") from exc
     return vectorbt_engine

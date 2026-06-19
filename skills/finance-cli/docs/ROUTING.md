@@ -22,8 +22,8 @@ Most company workflows are symbol-based. Extract the ticker before running symbo
 | Quotes, bars, market status, broad market context | `market.*` | Preserve provider and timestamp/date fields. |
 | Company calendar or earnings-date rows | `calendar.*` | Provider coverage can vary by symbol. |
 | Sector, industry, or screen discovery | `sector.*`, `industry.*`, `screen.*` | Use for Yahoo-defined keys, groups, and screens. |
-| News or dated event context | `news.*`, `price.context` | Do not infer causality from proximity alone. |
-| Transcripts and KPI evidence | `transcripts.*`, `kpi.*` | Preserve URLs, quarters, snippets, and metric labels. |
+| News or dated event context | `price.context`, `filings.recent` | Do not infer causality from proximity alone. |
+| Transcript evidence | `transcripts.*` | Preserve URLs, quarters, prepared remarks, and Q&A turns. |
 | Investor presentation discovery | `ir.*` | Preserve company IR and SEC exhibit URLs. |
 | Reproducible strategy checks | `backtest.*` | Use explicit symbols, dates, strategy names, and parameters. |
 | Provider setup/debugging | `sources.*` | Use `sources.status` for local setup and `sources.test SOURCE symbol=SYMBOL` before relying on a live provider. |

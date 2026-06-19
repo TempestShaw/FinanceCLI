@@ -1,4 +1,8 @@
 from importlib import resources
+import os
+from pathlib import Path
+import subprocess
+import sys
 
 from finance_cli.cli.usage import parse_usage_params
 
@@ -131,3 +135,30 @@ def test_completion_scripts_are_package_resources():
     assert (script_dir / "finance.bash").is_file()
     assert (script_dir / "finance.zsh").is_file()
     assert (script_dir / "finance.fish").is_file()
+
+
+def test_install_completion_script_installs_zsh_idempotently(tmp_path):
+    env = {
+        **os.environ,
+        "HOME": str(tmp_path),
+        "FINANCE_CMD": f"{sys.executable} -m finance_cli.cli.main",
+    }
+    root = Path(__file__).resolve().parents[1]
+    script = "scripts/install_completion.sh"
+
+    for _ in range(2):
+        result = subprocess.run(
+            ["sh", script, "zsh"],
+            check=True,
+            cwd=root,
+            env=env,
+            text=True,
+            capture_output=True,
+        )
+        assert "Installed FinanceCLI zsh completion" in result.stdout
+
+    completion_file = tmp_path / ".zfunc" / "_finance"
+    zshrc = tmp_path / ".zshrc"
+
+    assert "finance __complete zsh" in completion_file.read_text(encoding="utf-8")
+    assert zshrc.read_text(encoding="utf-8").count("# BEGIN FinanceCLI completion") == 1

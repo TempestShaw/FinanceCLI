@@ -4,20 +4,20 @@ from __future__ import annotations
 from finance_cli.cli.args import KVArgs
 from finance_cli.cli.registry import FinanceCommand, register_command
 from finance_cli.schemas import FinanceCommandResult
-from finance_cli.services.fundamentals import fetch_financial_metrics, fetch_financial_statement, fundamentals_growth
+from finance_cli.services.fundamentals import fetch_financial_metrics, fetch_financial_statement_with_display, fundamentals_growth
 
 
 def _financial_statement(args: list[str]) -> FinanceCommandResult:
     if not args:
         return FinanceCommandResult(ok=False, error="usage: fundamentals.statement SYMBOL [statement=income|balance|cashflow period=annual|quarterly provider=sec|yahoo]")
     kv = KVArgs(args[1:])
-    data = fetch_financial_statement(
+    data, display = fetch_financial_statement_with_display(
         args[0],
         statement=kv.str("statement", "income"),
         period=kv.str("period", "annual"),
         provider=kv.str("provider", "sec"),
     )
-    return FinanceCommandResult(ok=True, data=data)
+    return FinanceCommandResult(ok=True, data=data, display=display)
 
 
 def _financial_metrics(args: list[str]) -> FinanceCommandResult:

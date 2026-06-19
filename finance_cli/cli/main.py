@@ -4,20 +4,52 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from io import StringIO
+
+from rich import box
+from rich.console import Console
+from rich.table import Table
 
 from finance_cli.cli.commands import register_builtin_commands
+from finance_cli.cli.config import VALID_OUTPUT_FORMATS, resolve_output_format
 from finance_cli.cli.formatting import render_result
-from finance_cli.cli.options import OUTPUT_FORMATS
 from finance_cli.cli.registry import FinanceCommand, get_command, list_commands
 from finance_cli.records import RecordRenderOptions
 from finance_cli.schemas import FinanceCommandResult
+
+
+MODULE_DESCRIPTIONS = {
+    "backtest": "Strategy payloads, runs, tuning, and factor previews.",
+    "calendar": "Company calendars and earnings dates.",
+    "config": "Local CLI defaults such as interactive output format.",
+    "compare": "Run one command across several symbols and align the results.",
+    "completion": "Shell autocomplete scripts and installation support.",
+    "document": "Read, scan, window, table, and OCR document workflows.",
+    "estimates": "Consensus estimates and explicit estimate comparisons.",
+    "filings": "SEC filing discovery, sections, statements, reports, and exhibits.",
+    "formula": "Pure finance calculations from explicit numeric inputs.",
+    "fundamentals": "Financial statements, metrics, and growth calculations.",
+    "industry": "Industry keys, overviews, and company tables.",
+    "ir": "Investor-relations presentation discovery and reads.",
+    "market": "Market data, status, trend, regime, and sector heat.",
+    "news": "News search, timeline, tone, and geographic signals.",
+    "ownership": "Major, institutional, fund, and insider holders.",
+    "price": "Price performance, relative strength, moves, and event timelines.",
+    "research": "Deterministic research checklists and command plans.",
+    "screen": "Predefined equity screens and screen results.",
+    "sector": "Sector keys, overviews, industries, funds, and company tables.",
+    "sources": "Provider inventory, configuration, and health checks.",
+    "symbol": "Company profile and compact symbol snapshot.",
+    "transcripts": "Earnings-call transcript search, read, and Q&A.",
+    "valuation": "Valuation math, multiples, scenarios, DCF, NPV, IRR, and WACC.",
+}
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="finance", description="Finance research helper CLI")
     parser.add_argument("command", nargs="?", help="Command name, for example market.regime")
     parser.add_argument("args", nargs="*", help="Command arguments")
-    parser.add_argument("--output", choices=OUTPUT_FORMATS, default="json")
+    parser.add_argument("--output", choices=VALID_OUTPUT_FORMATS)
     parser.add_argument("--fields", help="Comma-separated record fields for compact or schema output")
     parser.add_argument("--max-records", type=_non_negative_int, help="Maximum normalized records to render")
     parser.add_argument("--max-chars", type=_non_negative_int, help="Approximate maximum rendered characters for compact or schema output")
@@ -40,29 +72,40 @@ def main(argv: list[str] | None = None) -> int:
         if raw_args[0] == "help":
             if len(raw_args) >= 2:
                 return _print_help(raw_args[1])
-            _print_command_list()
-            print("\nUse `finance NAMESPACE --help` or `finance NAMESPACE.COMMAND --help` for more detail.")
+            _print_module_overview()
             return 0
         if len(raw_args) >= 2 and raw_args[1] in {"-h", "--help", "help"} and not raw_args[0].startswith("-"):
             return _print_help(raw_args[0])
 
     parser = build_parser()
     ns = parser.parse_args(raw_args)
+    if ns.list:
+        _print_command_list()
+        return 0
+    if not ns.command:
+        _print_module_overview()
+        return 0
+
+    try:
+        output = resolve_output_format(ns.output, is_interactive=sys.stdout.isatty())
+    except ValueError as exc:
+        print(render_result(FinanceCommandResult(ok=False, error=str(exc)), "json"))
+        return 2
     record_options = RecordRenderOptions(
         fields=_parse_fields(ns.fields),
         max_records=ns.max_records,
         max_chars=ns.max_chars,
     )
 
-    if ns.list or not ns.command:
-        _print_command_list()
-        return 0
-
     command = get_command(ns.command)
     if command is None:
+        matching = _commands_in_namespace(ns.command)
+        if matching:
+            print(format_namespace_help(ns.command, matching))
+            return 0
         print(render_result(
             FinanceCommandResult(ok=False, error=f"unknown command: {ns.command}"),
-            ns.output,
+            output,
             command=ns.command,
             record_options=record_options,
         ))
@@ -73,13 +116,17 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         result = FinanceCommandResult(ok=False, error=str(exc))
 
-    print(render_result(result, ns.output, command=ns.command, record_options=record_options))
+    print(render_result(result, output, command=ns.command, record_options=record_options))
     return 0 if result.ok else 1
 
 
 def _print_command_list() -> None:
     for command in list_commands():
         print(f"{command.name}\t{command.summary}")
+
+
+def _print_module_overview() -> None:
+    print(format_module_overview(list_commands()))
 
 
 def _print_command_help(command_name: str) -> int:
@@ -138,6 +185,26 @@ def format_command_help(command: FinanceCommand) -> str:
     return "\n".join(lines)
 
 
+def format_module_overview(commands: list[FinanceCommand]) -> str:
+    modules = sorted({_module_name(command) for command in commands})
+    table = Table(
+        title="Finance modules",
+        caption="Use `finance MODULE --help` for commands, or `finance --list` for the full command list.",
+        box=box.SIMPLE,
+        show_header=True,
+        header_style="bold",
+    )
+    table.add_column("Module", style="bold", no_wrap=True)
+    table.add_column("Description", overflow="fold")
+    for module in modules:
+        table.add_row(module, MODULE_DESCRIPTIONS.get(module, f"{module.title()} workflows."))
+
+    buffer = StringIO()
+    console = Console(file=buffer, force_terminal=False, color_system=None, width=100)
+    console.print(table)
+    return buffer.getvalue().rstrip()
+
+
 def format_namespace_help(namespace: str, commands: list[FinanceCommand]) -> str:
     lines = [namespace, f"Commands under `{namespace}`:"]
     for command in commands:
@@ -145,6 +212,10 @@ def format_namespace_help(namespace: str, commands: list[FinanceCommand]) -> str
         lines.append(f"  {suffix:<24} {command.summary}")
     lines.extend(["", f"Use `finance {namespace}.COMMAND --help` for command-specific usage."])
     return "\n".join(lines)
+
+
+def _module_name(command: FinanceCommand) -> str:
+    return command.name.split(".", 1)[0]
 
 
 if __name__ == "__main__":
