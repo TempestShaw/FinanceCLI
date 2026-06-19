@@ -31,6 +31,32 @@ def fetch_financial_statement(
     return client.financial_statement(symbol, statement=statement, period=period)
 
 
+def fetch_financial_statement_with_display(
+    symbol: str,
+    *,
+    statement: str = "income",
+    period: str = "annual",
+    provider: str | SecEdgarProvider | YahooFinanceProvider | None = "sec",
+) -> tuple[dict[str, Any], Any | None]:
+    """Fetch a financial statement plus provider-native display when available."""
+    if provider is None:
+        provider = "sec"
+    if isinstance(provider, str):
+        provider_key = provider.strip().lower()
+        if provider_key == "sec":
+            client = SecEdgarProvider()
+        elif provider_key == "yahoo":
+            data = YahooFinanceProvider().financial_statement(symbol, statement=statement, period=period)
+            return data, None
+        else:
+            raise ValueError("provider must be sec or yahoo")
+    else:
+        client = provider
+    if hasattr(client, "financial_statement_with_display"):
+        return client.financial_statement_with_display(symbol, statement=statement, period=period)
+    return client.financial_statement(symbol, statement=statement, period=period), None
+
+
 def fetch_financial_metrics(
     symbol: str,
     *,
@@ -63,7 +89,12 @@ def fundamentals_growth(
 
     for period_type in period_keys:
         payload = client.financial_statement(normalized_symbol, statement="income", period=period_type)
-        rows = _normalized_fundamental_rows(payload.get("rows") or [], metrics=metric_keys, period_type=period_type)
+        rows = _normalized_fundamental_rows(
+            payload.get("rows") or [],
+            metrics=metric_keys,
+            period_type=period_type,
+            periods=payload.get("periods") or [],
+        )
         source = payload.get("source")
         if payload.get("source"):
             sources.append(str(payload["source"]))
@@ -115,7 +146,14 @@ def _statement_provider(provider: str | SecEdgarProvider | YahooFinanceProvider 
     return provider
 
 
-def _normalized_fundamental_rows(rows: list[dict[str, Any]], *, metrics: list[str], period_type: str) -> list[dict[str, Any]]:
+def _normalized_fundamental_rows(
+    rows: list[dict[str, Any]],
+    *,
+    metrics: list[str],
+    period_type: str,
+    periods: list[Any] | None = None,
+) -> list[dict[str, Any]]:
+    rows = _statement_period_rows(rows, periods=periods) or rows
     normalized = []
     for index, row in enumerate(rows):
         if not isinstance(row, dict):
@@ -130,6 +168,89 @@ def _normalized_fundamental_rows(rows: list[dict[str, Any]], *, metrics: list[st
         sort_key = _period_sort_key(period, period_type)
         normalized.append({"period": period, "values": values, "methods": methods, "sort_key": sort_key})
     return sorted(normalized, key=lambda item: item["sort_key"])
+
+
+def _statement_period_rows(rows: list[dict[str, Any]], *, periods: list[Any] | None) -> list[dict[str, Any]]:
+    period_columns = _statement_period_columns(rows, periods=periods)
+    if not period_columns:
+        return []
+    metric_rows = _statement_metric_rows(rows)
+    if not metric_rows:
+        return []
+
+    output: list[dict[str, Any]] = []
+    for period in period_columns:
+        row: dict[str, Any] = {"period": period}
+        for metric, source_row in metric_rows.items():
+            value = _number(source_row.get(period))
+            if value is not None:
+                row[metric] = value
+        output.append(row)
+    return output
+
+
+def _statement_period_columns(rows: list[dict[str, Any]], *, periods: list[Any] | None) -> list[str]:
+    if any(_has_explicit_period_row(row) for row in rows if isinstance(row, dict)):
+        return []
+    if periods:
+        candidates = [str(period) for period in periods]
+        return [period for period in candidates if any(isinstance(row, dict) and period in row for row in rows)]
+
+    columns: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        for key, value in row.items():
+            if key in {"concept", "label", "unit", "level", "abstract"}:
+                continue
+            if _number(value) is not None and re.search(r"\d{4}", str(key)) and key not in columns:
+                columns.append(str(key))
+    return columns
+
+
+def _has_explicit_period_row(row: dict[str, Any]) -> bool:
+    return any(row.get(key) not in (None, "") for key in ("period", "fiscal_period", "date", "end_date", "as_of_date"))
+
+
+def _statement_metric_rows(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    metric_rows: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        metric = _statement_metric(row)
+        if metric and metric not in metric_rows:
+            metric_rows[metric] = row
+    return metric_rows
+
+
+def _statement_metric(row: dict[str, Any]) -> str | None:
+    concept = str(row.get("concept") or "")
+    label = str(row.get("label") or "")
+    text = f"{concept} {label}".lower()
+    compact = re.sub(r"[^a-z0-9]", "", text)
+    label_text = label.strip().lower()
+
+    if "weightedaveragenumberofdilutedsharesoutstanding" in compact:
+        return "diluted_shares"
+    if "earningspersharediluted" in compact or "dilutedeps" in compact:
+        return "diluted_eps"
+    if "operatingincomeloss" in compact or label_text in {"operating income", "operating income loss"}:
+        return "operating_income"
+    if "netincomeloss" in compact or label_text in {"net income", "net income loss"}:
+        return "net_income"
+    if "stockholdersequity" in compact or label_text in {"stockholders equity", "shareholders equity"}:
+        return "stockholders_equity"
+    if _is_revenue_statement_row(compact, label_text):
+        return "revenue"
+    return None
+
+
+def _is_revenue_statement_row(compact: str, label_text: str) -> bool:
+    if label_text in {"revenue", "revenues", "net sales", "sales"}:
+        return True
+    if "costofrevenue" in compact or "deferredrevenue" in compact:
+        return False
+    return "usgaaprevenues" in compact or compact.endswith("revenues")
 
 
 def _growth_rows(

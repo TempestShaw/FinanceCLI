@@ -28,6 +28,25 @@ def list_recent_filings(
     }
 
 
+def list_recent_filings_with_display(
+    symbol: str,
+    *,
+    forms: list[str] | None = None,
+    limit: int = 20,
+    provider: SecEdgarProvider | None = None,
+) -> tuple[dict[str, Any], Any | None]:
+    """List recent SEC filings plus native edgartools display when available."""
+    client = provider or SecEdgarProvider()
+    data = list_recent_filings(symbol, forms=forms, limit=limit, provider=client)
+    if not hasattr(client, "list_filings_display"):
+        return data, None
+
+    def display_loader() -> Any | None:
+        return client.list_filings_display(symbol, forms=forms, limit=limit)
+
+    return data, display_loader
+
+
 def classify_recent_filings(
     symbol: str,
     *,
@@ -55,13 +74,27 @@ def fetch_filings(
     return list_recent_filings(symbol, forms=forms, limit=limit, provider=provider)
 
 
+def fetch_filings_with_display(
+    symbol: str,
+    *,
+    forms: list[str] | None = None,
+    limit: int = 20,
+    classify: bool = False,
+    provider: SecEdgarProvider | None = None,
+) -> tuple[dict[str, Any], Any | None]:
+    """Fetch recent filings plus native edgartools display for unclassified lists."""
+    if classify:
+        return classify_recent_filings(symbol, forms=forms, limit=limit, provider=provider), None
+    return list_recent_filings_with_display(symbol, forms=forms, limit=limit, provider=provider)
+
+
 def read_filing_section(
     *,
     symbol: str | None = None,
     accession_no: str | None = None,
     url: str | None = None,
     form: str = "10-K",
-    section: str = "business",
+    section: str | None = "business",
     max_chars: int = 8000,
     provider: SecEdgarProvider | None = None,
 ) -> dict[str, Any]:
@@ -118,6 +151,47 @@ def read_filing_statement(
     )
 
 
+def read_filing_statement_with_display(
+    *,
+    symbol: str | None = None,
+    accession_no: str | None = None,
+    url: str | None = None,
+    form: str = "10-K",
+    statement: str = "income",
+    query: str | None = None,
+    include_abstract: bool = False,
+    max_rows: int = 0,
+    view: str = "standard",
+    provider: SecEdgarProvider | None = None,
+) -> tuple[dict[str, Any], Any | None]:
+    """Read filing statement rows plus native edgartools display when available."""
+    client = provider or SecEdgarProvider()
+    if hasattr(client, "filing_statement_with_display"):
+        return client.filing_statement_with_display(
+            symbol=symbol,
+            accession_no=accession_no,
+            url=url,
+            form=form,
+            statement=statement,
+            query=query,
+            include_abstract=include_abstract,
+            max_rows=max_rows,
+            view=view,
+        )
+    return read_filing_statement(
+        symbol=symbol,
+        accession_no=accession_no,
+        url=url,
+        form=form,
+        statement=statement,
+        query=query,
+        include_abstract=include_abstract,
+        max_rows=max_rows,
+        view=view,
+        provider=client,
+    ), None
+
+
 def list_filing_reports(
     *,
     symbol: str | None = None,
@@ -130,6 +204,28 @@ def list_filing_reports(
     """List edgartools filing summary reports."""
     client = provider or SecEdgarProvider()
     return client.filing_reports(symbol=symbol, accession_no=accession_no, url=url, form=form, query=query)
+
+
+def list_filing_reports_with_display(
+    *,
+    symbol: str | None = None,
+    accession_no: str | None = None,
+    url: str | None = None,
+    form: str = "10-K",
+    query: str | None = None,
+    provider: SecEdgarProvider | None = None,
+) -> tuple[dict[str, Any], Any | None]:
+    """List filing summary reports plus native edgartools display when available."""
+    client = provider or SecEdgarProvider()
+    if hasattr(client, "filing_reports_with_display"):
+        return client.filing_reports_with_display(
+            symbol=symbol,
+            accession_no=accession_no,
+            url=url,
+            form=form,
+            query=query,
+        )
+    return client.filing_reports(symbol=symbol, accession_no=accession_no, url=url, form=form, query=query), None
 
 
 def read_filing_report(

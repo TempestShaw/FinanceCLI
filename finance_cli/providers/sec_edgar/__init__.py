@@ -80,6 +80,22 @@ class SecEdgarProvider:
             )
         return result
 
+    def list_filings_display(
+        self,
+        symbol: str,
+        *,
+        forms: list[str] | None = None,
+        limit: int = 20,
+    ) -> Any | None:
+        """Return native edgartools recent-filings display for a ticker."""
+        if limit <= 0:
+            return None
+        edgar = self._edgar()
+        company = quiet_call(edgar.Company, symbol.strip().upper())
+        filings = quiet_call(company.get_filings, form=forms or None, trigger_full_load=False)
+        limited = quiet_call(filings.head, limit)
+        return limited if hasattr(limited, "__rich__") else None
+
     def filing_events(
         self,
         symbol: str,
@@ -100,11 +116,27 @@ class SecEdgarProvider:
         accession_no: str | None = None,
         url: str | None = None,
         form: str = "10-K",
-        section: str = "business",
+        section: str | None = "business",
         max_chars: int = 8000,
     ) -> dict[str, Any]:
-        """Read a canonical filing section using edgartools."""
+        """Read a canonical filing section or the whole filing text using edgartools."""
         filing = self._get_filing(symbol=symbol, accession_no=accession_no, url=url, form=form)
+        if section is None:
+            text = _common._clean_text(str(quiet_call(filing.text) or ""))
+            truncated_text = _common._truncate_text(text, max_chars=max_chars)
+            return {
+                "filing": _common._filing_metadata(filing),
+                "section": {
+                    "key": "document",
+                    "title": "Document",
+                    "edgar_section": None,
+                },
+                "text": truncated_text,
+                "char_count": len(text),
+                "returned_chars": len(truncated_text),
+                "truncated": len(truncated_text) < len(text),
+                "source": "edgartools",
+            }
         spec = _sections._normalize_section(section)
         text = self._extract_section_text(filing, spec)
         truncated_text = _common._truncate_text(text, max_chars=max_chars)
@@ -168,10 +200,38 @@ class SecEdgarProvider:
         view: str = "standard",
     ) -> dict[str, Any]:
         """Return structured XBRL statement rows from an annual/quarterly filing."""
+        data, _display = self.filing_statement_with_display(
+            symbol=symbol,
+            accession_no=accession_no,
+            url=url,
+            form=form,
+            statement=statement,
+            query=query,
+            include_abstract=include_abstract,
+            max_rows=max_rows,
+            view=view,
+        )
+        return data
+
+    def filing_statement_with_display(
+        self,
+        *,
+        symbol: str | None = None,
+        accession_no: str | None = None,
+        url: str | None = None,
+        form: str = "10-K",
+        statement: str = "income",
+        query: str | None = None,
+        include_abstract: bool = False,
+        max_rows: int = 0,
+        view: str = "standard",
+    ) -> tuple[dict[str, Any], Any | None]:
+        """Return structured statement rows plus native edgartools Rich display when safe."""
         view_key = view.strip().lower()
         if view_key not in {"standard", "raw"}:
             raise ProviderError("view must be standard or raw")
         filing = self._get_filing(symbol=symbol, accession_no=accession_no, url=url, form=form)
+        display = None
         if view_key == "raw":
             statement_key, statement_obj = _statements._get_statement_object(filing, statement)
             raw_rows = quiet_call(statement_obj.get_raw_data)
@@ -186,6 +246,8 @@ class SecEdgarProvider:
             obj = quiet_call(filing.obj)
             financials = getattr(obj, "financials", None)
             statement_key, statement_obj = _statements._financials_statement_object(financials, statement)
+            if not query and not include_abstract and max_rows == 0:
+                display = _statement_display(statement_obj)
             rows, periods = _statements._shape_standard_statement_rows(
                 statement_obj,
                 query=query,
@@ -201,7 +263,7 @@ class SecEdgarProvider:
             "count": len(rows),
             "truncated": max_rows > 0 and len(rows) >= max_rows,
             "source": "edgartools",
-        }
+        }, display
 
     def financial_statement(
         self,
@@ -211,6 +273,17 @@ class SecEdgarProvider:
         period: str = "annual",
     ) -> dict[str, Any]:
         """Return standard SEC financial statement rows for a company."""
+        data, _display = self.financial_statement_with_display(symbol, statement=statement, period=period)
+        return data
+
+    def financial_statement_with_display(
+        self,
+        symbol: str,
+        *,
+        statement: str = "income",
+        period: str = "annual",
+    ) -> tuple[dict[str, Any], Any | None]:
+        """Return standard SEC statement rows plus native edgartools Rich display."""
         financials, normalized, period_key = self._company_financials(symbol, period=period)
         statement_key, statement_obj = _statements._financials_statement_object(financials, statement)
         rows, periods = _statements._shape_standard_statement_rows(
@@ -228,7 +301,7 @@ class SecEdgarProvider:
             "rows": rows,
             "count": len(rows),
             "source": "edgartools",
-        }
+        }, _statement_display(statement_obj)
 
     def financial_metrics(
         self,
@@ -283,16 +356,36 @@ class SecEdgarProvider:
         query: str | None = None,
     ) -> dict[str, Any]:
         """List edgartools filing summary reports for a filing."""
+        data, _display = self.filing_reports_with_display(
+            symbol=symbol,
+            accession_no=accession_no,
+            url=url,
+            form=form,
+            query=query,
+        )
+        return data
+
+    def filing_reports_with_display(
+        self,
+        *,
+        symbol: str | None = None,
+        accession_no: str | None = None,
+        url: str | None = None,
+        form: str = "10-K",
+        query: str | None = None,
+    ) -> tuple[dict[str, Any], Any | None]:
+        """List filing summary reports plus native edgartools Rich display when unfiltered."""
         filing = self._get_filing(symbol=symbol, accession_no=accession_no, url=url, form=form)
         reports = _reports._get_filing_reports(filing)
         shaped_reports = _reports._shape_report_list(reports, query=query)
+        display = reports if not query else None
         return {
             "filing": _common._filing_metadata(filing),
             "reports": shaped_reports,
             "count": len(shaped_reports),
             "query": query,
             "source": "edgartools",
-        }
+        }, display
 
     def read_filing_report(
         self,
@@ -556,6 +649,15 @@ class SecEdgarProvider:
         if not isinstance(payload, dict):
             raise ProviderError("SEC response was not a JSON object")
         return payload
+
+
+def _statement_display(statement_obj: Any) -> Any | None:
+    try:
+        return quiet_call(statement_obj.render, standard=True)
+    except TypeError:
+        return statement_obj if hasattr(statement_obj, "__rich__") else None
+    except Exception:
+        return statement_obj if hasattr(statement_obj, "__rich__") else None
 
 
 def _financial_metric_values(financials: Any) -> dict[str, Any]:
