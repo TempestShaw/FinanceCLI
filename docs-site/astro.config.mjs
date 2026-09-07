@@ -9,6 +9,10 @@ export default defineConfig({
       title: "Finance CLI",
       description: "Financial research tools for you and your AI agent, with traceable sources and reproducible calculations.",
       customCss: ["./src/styles/custom.css"],
+      components: {
+        Header: "./src/components/SiteHeader.astro",
+        PageTitle: "./src/components/SitePageTitle.astro",
+      },
       social: [
         {
           icon: "github",

@@ -1,0 +1,25 @@
+---
+import DefaultHeader from '@astrojs/starlight/components/Header.astro';
+const home = Astro.url.pathname.replace(/\/$/, '') === import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+{home ? (
+  <nav class="landing-nav" aria-label="Main navigation">
+    <a class="brand" href="/FinanceCLI/" aria-label="Finance CLI home"><span aria-hidden="true">ƒ</span> Finance CLI</a>
+    <div>
+      <a href="#examples">Examples</a>
+      <a href="/FinanceCLI/ai/">AI Skills</a>
+      <a href="/FinanceCLI/quickstart/">Docs</a>
+      <a class="github" href="https://github.com/TempestShaw/FinanceCLI">GitHub <span aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
+) : <DefaultHeader />}
+<style>
+  .landing-nav { max-width: 1200px; height: 100%; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .9rem; }
+  .brand { display: flex; align-items: center; gap: .7rem; font-weight: 750; color: #16372d; white-space: nowrap; letter-spacing: -.04em; font-size: 1.18rem; }
+  .brand > span { display: grid; place-items: center; width: 29px; height: 29px; background: #16372d; color: #b6e6af; border-radius: 8px; font: italic 24px Georgia, serif; }
+  .landing-nav div { display: flex; align-items: center; gap: 1.6rem; }
+  .landing-nav a { color: #16372d; text-decoration: none; }
+  .landing-nav a:hover { color: #236747; text-decoration: underline; text-underline-offset: 5px; }
+  .github { border: 1px solid #cad3c7; padding: .45rem .8rem; border-radius: 6px; }
+  @media(max-width: 520px) { .landing-nav { font-size: .78rem; gap: .5rem; } .landing-nav div { gap: .7rem; } .brand { font-size: .95rem; gap: .4rem; } .brand > span { display: none; } .github { border: 0; padding: 0; } }
+</style>

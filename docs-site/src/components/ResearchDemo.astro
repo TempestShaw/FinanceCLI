@@ -1,0 +1,91 @@
+---
+const source = 'https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm';
+---
+<section class="demo" aria-labelledby="demo-title" data-research-demo>
+  <div class="demo-bar"><span><i aria-hidden="true"></i> RESEARCH SESSION</span><span>AAPL / 10-K</span></div>
+  <div class="demo-body">
+    <div class="question"><span class="label">YOUR QUESTION</span><h2 id="demo-title">How does Apple make money,<br />and what could go wrong?</h2></div>
+    <ol class="steps" aria-label="Recorded research steps">
+      <li data-step><span class="step-icon" aria-hidden="true">01</span><div><strong>Read the business</strong><code>filings.read · section=business</code><p>Devices, accessories, and related services.</p></div><span class="check" aria-hidden="true">✓</span></li>
+      <li data-step><span class="step-icon" aria-hidden="true">02</span><div><strong>Inspect disclosed risks</strong><code>filings.read · section=risk_factors</code><p>Economic conditions. Trade restrictions. Supply chains.</p></div><span class="check" aria-hidden="true">✓</span></li>
+      <li data-step class="answer"><span class="label">03 / EVIDENCE TO EXPLANATION</span><h3>A global business.<br />A global set of exposures.</h3><p>Apple sells devices and related services. Its filing describes how weaker consumer spending and restrictions on international trade can affect demand, costs, and its supply chain.</p><a href={source}>Apple 2025 Form 10-K <span aria-hidden="true">↗</span></a></li>
+    </ol>
+    <div class="playback" hidden data-playback>
+      <button type="button" data-toggle>Pause</button><button type="button" data-replay>Replay <span aria-hidden="true">↺</span></button><span data-progress role="status">Step 1 of 3</span>
+    </div>
+    <p class="demo-note">Recorded example · not a live query<br />CLI retrieval reproduced 7 Sep 2026. Summary written for this demo.</p>
+    <details>
+      <summary>Inspect the evidence &amp; commands</summary>
+      <p>Apple Inc. · filed 31 Oct 2025 · period ended 27 Sep 2025<br />Accession: 0000320193-25-000079</p>
+      <p>Business excerpt: “sells a variety of related services.”<br />Risk excerpt: “Restrictions on international trade, such as tariffs”</p>
+      <p>Both retrieved excerpts were truncated. This short summary covers only the displayed themes, not all company risks. Open the original filing for full context.</p>
+      <pre><code>finance filings.read accession=0000320193-25-000079 section=business max_chars=1200 --output json{ '\n' }finance filings.read accession=0000320193-25-000079 section=risk_factors max_chars=6500 --output json</code></pre>
+      <a href={source}>Read the original SEC filing ↗</a>
+    </details>
+  </div>
+</section>
+<script>
+  const demo = document.querySelector<HTMLElement>('[data-research-demo]')!;
+  const steps = [...demo.querySelectorAll<HTMLElement>('[data-step]')];
+  const toggle = demo.querySelector<HTMLButtonElement>('[data-toggle]')!;
+  const progress = demo.querySelector<HTMLElement>('[data-progress]')!;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let step = 0;
+  let paused = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const render = () => {
+    steps.forEach((item, i) => { item.hidden = i > step; });
+    progress.textContent = step === 2 ? 'Example complete' : `Step ${step + 1} of 3`;
+    toggle.textContent = step === 2 ? 'Complete' : paused ? 'Resume' : 'Pause';
+    toggle.disabled = step === 2;
+  };
+  const schedule = () => {
+    clearTimeout(timer);
+    if (step < 2 && !paused && !document.hidden) timer = setTimeout(() => { step++; render(); schedule(); }, 2600);
+  };
+  const finish = () => { clearTimeout(timer); step = 2; paused = true; render(); };
+  demo.querySelector<HTMLElement>('[data-playback]')!.hidden = false;
+  toggle.addEventListener('click', () => { paused = !paused; render(); schedule(); });
+  demo.querySelector('[data-replay]')!.addEventListener('click', () => {
+    if (reducedMotion.matches) return finish();
+    step = 0; paused = false; render(); schedule();
+  });
+  document.addEventListener('visibilitychange', schedule);
+  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) finish(); });
+  if (reducedMotion.matches) finish(); else { render(); schedule(); }
+</script>
+<style>
+  .demo { color: #e5ede4; background: #152b24; border: 1px solid #385145; border-radius: 16px; box-shadow: 0 25px 70px #183b2420; overflow: hidden; text-align: left; }
+  .demo-bar { padding: 1rem 1.4rem; border-bottom: 1px solid #375045; display: flex; justify-content: space-between; gap: .7rem; color: #bbccbd; font: .65rem ui-monospace, monospace; letter-spacing: .09em; }
+  .demo-bar i { display: inline-block; width: 6px; height: 6px; margin-right: 7px; background: #b6e6af; border-radius: 50%; }
+  .demo-body { padding: 1.5rem; }
+  .label { font: .65rem ui-monospace, monospace; letter-spacing: .08em; color: #b6d3b4; }
+  h2 { color: #faf9f1; font-size: 1.3rem; font-weight: 500; line-height: 1.4; margin: .55rem 0 1.5rem; }
+  .steps { padding: 0; margin: 0; list-style: none; min-height: 440px; }
+  li { display: flex; align-items: start; gap: .8rem; padding: .85rem 0; border-top: 1px solid #385145; animation: arrive .45s ease both; }
+  [hidden] { display: none !important; }
+  .step-icon { color: #b7d5b1; font: .66rem ui-monospace, monospace; margin-top: 4px; }
+  strong { font-size: .83rem; font-weight: 500; }
+  code { display: block; color: #b8c6b9; font: .65rem ui-monospace, monospace; margin-top: .25rem; border: 0; padding: 0; background: none; }
+  li p { margin: .3rem 0 0; font-size: .75rem; color: #b9cbbb; line-height: 1.5; }
+  .check { margin-left: auto; color: #b6e6af; }
+  .answer { display: block; background: #dfead7; color: #193a2b; border: 0; padding: 1rem 1.2rem; margin-top: .7rem; border-radius: 8px; }
+  .answer .label { color: #3b644e; }
+  h3 { color: #193a2b; font: 1.6rem/1.13 Georgia, serif; letter-spacing: -.035em; margin: .5rem 0; }
+  .answer p { color: #314d3e; font-size: .78rem; }
+  .answer a { color: #205235; font-size: .72rem; display: inline-block; margin-top: .7rem; text-underline-offset: 3px; }
+  .playback { display: flex; align-items: center; gap: .65rem; margin-top: 1rem; }
+  button { background: transparent; border: 1px solid #627969; color: #e5ede4; border-radius: 5px; padding: .45rem .65rem; font: inherit; font-size: .72rem; cursor: pointer; }
+  button:hover:not(:disabled) { background: #355444; }
+  button:disabled { opacity: .45; cursor: default; }
+  [data-progress] { margin-left: auto; color: #bacdbc; font: .65rem ui-monospace, monospace; }
+  .demo-note { font-size: .65rem; line-height: 1.7; color: #adbfaf; margin: .8rem 0; }
+  details { border-top: 1px solid #385145; padding-top: .7rem; font-size: .7rem; color: #c3d4c1; }
+  summary { cursor: pointer; padding: .3rem 0; }
+  details p { line-height: 1.7; margin: .7rem 0; }
+  details a { color: #c7eabb; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #0e2119 !important; padding: .75rem; border: 1px solid #385145 !important; }
+  @keyframes arrive { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+  @media(prefers-reduced-motion: reduce) { li { animation: none; } }
+  @media(max-width: 480px) { .demo-body { padding: 1.1rem; } .steps { min-height: 460px; } }
+</style>
