@@ -1,69 +1,104 @@
 <h1 align="center">Finance CLI</h1>
 
+<p align="center">Financial research tools for your AI agent. Evidence you can check.</p>
+
 <p align="center">
-  Research a company. Keep the evidence.
+  <strong>English</strong> | <a href="https://github.com/TempestShaw/FinanceCLI/blob/main/README.zh-CN.md" lang="zh-CN">简体中文</a>
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/finresearch-cli/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-finresearch--cli-blue"></a>
-  <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
-  <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-111827">
+  <a href="https://tempestshaw.github.io/FinanceCLI/">Website</a> ·
+  <a href="https://tempestshaw.github.io/FinanceCLI/ai/">AI Integration &amp; Skills</a> ·
+  <a href="https://tempestshaw.github.io/FinanceCLI/quickstart/">Quick Start</a> ·
+  <a href="https://tempestshaw.github.io/FinanceCLI/research-examples/">Research Examples</a>
 </p>
 
-Finance CLI helps you read company filings, inspect financial statements, and check calculations with traceable inputs. Run it in your terminal or let your research agent choose and combine commands.
+<p align="center">
+  <a href="https://pypi.org/project/finresearch-cli/"><img alt="PyPI: finresearch-cli" src="https://img.shields.io/badge/PyPI-finresearch--cli-blue"></a>
+  <img alt="Python 3.10 or later" src="https://img.shields.io/badge/Python-3.10%2B-3776AB">
+  <a href="https://github.com/TempestShaw/FinanceCLI/blob/main/LICENSE"><img alt="Apache-2.0 license" src="https://img.shields.io/badge/license-Apache--2.0-111827"></a>
+</p>
 
-**Start with a question:** [choose a company research task](https://tempestshaw.github.io/FinanceCLI/#starter-title), [see worked examples](https://tempestshaw.github.io/FinanceCLI/research-examples/), or [follow the installation guide](https://tempestshaw.github.io/FinanceCLI/quickstart/).
+Finance CLI gives your agent tools to retrieve SEC filings, inspect financial statements, read documents, and run calculations. Ask a company question in your own words, then follow the sources and inputs behind the answer. You can also run every command directly in your terminal.
 
-For example, ask what Apple does and what risks it discloses:
+## Start with a question
 
-```bash
-finance filings.read AAPL section=business max_chars=4000 --output md
-finance filings.read AAPL section=risk_factors max_chars=4000 --output md
+After [setting up the CLI and skill](https://tempestshaw.github.io/FinanceCLI/ai/), ask your agent:
+
+```text
+Use Finance CLI to research Apple's latest annual filing. Explain how it
+makes money and three risks it discloses. Cite the filing date and source
+for each finding. Retrieve more evidence if an excerpt is truncated, and
+report missing data or source errors.
 ```
 
-These commands return filing excerpts to inspect, with source information when available. Check filing dates and truncation before summarizing. They require SEC access and the current source version described below.
+Your agent chooses the commands and writes the explanation. Finance CLI supplies filing evidence and calculation results. Review the cited sources to check the agent's interpretation.
 
-It is designed for repeatable public-company research: commands in, structured output out.
+For a small, reproducible example, this command calculates annual compound growth from 100 to 150 over three years:
 
-## Why This Exists
+```bash
+finance formula.cagr start=100 end=150 periods=3 --output md
+```
 
-You can already combine notebooks, yfinance, SEC downloads, PDF parsers, spreadsheet formulas, and backtesting libraries by hand. That works until every company or question needs a slightly different glue script.
+Actual CLI output with illustrative inputs, requiring no external data:
 
-Finance CLI packages those recurring research steps into terminal commands with consistent JSON output. The goal is not to hide the underlying sources. It is to make common research moves easy to repeat, inspect, diff, and automate.
+```text
+**CAGR = 14.47%**
 
-Use it when you want to:
+_Inputs_
+| Field | Value |
+| --- | --- |
+| start | 100 |
+| end | 150 |
+| periods | 3 |
 
-- pull a 10-K section without rewriting EDGAR retrieval code
-- inspect filing tables without manually searching raw HTML
-- scan a long filing and keep stable offsets for follow-up reading
-- run finance formulas with explicit inputs and methods
-- fetch market context from the same command surface as filings and documents
-- run quick strategy checks without starting from a blank notebook
+method: (end / start) ** (1 / periods) - 1
+```
 
-## Install
+## Why use Finance CLI?
+
+- **Check the evidence.** Filing commands retain source identifiers such as URLs and accessions when available. Missing data and provider errors stay visible.
+- **Reproduce the calculation.** Formula commands return their inputs and method. Save readable Markdown or structured JSON to rerun and inspect research steps.
+- **Let your agent choose the workflow.** Combine small tools for your question, from finding a filing to reading a table and calculating a metric. Reuse them across companies without writing another retrieval script.
+
+## Use with your AI agent
+
+1. Install the CLI using the command below. Your agent needs access to the terminal environment where `finance` is installed.
+2. [Download the skill](https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip) and follow the [skill setup guide](https://tempestshaw.github.io/FinanceCLI/ai/#3-install-the-skill) to add it to your agent's local skills directory.
+3. Ask the research question above. For SEC requests, first set your real contact identity using the Quick Start guide.
+
+The skill teaches tool selection and source handling; downloading it alone does not install the CLI. You bring an agent that can run local commands and its AI model. Finance CLI does not include a hosted chat service.
+
+## Use directly in your terminal
+
+Requires Python 3.10 or later. We recommend an isolated environment; [Quick Start](https://tempestshaw.github.io/FinanceCLI/quickstart/) covers macOS, Linux, and Windows setup.
 
 ```bash
 python -m pip install -U finresearch-cli
+finance formula.cagr start=100 end=150 periods=3 --output md
 ```
 
-From a local checkout:
-
-The website and this README describe the current repository. The published package may lag behind; use the source installation below for current commands and output formats. The [Quick Start](https://tempestshaw.github.io/FinanceCLI/quickstart/) includes an isolated environment and SEC contact setup.
+To read an annual filing, set your name and real email for SEC requests. On macOS or Linux, replace the example contact below:
 
 ```bash
-git clone https://github.com/TempestShaw/FinanceCLI.git
-cd FinanceCLI
-python -m pip install -U .
+export FINANCE_SEC_USER_AGENT="Your Name your.email@example.com"
+finance filings.read AAPL section=business max_chars=4000 --output md
 ```
 
-Check the install:
+This returns a filing excerpt. Check its date, source, and truncation information before drawing conclusions. The [Quick Start](https://tempestshaw.github.io/FinanceCLI/quickstart/) includes the equivalent Windows setup.
 
-```bash
-finance --list
-finance sources.status --output json
-```
+## What is included?
 
-The base install includes SEC filing access, native PDF/HTML reading, Yahoo market data, and finance formulas. Starting with 0.1.0b1, install advanced capabilities only when needed:
+| Research task | Tools |
+| --- | --- |
+| Find and read company disclosures | SEC filings, sections, XBRL financial statements, filing reports |
+| Read research documents | Native PDF/HTML text, text search, bounded reading windows |
+| Add company and market context | Quotes, price history, fundamentals, public transcripts, IR presentation discovery |
+| Check assumptions and calculations | Finance formulas, valuation scenarios, DCF/NPV/IRR |
+
+SEC research and basic calculators need no paid data key. Provider-backed results depend on availability and coverage; consensus estimates require an FMP key. See [Data Sources](https://tempestshaw.github.io/FinanceCLI/data-sources/) for details.
+
+Install advanced capabilities only when needed:
 
 ```bash
 python -m pip install -U "finresearch-cli[tables]"
@@ -71,192 +106,19 @@ python -m pip install -U "finresearch-cli[ocr]"
 python -m pip install -U "finresearch-cli[backtest]"
 ```
 
-Combine extras with `"finresearch-cli[tables,ocr,backtest]"`. For a local checkout, use `".[tables,ocr,backtest]"`. OCR may download model files on first use.
+These add PDF table extraction, OCR, and VectorBT backtesting respectively. Combine them as `"finresearch-cli[tables,ocr,backtest]"`. OCR may download models on first use.
 
-## First Minute
+## Explore and contribute
 
-```bash
-finance filings.recent AAPL forms=10-K,10-Q limit=3
-finance filings.statement COST statement=balance query="Common Stock"
-finance formula.margin numerator=11969 denominator=254453
-finance market.quote AAPL
-finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31 fast=20 slow=100
-```
+- [Worked research examples](https://tempestshaw.github.io/FinanceCLI/research-examples/) and [more command examples](https://github.com/TempestShaw/FinanceCLI/blob/main/EXAMPLES.md).
+- [Command reference](https://tempestshaw.github.io/FinanceCLI/commands/), [output formats](https://tempestshaw.github.io/FinanceCLI/agent-output-formats/), and [shell completion](https://github.com/TempestShaw/FinanceCLI/blob/main/EXAMPLES.md#shell-completion).
+- For integrations: [Agent Guide](https://tempestshaw.github.io/FinanceCLI/agents/), [llms.txt](https://tempestshaw.github.io/FinanceCLI/llms.txt), and [tools.json](https://tempestshaw.github.io/FinanceCLI/tools.json).
+- [Report a problem or suggest a research question](https://github.com/TempestShaw/FinanceCLI/issues/new). Include the command and error, excluding credentials and private documents. If it helped your research, share a reproducible example or star the repository.
 
-Most commands return JSON by default:
+English and Chinese READMEs follow the same structure and examples; please update both when changing setup or capabilities. The detailed documentation is currently in English.
 
-```json
-{
-  "ok": true,
-  "data": {
-    "margin": 0.04703815635893466,
-    "margin_pct": 4.7038156358934655,
-    "inputs": {
-      "numerator": 11969.0,
-      "denominator": 254453.0
-    },
-    "method": "numerator / denominator"
-  },
-  "error": null,
-  "warnings": []
-}
-```
+## Trust and license
 
-For output that is readable by **both humans and LLMs**, use `--output md`. It leads with a one-line headline answer, follows with humanized tables (percentages, thousands separators), and ends with a source line:
+The CLI runs locally and does not collect usage telemetry. API credentials are read from environment variables. See the [trust guide](https://tempestshaw.github.io/FinanceCLI/trust/) and [Apache-2.0 license](https://github.com/TempestShaw/FinanceCLI/blob/main/LICENSE).
 
-```bash
-finance formula.margin numerator=11969 denominator=254453 --output md
-```
-
-```text
-**margin = 4.70%**
-
-_Inputs_
-| Field | Value |
-| --- | --- |
-| numerator | 11,969 |
-| denominator | 254,453 |
-
-method: numerator / denominator
-```
-
-`--output table` and `--output report` give rich terminal views; `--output pretty-json` is for debugging. To make a human format the default for interactive shells, configure it once:
-
-```bash
-finance config.set output.default md
-finance config.set output.non_interactive_default json
-```
-
-Explicit `--output` flags still override the config. Non-interactive output can stay JSON so pipes, CI, and agents keep a stable parser contract.
-
-### Shell Completion
-
-Install completion automatically for your current shell:
-
-```bash
-scripts/install_completion.sh zsh
-```
-
-When installed from a wheel, the same helper is available as `install_completion.sh`.
-
-FinanceCLI can print shell completion scripts without modifying your shell files:
-
-```bash
-finance completion bash > ~/.local/share/bash-completion/completions/finance
-finance completion zsh > ~/.zfunc/_finance
-finance completion fish > ~/.config/fish/completions/finance.fish
-```
-
-Completions are generated from the live command registry and usage metadata, so command names, global options, and key=value argument enums stay aligned with the CLI.
-
-## Mental Model
-
-```mermaid
-flowchart LR
-    A["finance command"] --> B["research service"]
-    B --> C["SEC filings"]
-    B --> D["document parsers"]
-    B --> E["market data"]
-    B --> F["formulas and backtests"]
-    C --> G["structured JSON"]
-    D --> G
-    E --> G
-    F --> G
-    G --> H["terminal, notebooks, scripts, automation"]
-```
-
-Commands are grouped by research job:
-
-| Namespace | Use it for |
-| --- | --- |
-| `filings.*` | SEC filings, filing sections, XBRL statements, and filing reports. |
-| `document.*` | PDF/HTML reading, text search, windows, table extraction, and OCR. |
-| `market.*`, `price.*` | Quotes, OHLCV, market moves, regimes, sectors, and event context. |
-| `transcripts.*`, `ir.*` | Earnings transcripts, analyst Q&A, and investor presentations. |
-| `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
-| `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
-
-## Automation Workflows
-
-Finance CLI works well in local scripts, notebooks, CI jobs, and research automation because commands are small, explicit, and machine-readable.
-
-The document examples below assume a filing or report has been saved locally as `./filing.html`.
-
-```bash
-finance document.scan ./filing.html format=html query="operating lease costs" window=1200
-finance document.window ./filing.html format=html match_id=char_52000_52200 direction=next chars=4000
-finance filings.statement COST statement=balance query="Common Stock"
-finance formula.net_debt debt=11415 cash=11144 operating_cash=5089
-```
-
-A typical automated research workflow is:
-
-1. discover the filing or presentation
-2. scan for the relevant section, metric, table, or phrase
-3. continue reading from a stable match id or character window
-4. calculate the metric with explicit inputs
-5. preserve the command and JSON output as audit trail
-
-## What You Can Do
-
-| Task | Example |
-| --- | --- |
-| Find recent filings | `finance filings.recent NVDA forms=10-Q,8-K limit=5` |
-| Read a 10-K section | `finance filings.read AAPL section=mda max_chars=4000` |
-| Search filing text | `finance document.scan ./filing.html format=html query="lease liabilities"` |
-| Extract PDF tables | `finance document.tables ./report.pdf pages=10-12 flavor=stream` |
-| OCR a scanned deck | `finance document.ocr ./deck.pdf max_pages=3` |
-| Pull market data | `finance market.ohlcv NVDA timeframe=1d limit=20` |
-| Calculate finance metrics | `finance formula.net_debt debt=11415 cash=11144 operating_cash=5089` |
-| Run a backtest | `finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31 fast=20 slow=100` |
-| Compare symbols side by side | `finance compare AAPL MSFT GOOG market.quote --output md` |
-
-More examples are in [EXAMPLES.md](EXAMPLES.md).
-
-## Trust Model
-
-Finance research needs traceable inputs. Finance CLI is built around a few practical rules:
-
-- Source handles: filing commands return accessions, URLs, report names, sections, offsets, or provider names when available.
-- Explicit calculations: formula commands include the inputs and method used.
-- Scriptable results: commands return predictable JSON with `ok`, `data`, `error`, and `warnings` fields.
-- Local credentials: API keys are read from environment variables at runtime and are not written by the CLI.
-- No telemetry: the CLI does not track commands, symbols, queries, or usage.
-- Freshness: provider-backed commands reflect the source response at runtime; there is no general stale-cache layer.
-
-## Why Not Just A Notebook?
-
-| Research job | Notebook-first workflow | Finance CLI workflow |
-| --- | --- | --- |
-| Pull a 10-K section | Write SEC lookup, filing selection, parser setup, and cleanup code. | `finance filings.read AAPL section=mda` |
-| Inspect a filing table | Search raw HTML or build one-off XBRL/table parsing. | `finance filings.statement COST statement=balance query="Common Stock"` |
-| Continue reading a long document | Copy text into cells and lose the original location. | `finance document.window ./filing.html match_id=char_52000_52200 direction=next` |
-| Reuse finance formulas | Reimplement formulas and unit conventions in each notebook. | `finance formula.roic nopat=7113 invested_capital=28077` |
-| Run a quick strategy check | Build the data fetch, signals, portfolio, and metrics before testing the idea. | `finance backtest.run sma_cross AAPL 2020-01-01 2024-12-31` |
-| Make research reproducible | Commit notebooks with hidden state and noisy diffs. | Commit commands, JSON outputs, and CI checks as plain text. |
-
-Notebooks are still useful for exploration and visualization. Finance CLI is for the repeated research steps you want to make portable, auditable, and easy to run again.
-
-## Data Sources And Keys
-
-Many commands work without a paid key. Some provider-backed commands use environment variables:
-
-| Variable | Enables |
-| --- | --- |
-| `FMP_API_KEY` | Financial Modeling Prep consensus estimates. |
-| `ALPHAVANTAGE_API_KEY` or `ALPHA_VANTAGE_API_KEY` | Alpha Vantage market data fallback. |
-| `ALPACA_API_KEY` and `ALPACA_API_SECRET` | Alpaca market-data fallback. |
-
-SEC filings, native document reading, formulas, and Yahoo market data are included in the base install. PDF tables, OCR, and local backtests use the optional installs above.
-
-## Help
-
-```bash
-finance help filings
-finance filings.statement --help
-finance document.scan --help
-```
-
-## Disclaimer
-
-Finance CLI is for research and automation workflows only. It is not financial advice, investment advice, tax advice, or a recommendation to buy or sell securities.
+Finance CLI is for research and automation. It does not provide investment advice or recommendations to buy or sell securities.
