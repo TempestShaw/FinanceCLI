@@ -1,9 +1,30 @@
 ---
 title: AI Integration & Skills
-description: Install Finance CLI for agent workflows and add the Finance CLI skill.
+description: Give your AI agent financial research tools. Install Finance CLI and its skill, then ask company questions with traceable sources and calculations.
 ---
 
-This page is the starting point for using Finance CLI with coding agents and research agents. The package installation and the skill installation are separate on purpose: the package provides the `finance` executable, while the skill teaches an agent how to route research tasks to that executable.
+Ask your agent to investigate a company, read its filings, or check a financial calculation. Finance CLI provides the tools and source evidence; the skill helps your agent choose commands and handle the results.
+
+You need an agent that can run terminal commands on your computer. The CLI supplies data retrieval and calculations, while your existing agent supplies the model and reasoning. Downloading the skill alone does not install the CLI.
+
+**Get started:** [Install the CLI](#1-install-finance-cli) → [add the skill](#3-install-the-skill) → [ask your first question](#ask-your-first-research-question).
+
+[Download the Finance CLI skill](/FinanceCLI/skills/finance-cli-skills.zip)
+
+## Ask your first research question
+
+Once setup is complete, paste this into your agent:
+
+```text
+Use Finance CLI to research Apple's latest annual filing. Explain its
+business and three disclosed risks. Cite the filing date and source for
+each finding. Retrieve more evidence when excerpts are truncated, and
+report missing data or source errors.
+```
+
+The agent can discover the filing, read the relevant sections, and follow up with other commands. You should receive an explanation tied to filing evidence. Review the cited sources: the skill guides source handling, but does not guarantee that an agent's interpretation is correct.
+
+For another task, ask it to compare financial statement rows for companies you specify, or calculate growth from verified period values. [See worked examples](/FinanceCLI/research-examples/).
 
 ## 1. Install Finance CLI
 
@@ -37,7 +58,7 @@ Agents should prefer the machine-readable files over scraping prose pages.
 
 The Finance CLI skill is a compact routing guide for agents. It points them to the installed `finance` CLI, JSON output, `tools.json` schemas, and source-aware citation rules.
 
-Use this one-click prompt in an agent that can manage local files:
+Copy this setup prompt into an agent that can manage local files:
 
 ```text
 Download https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip, extract it, copy the extracted skills/finance-cli folder into my local agent skills directory, verify that the copied folder contains SKILL.md, and then stop. Do not run pip install. Do not run finance commands during skill installation.

@@ -1,20 +1,65 @@
 ---
-title: Research a company. Keep the evidence.
-description: Find SEC filings, read company risks, and check financial calculations with Finance CLI. Choose a question to start your research.
+title: Give your AI agent the tools for financial research.
+description: Equip your AI agent with SEC filings, financial statements, and reproducible calculations. Finance CLI brings source evidence and structured results to company research.
 tableOfContents: false
 ---
 
 import ResearchStarter from '../../components/ResearchStarter.astro';
 
-Finance CLI helps you read public-company filings, inspect financial statements, and check calculations with traceable inputs. Use it in a terminal or give the tools to your research agent.
+Turn a company question into research you can check. Finance CLI gives your AI agent tools to retrieve SEC filings, inspect financial statements, read documents, and run calculations—with sources and inputs you can follow.
 
 <div class="fc-action-row">
-  <a href="#starter-title">Choose a research question</a>
+  <a href="/FinanceCLI/ai/">AI Integration &amp; Skills</a>
   <a href="/FinanceCLI/research-examples/">See worked examples</a>
-  <a href="/FinanceCLI/ai/">Use with an agent</a>
+  <a href="#starter-title">Try the command builder</a>
 </div>
 
 Open source · Runs on your computer · No paid data key needed for SEC research
+
+## Your question. Your agent. The evidence behind its answer.
+
+After [setting up the CLI and skill](/FinanceCLI/ai/), give your agent a question like this:
+
+```text
+Research Apple's latest annual filing with Finance CLI. Explain how it
+makes money and three risks it discloses. Cite the filing date and source
+for each finding, and tell me where the evidence is incomplete.
+```
+
+Your agent chooses the tools, follows up on the evidence, and writes the explanation. Finance CLI supplies filing excerpts, structured data, and calculation results. You can inspect the sources and rerun the commands behind the answer.
+
+Requires an agent that can run local commands. The skill teaches it how to use the CLI; the CLI does not include an AI model or a hosted chat service.
+
+## Why Finance CLI belongs in your research toolkit
+
+Company research involves finding the right filing, locating a table, checking the reporting period, and calculating a metric. Repeating that work for each question means more downloads, copied numbers, and one-off scripts. Finance CLI makes those steps reusable for both you and your agent.
+
+<section class="fc-usecase-grid" aria-label="Why use Finance CLI">
+  <a class="fc-usecase-card" href="/FinanceCLI/trust/">
+    <span>Evidence you can inspect</span>
+    <strong>Follow an answer back to its inputs.</strong>
+    <small>Filing commands retain source identifiers when available. Calculations expose their inputs and methods; missing data and errors stay visible.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/ai/">
+    <span>A skill for your agent</span>
+    <strong>Ask in your own words.</strong>
+    <small>The skill guides tool selection and source handling. Your agent can combine commands for your question and decide what to investigate next.</small>
+  </a>
+  <a class="fc-usecase-card" href="/FinanceCLI/commands/">
+    <span>Reusable research tools</span>
+    <strong>Spend less time writing retrieval scripts.</strong>
+    <small>Use one command interface for filings, documents, market data, and calculations. Keep readable reports or structured JSON for the next step.</small>
+  </a>
+</section>
+
+<div class="fc-action-row">
+  <a href="/FinanceCLI/ai/">Set up your research agent</a>
+  <a href="/FinanceCLI/skills/finance-cli-skills.zip">Download the skill</a>
+</div>
+
+## Prefer to run the commands yourself?
+
+Use the same tools directly in your terminal. Start with a question below, then follow the [Quick Start](/FinanceCLI/quickstart/).
 
 <ResearchStarter />
 

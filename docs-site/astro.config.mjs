@@ -7,7 +7,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Finance CLI",
-      description: "Public-company research from the terminal.",
+      description: "Financial research tools for you and your AI agent, with traceable sources and reproducible calculations.",
       customCss: ["./src/styles/custom.css"],
       social: [
         {
@@ -21,10 +21,10 @@ export default defineConfig({
           label: "Start",
           items: [
             { label: "Home", slug: "" },
+            { label: "AI Integration & Skills", slug: "ai" },
             { label: "Quick Start", slug: "quickstart" },
             { label: "Research Examples", slug: "research-examples" },
             { label: "Agent Guide", slug: "agents" },
-            { label: "AI Integration & Skills", slug: "ai" },
             { label: "Agent Output Formats", slug: "agent-output-formats" },
             { label: "Workflows", slug: "workflows" },
           ],
