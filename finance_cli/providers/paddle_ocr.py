@@ -68,7 +68,7 @@ class PaddleOCRProvider:
             paddleocr = quiet_call(
                 require_dependency,
                 "paddleocr",
-                "Install or repair Finance CLI with: python -m pip install -U finresearch-cli",
+                'Install OCR with: python -m pip install -U "finresearch-cli[ocr]"',
             )
             pp_structure = getattr(paddleocr, "PPStructureV3")
             return quiet_call(pp_structure)

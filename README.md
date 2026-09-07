@@ -1,7 +1,7 @@
 <h1 align="center">Finance CLI</h1>
 
 <p align="center">
-  Public-company research from the terminal.
+  Research a company. Keep the evidence.
 </p>
 
 <p align="center">
@@ -10,7 +10,18 @@
   <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-111827">
 </p>
 
-Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML, extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from one command-line interface.
+Finance CLI helps you read company filings, inspect financial statements, and check calculations with traceable inputs. Run it in your terminal or let your research agent choose and combine commands.
+
+**Start with a question:** [choose a company research task](https://tempestshaw.github.io/FinanceCLI/#starter-title), [see worked examples](https://tempestshaw.github.io/FinanceCLI/research-examples/), or [follow the installation guide](https://tempestshaw.github.io/FinanceCLI/quickstart/).
+
+For example, ask what Apple does and what risks it discloses:
+
+```bash
+finance filings.read AAPL section=business max_chars=4000 --output md
+finance filings.read AAPL section=risk_factors max_chars=4000 --output md
+```
+
+These commands return filing excerpts to inspect, with source information when available. Check filing dates and truncation before summarizing. They require SEC access and the current source version described below.
 
 It is designed for repeatable public-company research: commands in, structured output out.
 
@@ -37,6 +48,8 @@ python -m pip install -U finresearch-cli
 
 From a local checkout:
 
+The website and this README describe the current repository. The published package may lag behind; use the source installation below for current commands and output formats. The [Quick Start](https://tempestshaw.github.io/FinanceCLI/quickstart/) includes an isolated environment and SEC contact setup.
+
 ```bash
 git clone https://github.com/TempestShaw/FinanceCLI.git
 cd FinanceCLI
@@ -50,7 +63,15 @@ finance --list
 finance sources.status --output json
 ```
 
-The default install includes SEC filing access, PDF parsing, Camelot table extraction, PaddleOCR fallback, Yahoo market data, finance formulas, and VectorBT backtests.
+The base install includes SEC filing access, native PDF/HTML reading, Yahoo market data, and finance formulas. Starting with 0.1.0b1, install advanced capabilities only when needed:
+
+```bash
+python -m pip install -U "finresearch-cli[tables]"
+python -m pip install -U "finresearch-cli[ocr]"
+python -m pip install -U "finresearch-cli[backtest]"
+```
+
+Combine extras with `"finresearch-cli[tables,ocr,backtest]"`. For a local checkout, use `".[tables,ocr,backtest]"`. OCR may download model files on first use.
 
 ## First Minute
 
@@ -150,7 +171,7 @@ Commands are grouped by research job:
 | --- | --- |
 | `filings.*` | SEC filings, filing sections, XBRL statements, and filing reports. |
 | `document.*` | PDF/HTML reading, text search, windows, table extraction, and OCR. |
-| `market.*`, `price.*`, `news.*` | Quotes, OHLCV, market moves, regimes, sectors, and news context. |
+| `market.*`, `price.*` | Quotes, OHLCV, market moves, regimes, sectors, and event context. |
 | `transcripts.*`, `ir.*` | Earnings transcripts, analyst Q&A, and investor presentations. |
 | `formula.*`, `valuation.*`, `estimates.*` | Finance formulas, DCF/NPV/IRR, multiples, scenarios, and consensus estimates. |
 | `backtest.*` | VectorBT strategy runs, tuning, custom strategy files, and factor payload helpers. |
@@ -226,7 +247,7 @@ Many commands work without a paid key. Some provider-backed commands use environ
 | `ALPHAVANTAGE_API_KEY` or `ALPHA_VANTAGE_API_KEY` | Alpha Vantage market data fallback. |
 | `ALPACA_API_KEY` and `ALPACA_API_SECRET` | Alpaca market-data fallback. |
 
-SEC filing, document, formula, table, OCR, Yahoo market data, and local backtest commands are available from the default install.
+SEC filings, native document reading, formulas, and Yahoo market data are included in the base install. PDF tables, OCR, and local backtests use the optional installs above.
 
 ## Help
 

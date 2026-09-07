@@ -71,21 +71,22 @@ def setup_function():
     clear_commands()
 
 
-def test_default_install_includes_full_research_stack_without_vectorbt_full():
+def test_default_install_keeps_advanced_capabilities_optional():
     pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
     text = pyproject.read_text()
     dependencies = text.split("dependencies = [", 1)[1].split("]\n\n[project.optional-dependencies]", 1)[0]
 
-    for package in ("camelot-py", "edgartools", "paddleocr", "paddlepaddle", "pypdf", "PyMuPDF", "yfinance", "vectorbt"):
+    for package in ("edgartools", "pypdf", "PyMuPDF", "yfinance"):
         assert package in dependencies
 
-    for package in ("vectorbt[full]",):
+    for package in ("camelot-py", "paddleocr", "paddlepaddle", "vectorbt"):
         assert package not in dependencies
 
     optional_dependencies = text.split("[project.optional-dependencies]", 1)[1].split("[project.scripts]", 1)[0]
     assert "dev =" in optional_dependencies
-    assert "ocr =" not in optional_dependencies
-    assert "tables =" not in optional_dependencies
+    assert 'ocr = ["paddleocr[doc-parser]>=3.5.0", "paddlepaddle>=3.3.0"]' in optional_dependencies
+    assert 'tables = ["camelot-py>=0.11.0"]' in optional_dependencies
+    assert 'backtest = ["vectorbt>=1.0.0"]' in optional_dependencies
 
 
 def test_core_market_and_symbol_capabilities_return_structured_results(monkeypatch):

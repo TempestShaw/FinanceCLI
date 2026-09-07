@@ -1,0 +1,56 @@
+<section class="fc-starter" aria-labelledby="starter-title">
+  <h2 id="starter-title">Start with your question</h2>
+  <p>Get a command to run locally. This website does not fetch live financial data.</p>
+  <noscript>Enable JavaScript to customize the command, or use the AAPL example below.</noscript>
+  <form id="research-starter">
+    <label for="research-symbol">Stock symbol</label>
+    <input id="research-symbol" name="symbol" value="AAPL" required maxlength="20" pattern="[A-Za-z0-9][A-Za-z0-9.]{0,19}" aria-describedby="symbol-hint" />
+    <small id="symbol-hint">Use a US company ticker such as AAPL or MSFT for SEC research.</small>
+    <label for="research-question">What do you want to find?</label>
+    <select id="research-question" name="question">
+      <option value="business">What does this company do?</option>
+      <option value="risks">What risks does the company disclose?</option>
+      <option value="filings">Where are its latest annual and quarterly filings?</option>
+    </select>
+    <button type="submit">Create command</button>
+  </form>
+  <pre><code id="research-command" aria-live="polite">finance filings.read AAPL section=business max_chars=4000 --output md</code></pre>
+  <button id="copy-research-command" type="button">Copy command</button>
+  <p id="copy-status" role="status"></p>
+  <p><a href="/FinanceCLI/quickstart/">Set up the CLI</a> or <a href="/FinanceCLI/research-examples/">follow a complete example</a>.</p>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#research-starter')!;
+  const output = document.querySelector<HTMLElement>('#research-command')!;
+  const status = document.querySelector<HTMLElement>('#copy-status')!;
+  const tasks: Record<string, string> = {
+    business: 'filings.read SYMBOL section=business max_chars=4000',
+    risks: 'filings.read SYMBOL section=risk_factors max_chars=4000',
+    filings: 'filings.recent SYMBOL forms=10-K,10-Q limit=3',
+  };
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    output.textContent = `finance ${tasks[String(data.get('question'))].replace('SYMBOL', String(data.get('symbol')).toUpperCase())} --output md`;
+    status.textContent = '';
+  });
+  document.querySelector('#copy-research-command')!.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(output.textContent!);
+      status.textContent = 'Command copied. Paste it into your terminal after installation.';
+    } catch {
+      status.textContent = 'Select the command above and copy it manually.';
+    }
+  });
+</script>
+
+<style>
+  .fc-starter { border: 1px solid var(--sl-color-gray-4); border-radius: 8px; padding: 1.25rem; margin-top: 2rem; }
+  form { display: grid; gap: .65rem; }
+  input, select, button { font: inherit; padding: .65rem; border: 1px solid var(--sl-color-gray-4); border-radius: 4px; color: var(--sl-color-white); background: var(--sl-color-black); }
+  input, select { width: 100%; min-width: 0; }
+  button { cursor: pointer; font-weight: 600; border-color: var(--sl-color-accent); }
+  pre { padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+  #copy-status { min-height: 1.6em; }
+</style>

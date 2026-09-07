@@ -1,107 +1,56 @@
 ---
-title: Finance CLI
-description: Public-company research from the terminal.
+title: Research a company. Keep the evidence.
+description: Find SEC filings, read company risks, and check financial calculations with Finance CLI. Choose a question to start your research.
 tableOfContents: false
 ---
 
-<section class="fc-command-hero" aria-label="Finance CLI overview">
-  <div>
-    <p class="fc-lede">
-      Finance CLI helps analysts, quants, and research workflows pull SEC filings, read PDFs and HTML,
-      extract filing tables, run finance formulas, fetch market context, and test VectorBT strategies from
-      one command-line interface.
-    </p>
+import ResearchStarter from '../../components/ResearchStarter.astro';
 
-    <p>
-      It is designed for repeatable public-company research: commands in, structured output out.
-    </p>
+Finance CLI helps you read public-company filings, inspect financial statements, and check calculations with traceable inputs. Use it in a terminal or give the tools to your research agent.
 
-    <p>
-      Agents can start from <a href="/FinanceCLI/llms.txt"><code>llms.txt</code></a>,
-      <a href="/FinanceCLI/tools.json"><code>tools.json</code></a>, the
-      <a href="/FinanceCLI/agents/">Agent Guide</a>, or
-      <a href="/FinanceCLI/ai/">AI Integration & Skills</a>.
-    </p>
+<div class="fc-action-row">
+  <a href="#starter-title">Choose a research question</a>
+  <a href="/FinanceCLI/research-examples/">See worked examples</a>
+  <a href="/FinanceCLI/ai/">Use with an agent</a>
+</div>
 
-    <div class="fc-action-row">
-      <a href="/FinanceCLI/quickstart/">Quick Start</a>
-      <a href="/FinanceCLI/namespaces/">Browse Use Cases</a>
-      <a href="/FinanceCLI/commands/">Command Reference</a>
-    </div>
-  </div>
+Open source · Runs on your computer · No paid data key needed for SEC research
 
-  <div class="fc-terminal" aria-label="Example terminal session">
-    <div class="fc-terminal-bar">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <strong>research session</strong>
-    </div>
-    <pre><code>{`python -m pip install -U finresearch-cli
+<ResearchStarter />
 
-finance filings.recent AAPL --output json
-finance filings.statement AAPL statement=income --output json
-finance document.scan filing.html query="gross margin" --output json`}</code></pre>
-  </div>
-</section>
+## From question to evidence
 
-<section class="fc-usecase-grid" aria-label="Use case shortcuts">
-  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/filings/">
-    <span>Filings</span>
-    <strong>SEC discovery and XBRL statements</strong>
-    <small>Find filings, read sections, inspect reports, and pull statement rows.</small>
+<section class="fc-usecase-grid" aria-label="Research examples">
+  <a class="fc-usecase-card" href="/FinanceCLI/research-examples/#understand-a-company">
+    <span>Company research</span>
+    <strong>What does this company do, and what could go wrong?</strong>
+    <small>Read the business description and disclosed risks from its annual filing.</small>
   </a>
-  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/document/">
-    <span>Documents</span>
-    <strong>PDF, HTML, table, and OCR workflows</strong>
-    <small>Read documents, scan phrases, open windows, and extract tables.</small>
+  <a class="fc-usecase-card" href="/FinanceCLI/research-examples/#inspect-financial-statements">
+    <span>Financial statements</span>
+    <strong>Where do the revenue and profit numbers come from?</strong>
+    <small>Inspect reported income statement rows and retain their source.</small>
   </a>
-  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/market/">
-    <span>Market Data</span>
-    <strong>Quotes, history, calendars, sectors</strong>
-    <small>Fetch market context before deeper company research.</small>
-  </a>
-  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/valuation/">
-    <span>Finance Math</span>
-    <strong>Formulas, valuation, and estimates</strong>
-    <small>Run deterministic calculations from explicit assumptions.</small>
-  </a>
-  <a class="fc-usecase-card" href="/FinanceCLI/namespaces/backtest/">
-    <span>Backtesting</span>
-    <strong>VectorBT strategy and factor helpers</strong>
-    <small>Create payloads, run simulations, and inspect strategy outputs.</small>
-  </a>
-  <a class="fc-usecase-card" href="/FinanceCLI/agents/">
-    <span>Agents</span>
-    <strong>LLM-ready command routing</strong>
-    <small>Use schemas, JSON output, source attribution, and playbooks.</small>
+  <a class="fc-usecase-card" href="/FinanceCLI/research-examples/#check-a-growth-calculation">
+    <span>Worked result</span>
+    <strong>What is annual growth from 100 to 150 over three years?</strong>
+    <small>See the 14.47% compound growth result, its inputs, and the calculation.</small>
   </a>
 </section>
 
-## Why This Exists
+## Know what you are reading
 
-You can already combine notebooks, yfinance, SEC downloads, PDF parsers, spreadsheet formulas, and backtesting libraries by hand. That works until every company or question needs a slightly different glue script.
+Filing commands retain source identifiers such as URLs and accessions when available. Calculations expose their inputs and method. Provider failures and missing data remain visible. Read the [trust guide](/FinanceCLI/trust/).
 
-Finance CLI packages those recurring research steps into terminal commands with consistent JSON output. The goal is not to hide the underlying sources. It is to make common research moves easy to repeat, inspect, diff, and automate.
+Finance CLI retrieves evidence and performs calculations. Interpreting a filing or writing a summary is your task, or your agent's task. Combine the commands freely for your research question.
 
-## Use-Case Reference
+## Go further
 
-If you know the research job but not the exact command, start from the [Namespaces](/FinanceCLI/namespaces/) page. It groups commands by setup, filings, market discovery, evidence gathering, calculators, and backtesting.
+- [Quick Start](/FinanceCLI/quickstart/): install, run a command, and save a readable result.
+- [AI Integration & Skills](/FinanceCLI/ai/): use an agent that can run local commands.
+- [Command Reference](/FinanceCLI/commands/): market data, documents, valuation, and backtests.
+- [Data Sources](/FinanceCLI/data-sources/): coverage, setup, and provider availability.
 
-## Machine-Readable Entry Points
+Building an integration? Start with [llms.txt](/FinanceCLI/llms.txt), [tools.json](/FinanceCLI/tools.json), and the [Agent Guide](/FinanceCLI/agents/).
 
-| File | Use it for |
-| --- | --- |
-| [`llms.txt`](/FinanceCLI/llms.txt) | Compact LLM entry point and read order. |
-| [`llms-full.txt`](/FinanceCLI/llms-full.txt) | Full command routing context and playbooks. |
-| [`tools.json`](/FinanceCLI/tools.json) | Command schemas, side effects, citation fields, and agent routing hints. |
-| [`openapi.json`](/FinanceCLI/openapi.json) | OpenAPI-style adapter contract for MCP/plugin wrappers. |
-| [`finance-cli-skills.zip`](/FinanceCLI/skills/finance-cli-skills.zip) | Skill package for agents that support local skills. |
-
-## Install
-
-```bash
-python -m pip install -U finresearch-cli
-```
-
-The default install includes SEC filing access, PDF parsing, Camelot table extraction, PaddleOCR fallback, Yahoo market data, finance formulas, and VectorBT backtests.
+Have a task you cannot complete? [Tell us your research question and where you got stuck](https://github.com/TempestShaw/FinanceCLI/issues/new). Please omit credentials and private documents.

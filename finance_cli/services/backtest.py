@@ -9,7 +9,7 @@ from finance_cli.backtesting.result_shaping import shape_backtest_result
 from finance_cli.providers.base import ProviderError
 
 
-BACKTEST_INSTALL_HINT = "Install or repair Finance CLI with: python -m pip install -U finresearch-cli"
+BACKTEST_INSTALL_HINT = 'Install backtests with: python -m pip install -U "finresearch-cli[backtest]"'
 
 
 def _vectorbt_engine() -> Any:

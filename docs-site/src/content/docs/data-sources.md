@@ -23,11 +23,22 @@ These areas work from the default package install, subject to normal provider av
 | Area | Enables |
 | --- | --- |
 | SEC filings | Filing discovery, filing sections, XBRL statement rows, and filing reports through `filings.*`. |
-| Documents | Native PDF/HTML text extraction, document scanning, windows, table extraction, and OCR through `document.*`. |
+| Documents | Native PDF/HTML text extraction, document scanning, and windows through `document.*`. |
 | Yahoo Finance | Quotes, OHLCV, fundamentals, calendars, sectors, industries, and screens through `market.*`, `fundamentals.*`, `calendar.*`, `sector.*`, `industry.*`, and `screen.*`. |
 | News and transcripts | Public transcript pages through `transcripts.*`. |
 | Calculators | Deterministic finance formulas and valuation math through `formula.*` and `valuation.*`. |
-| Backtests | Built-in VectorBT strategy runs, tuning, and factor payload helpers through `backtest.*`. |
+
+## Optional Capabilities
+
+Starting with 0.1.0b1, install these only when you need them:
+
+| Capability | Install |
+| --- | --- |
+| PDF table extraction | `python -m pip install -U "finresearch-cli[tables]"` |
+| OCR and layout parsing | `python -m pip install -U "finresearch-cli[ocr]"` |
+| VectorBT backtests and tuning | `python -m pip install -U "finresearch-cli[backtest]"` |
+
+Combine extras as `"finresearch-cli[tables,ocr,backtest]"`. In a local checkout, use `".[tables,ocr,backtest]"`. OCR may download models on first use. If an optional dependency is absent, the command reports an error with its install instruction.
 
 ## Optional Environment Variables
 
@@ -48,7 +59,7 @@ Finance CLI reads these variables at runtime. It does not write API keys into pr
 | --- | --- |
 | SEC filings | `filings.*`, `document.*`, `ir.*` |
 | Market data | `market.*`, `price.*`, `valuation.*` |
-| News context | `news.*`, `price.context` |
+| Event context | `price.context`, `filings.recent` |
 | Transcripts | `transcripts.*` |
 | Formulas and valuation | `formula.*`, `valuation.*`, `estimates.*` |
 | Backtesting | `backtest.*` |

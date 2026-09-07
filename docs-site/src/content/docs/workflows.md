@@ -51,7 +51,6 @@ task: explain_price_move
 steps:
   - price.moves
   - price.context
-  - news.search
   - filings.recent
   - transcripts.search
 failure_modes:

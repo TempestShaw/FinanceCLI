@@ -22,6 +22,7 @@ export default defineConfig({
           items: [
             { label: "Home", slug: "" },
             { label: "Quick Start", slug: "quickstart" },
+            { label: "Research Examples", slug: "research-examples" },
             { label: "Agent Guide", slug: "agents" },
             { label: "AI Integration & Skills", slug: "ai" },
             { label: "Agent Output Formats", slug: "agent-output-formats" },

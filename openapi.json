@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Finance CLI command adapter contract",
-    "version": "0.1.0b0",
+    "version": "0.1.0b1",
     "description": "OpenAPI-style schema for adapters that expose Finance CLI commands over HTTP, MCP, or tool runtimes. The CLI itself is local."
   },
   "servers": [
