@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "finresearch-cli"
-version = "0.1.0b1"
+version = "0.1.0b2"
 description = "Finance CLI for public-company research, filings, documents, market data, valuation helpers, and backtests."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -39,7 +39,8 @@ dependencies = [
 [project.optional-dependencies]
 tables = ["camelot-py>=0.11.0"]
 ocr = ["paddleocr[doc-parser]>=3.5.0", "paddlepaddle>=3.3.0"]
-backtest = ["vectorbt>=1.0.0"]
+# VectorBT themes use scattermapbox, removed in Plotly 7.
+backtest = ["vectorbt>=1.0.0", "plotly>=4.12.0,<7"]
 dev = [
     "build>=1.2.0",
     "pytest>=8.0.0",

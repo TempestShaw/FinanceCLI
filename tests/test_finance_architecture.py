@@ -86,7 +86,7 @@ def test_default_install_keeps_advanced_capabilities_optional():
     assert "dev =" in optional_dependencies
     assert 'ocr = ["paddleocr[doc-parser]>=3.5.0", "paddlepaddle>=3.3.0"]' in optional_dependencies
     assert 'tables = ["camelot-py>=0.11.0"]' in optional_dependencies
-    assert 'backtest = ["vectorbt>=1.0.0"]' in optional_dependencies
+    assert 'backtest = ["vectorbt>=1.0.0", "plotly>=4.12.0,<7"]' in optional_dependencies
 
 
 def test_core_market_and_symbol_capabilities_return_structured_results(monkeypatch):

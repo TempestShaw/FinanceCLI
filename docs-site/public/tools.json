@@ -1,7 +1,7 @@
 {
   "$schema": "https://tempestshaw.github.io/FinanceCLI/schemas/finance-cli-tools.schema.json",
   "name": "finresearch-cli",
-  "version": "0.1.0b1",
+  "version": "0.1.0b2",
   "description": "Machine-readable Finance CLI command metadata for LLM agents, MCP adapters, and plugin wrappers.",
   "canonical_docs": "https://tempestshaw.github.io/FinanceCLI/",
   "result_envelope": {

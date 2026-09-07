@@ -2,6 +2,10 @@
 
 All notable changes to Finance CLI will be documented here.
 
+## 0.1.0b2 - Beta
+
+- Constrained the optional backtesting stack to Plotly below 7, whose removed `scattermapbox` template field prevents VectorBT from initializing. Base research installations are unaffected.
+
 ## 0.1.0b1 - Beta
 
 - Added a question-based website entry point, worked research examples, and a guided first-use path.
