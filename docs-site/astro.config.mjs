@@ -9,6 +9,7 @@ export default defineConfig({
       title: "Finance CLI",
       description: "Financial research tools for you and your AI agent, with traceable sources and reproducible calculations.",
       customCss: ["./src/styles/custom.css"],
+      tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 2 },
       components: {
         Header: "./src/components/SiteHeader.astro",
         PageTitle: "./src/components/SitePageTitle.astro",

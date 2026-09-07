@@ -638,6 +638,8 @@ def build_commands_markdown(commands: list[FinanceCommand]) -> str:
         "---",
         "title: Commands",
         "description: Generated command reference for Finance CLI.",
+        "tableOfContents:",
+        "  maxHeadingLevel: 3",
         "---",
         "",
         "# Commands",

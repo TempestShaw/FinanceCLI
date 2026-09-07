@@ -1,6 +1,8 @@
 ---
 title: Commands
 description: Generated command reference for Finance CLI.
+tableOfContents:
+  maxHeadingLevel: 3
 ---
 
 # Commands
