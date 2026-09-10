@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/financecli_logo.png" alt="Finance CLI logo" width="320">
+</p>
+
 <h1 align="center">Finance CLI</h1>
 
 <p align="center">Financial research tools for your AI agent. Evidence you can check.</p>

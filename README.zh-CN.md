@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/financecli_logo.png" alt="Finance CLI logo" width="320">
+</p>
+
 <h1 align="center">Finance CLI</h1>
 
 <p align="center">给你的 AI agent 配备金融研究工具，让每一步都有据可查。</p>
