@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/financecli_logo.png" alt="Finance CLI logo" width="320">
+  <img src="docs/assets/financecli_logo.svg" alt="Finance CLI logo" width="200">
 </p>
 
 <h1 align="center">Finance CLI</h1>
