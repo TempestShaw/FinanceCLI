@@ -16,7 +16,7 @@ export const Question = ({ lead, detail, footnote }: QuestionProps) => {
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", maxWidth: 1500 }}>
         <Eyebrow>Your question</Eyebrow>
-        <div style={{ fontSize: 96, lineHeight: 1.08, letterSpacing: -3, fontWeight: 600, marginTop: 36 }}>
+        <div style={{ fontFamily: FONT.serif, fontSize: 96, lineHeight: 1.08, letterSpacing: -1, fontWeight: 600, marginTop: 36 }}>
           “{shown}{done ? "”" : ""}<span style={{ color: COLOR.accent, opacity: caretOn ? 1 : 0, marginLeft: 6 }}>▍</span>
         </div>
         {detail && (

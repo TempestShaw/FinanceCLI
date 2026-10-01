@@ -9,7 +9,6 @@ import { cases, caseBySlug, href, recordedOn } from "../lib/showcase";
 const apple = caseBySlug("apple-services");
 const gap = caseBySlug("data-gap");
 const [featured, ...rest] = cases;
-const pipeline = ["Question", "Agent picks tools", "SEC filings", "Extract values", "Normalize periods & units", "Calculate", "Cite every source"];
 const pitfalls = [
   { title: "Mixed fiscal years", risk: "Apple’s year ends in September, NVIDIA’s in January. Blend them and the comparison is quietly wrong.", keep: "Every value keeps its period end date." },
   { title: "Million vs billion", risk: "Statements, notes and websites scale numbers differently. One slip changes the answer by 1,000×.", keep: "Raw XBRL values, with the unit stated." },
@@ -18,22 +17,45 @@ const pitfalls = [
 ];
 ---
 <Marketing title="Finance CLI — financial research tools for AI agents" description="Give your AI agent tools to retrieve SEC filings, normalize financial data, calculate metrics and keep the source behind every number. Watch five recorded research sessions.">
-  <section class="hero night night-grid" aria-labelledby="hero-title">
+  <section class="hero night" aria-labelledby="hero-title">
+    <div class="wrap cover">
+      <div class="cover-text">
+        <p class="eyebrow">Financial research tools for AI agents</p>
+        <h1 id="hero-title" class="display">Your AI can browse financial data. <span class="serif">Can you verify its answer?</span></h1>
+        <p class="lead">Finance CLI gives your agent tools to retrieve SEC filings, normalize periods and units, calculate metrics, and keep the source behind every important number. You ask the question. Your agent decides how to investigate it.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#start">Run your first research task <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href={href("showcase/")}>Read the five case studies</a>
+        </div>
+        <div class="install"><code id="install-cmd">pip install finresearch-cli</code><button class="copy-btn" type="button" data-copy="#install-cmd">Copy</button></div>
+        <p class="fine">Open source · Runs locally · SEC research needs no paid key</p>
+      </div>
+      <figure class="exhibit card">
+        <figcaption><span>Exhibit 1</span>Apple — Services share of net sales</figcaption>
+        <table>
+          <thead><tr><th scope="col">Fiscal year</th><th scope="col" class="end">Services</th><th scope="col" class="end">Share</th><th scope="col" class="bar-col"><span class="sr">Share chart</span></th></tr></thead>
+          <tbody>
+            {apple.table!.rows.map((r) => (
+              <tr><td><a href={r.url}>{r.fy}</a></td><td class="end">{r.services}</td><td class="end"><b>{r.share}</b></td>
+                <td class="bar-col"><span class="bar" style={`width:${parseFloat(r.share) / 30 * 100}%`}></span></td></tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="note">Source: Apple Form 10-K filings, FY2022 and FY2025 (fiscal years end in late September). Values reported in $ millions; share = Services ÷ net sales. Each year links to its filing. Retrieved by an agent with Finance CLI on {recordedOn}.</p>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section watch" id="demo" aria-labelledby="demo-title">
     <div class="wrap">
-      <p class="pill"><span class="dot"></span>Open source · Financial research tools for AI agents</p>
-      <h1 id="hero-title" class="display">Your AI can browse financial data.<br /><span class="serif">Can you verify its answer?</span></h1>
-      <p class="lead">Finance CLI gives your agent tools to retrieve SEC filings, normalize periods and units, calculate metrics, and keep the source behind every important number. You ask the question. Your agent decides how to investigate it.</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="#start">Run your first research task <span aria-hidden="true">→</span></a>
-        <a class="btn btn-ghost" href={href("showcase/")}>See all five sessions</a>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">How Exhibit 1 was made</p>
+          <h2 id="demo-title" class="h2">Watch the agent build it, <span class="serif">one tool call at a time.</span></h2>
+        </div>
+        <p class="lead">Seven CLI calls: find the filings, read the statements, check overlapping years for restatements, confirm units, and calculate. Sixty seconds, no editing of the numbers.</p>
       </div>
-      <div class="install"><span aria-hidden="true">$</span><code id="install-cmd">pip install finresearch-cli</code><button class="copy-btn" type="button" data-copy="#install-cmd">Copy</button></div>
-      <div class="demo" id="demo">
-        <VideoPlayer slug="apple-services" label="Watch a 60-second research session" eager caption={`“Has Apple become more dependent on Services?” — 7 CLI calls, 6 fiscal years, every figure linked to its 10-K. Recorded ${recordedOn}.`} />
-      </div>
-      <ol class="pipeline" aria-label="What happens between question and answer">
-        {pipeline.map((step, i) => <li><span>{String(i + 1).padStart(2, "0")}</span>{step}</li>)}
-      </ol>
+      <VideoPlayer slug="apple-services" label="Play the 60-second session" eager caption={`“Has Apple become more dependent on Services?” — 7 CLI calls, 6 fiscal years, every figure linked to its 10-K.`} />
     </div>
   </section>
 
@@ -49,7 +71,7 @@ const pitfalls = [
     </div>
   </section>
 
-  <section class="section alt" aria-labelledby="why-title">
+  <section class="section alt night" aria-labelledby="why-title">
     <div class="wrap">
       <p class="eyebrow">Why not just let the agent browse?</p>
       <h2 id="why-title" class="h2">Browsing finds numbers.<br /><span class="serif">Research needs to know which number.</span></h2>
@@ -58,7 +80,7 @@ const pitfalls = [
           <article class="card">
             <h3>{p.title}</h3>
             <p class="risk">{p.risk}</p>
-            <p class="keep"><span aria-hidden="true">✓</span> {p.keep}</p>
+            <p class="keep"><span class="status good"><b aria-hidden="true">✓</b>Finance CLI</span> {p.keep}</p>
           </article>
         ))}
       </div>
@@ -81,7 +103,7 @@ const pitfalls = [
     </div>
   </section>
 
-  <section class="gap night night-grid" aria-labelledby="gap-title">
+  <section class="section gap" aria-labelledby="gap-title">
     <div class="wrap gap-grid">
       <div>
         <p class="eyebrow">Missing data, reported honestly</p>
@@ -108,19 +130,19 @@ const pitfalls = [
       <p class="lead">You need an agent that can run terminal commands, such as Claude Code or Codex. Finance CLI runs locally; SEC research needs no paid key.</p>
       <ol class="steps">
         <li class="card">
-          <span class="num">1</span>
+          <span class="num">Step 1</span>
           <h3>Install the CLI</h3>
           <p>Python 3.10 or later. Then set a contact identity for SEC requests.</p>
           <CopyBlock id="step-install" text={`python -m pip install -U finresearch-cli\nexport FINANCE_SEC_USER_AGENT="Your Name you@example.com"`} />
         </li>
         <li class="card">
-          <span class="num">2</span>
+          <span class="num">Step 2</span>
           <h3>Add the skill</h3>
           <p>It teaches your agent which tools to use and how to cite them. Paste this into your agent:</p>
           <CopyBlock id="step-skill" text="Download https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip, extract it, copy the skills/finance-cli folder into my local agent skills directory, and verify it contains SKILL.md." />
         </li>
         <li class="card">
-          <span class="num">3</span>
+          <span class="num">Step 3</span>
           <h3>Ask the question</h3>
           <p>Then compare its answer with the recorded session. {apple.metrics[0].label}: <b>{apple.metrics[0].value}</b>.</p>
           <CopyBlock id="step-ask" text={apple.prompt} />
@@ -132,68 +154,78 @@ const pitfalls = [
 </Marketing>
 
 <style>
-  .hero { padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(3rem, 6vw, 4.5rem); text-align: center; }
-  .hero .lead { margin-inline: auto; }
-  .hero .display { max-width: 15ch; margin-inline: auto; }
-  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin: 2rem 0 1.2rem; }
-  .install { display: inline-flex; align-items: center; gap: .7rem; padding: .45rem .5rem .45rem 1rem; border: 1px solid #36503f; border-radius: 10px; background: #111f19; font-size: .85rem; position: relative; }
-  .install span { color: var(--night-faint); font-family: var(--font-mono); }
+  .hero { padding: clamp(3rem, 7vw, 5.5rem) 0; border-bottom: 1px solid var(--line); }
+  .cover { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .actions { display: flex; flex-wrap: wrap; gap: .7rem; margin: 1.8rem 0 1.2rem; }
+  .install { display: inline-flex; align-items: center; gap: .8rem; padding: .4rem .45rem .4rem .9rem; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); font-size: .84rem; }
+  .install::before { content: "$"; color: var(--faint); font-family: var(--font-mono); }
   .install .copy-btn { position: static; }
-  .demo { margin: clamp(2.5rem, 6vw, 4rem) auto 0; max-width: 1080px; text-align: left; }
-  .pipeline { list-style: none; padding: 0; margin: 2.2rem auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; max-width: 1080px; }
-  .pipeline li { display: flex; align-items: center; gap: .5rem; padding: .45rem .8rem; border: 1px solid #24382f; border-radius: 999px; font-size: .8rem; color: var(--night-muted); background: #111f19aa; }
-  .pipeline li span { font: .66rem var(--font-mono); color: var(--lime); }
+  .fine { font-size: .8rem; color: var(--faint); margin: .9rem 0 0; }
 
+  .exhibit { margin: 0; padding: 1.4rem 1.5rem 1.2rem; }
+  .exhibit figcaption { font: 600 1.05rem/1.35 var(--font-serif); padding-bottom: .8rem; border-bottom: 2px solid var(--ink); }
+  .exhibit figcaption span { display: block; font: 600 .7rem/1.4 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .2rem; }
+  .exhibit table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .92rem; }
+  .exhibit th { font: 600 .7rem/1.3 var(--font-sans); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); text-align: left; padding: .6rem .4rem; border-bottom: 1px solid var(--line-strong); }
+  .exhibit td { padding: .5rem .4rem; border-bottom: 1px solid var(--line); }
+  .exhibit td a { color: var(--accent); }
+  .exhibit .end { text-align: right; }
+  .bar-col { width: 34%; }
+  .bar { display: block; height: 8px; background: var(--accent); border-radius: 0 2px 2px 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .note { font-size: .74rem; line-height: 1.55; color: var(--faint); margin: .9rem 0 0; }
+
+  .watch :global(.player) { margin-top: .5rem; }
   .split { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
-  .intro { position: sticky; top: 6rem; }
-  .text-link { display: inline-block; margin-top: 1.4rem; color: var(--accent); font-weight: 600; font-size: .92rem; }
+  .intro { position: sticky; top: 5.5rem; }
+  .text-link { display: inline-block; margin-top: 1.3rem; color: var(--accent); font-weight: 600; font-size: .92rem; }
 
-  .alt { background: var(--surface-2); border-block: 1px solid var(--line); }
-  .pitfalls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2.5rem; }
-  .pitfalls article { padding: 1.4rem; display: flex; flex-direction: column; gap: .7rem; }
-  .pitfalls h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.02em; }
+  .pitfalls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 2.2rem; border-top: 2px solid var(--ink); }
+  .pitfalls article { padding: 1.3rem 1.3rem 1.3rem 0; display: flex; flex-direction: column; gap: .6rem; border: 0; border-radius: 0; background: transparent; }
+  .pitfalls article + article { padding-left: 1.3rem; border-left: 1px solid var(--line); }
+  .pitfalls h3 { margin: 0; font: 600 1.15rem/1.3 var(--font-serif); }
   .risk { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.6; flex: 1; }
-  .keep { margin: 0; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .85rem; font-weight: 550; color: var(--good); }
+  .keep { margin: 0; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .86rem; display: flex; flex-direction: column; gap: .35rem; }
 
-  .section-head { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; margin-bottom: 2.5rem; }
-  .cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .section-head { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; margin-bottom: 2.2rem; }
+  .cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.1rem; }
   .cases :global(.featured) { grid-column: 1 / -1; }
 
-  .gap { padding-block: clamp(4rem, 9vw, 7rem); }
   .gap-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
-  .gap-quote { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 620; margin: 1rem 0 1.2rem; text-wrap: balance; }
-  .gap .lead { margin-bottom: 1.8rem; }
-  .gap-card { background: #111f19; border: 1px solid #36503f; border-radius: 16px; padding: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-mono); font-size: .82rem; line-height: 1.6; }
-  .gq { font: italic 1.3rem/1.35 var(--font-serif); margin: 0 0 1.2rem; color: var(--night-ink); }
-  .gap-card dl { margin: 0; display: grid; gap: .7rem; }
-  .gap-card dl div { display: grid; grid-template-columns: 6.5rem 1fr; gap: .8rem; }
-  .gap-card dt { color: var(--night-faint); }
-  .gap-card dt.ok { color: #4fd14f; }
-  .gap-card dt.no { color: #ec835a; }
-  .gap-card dd { margin: 0; color: var(--night-ink); }
-  .policy { margin: 1.3rem 0 0; padding-top: 1rem; border-top: 1px solid #24382f; color: var(--lime); }
+  .gap-quote { font: 600 clamp(1.9rem, 3.8vw, 3rem)/1.12 var(--font-serif); letter-spacing: -.015em; margin: .9rem 0 1.1rem; text-wrap: balance; }
+  .gap .lead { margin-bottom: 1.6rem; }
+  .gap-card { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--bad); border-radius: var(--radius); padding: clamp(1.2rem, 3vw, 1.8rem); font-size: .88rem; line-height: 1.6; }
+  .gq { font: 600 1.15rem/1.4 var(--font-serif); margin: 0 0 1.1rem; }
+  .gap-card dl { margin: 0; display: grid; gap: .6rem; }
+  .gap-card dl div { display: grid; grid-template-columns: 6.5rem 1fr; gap: .8rem; padding-bottom: .6rem; border-bottom: 1px solid var(--line); }
+  .gap-card dt { font: 600 .72rem/1.6 var(--font-sans); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .gap-card dt.ok { color: var(--good); }
+  .gap-card dt.no { color: var(--bad); }
+  .gap-card dd { margin: 0; }
+  .policy { margin: 1rem 0 0; font-weight: 600; }
 
-  .steps { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .steps li { padding: 1.5rem; display: flex; flex-direction: column; gap: .7rem; position: relative; min-width: 0; }
-  .steps h3 { margin: 0; font-size: 1.1rem; }
+  .steps { list-style: none; padding: 0; margin: 2.2rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .steps li { padding: 1.4rem; display: flex; flex-direction: column; gap: .65rem; min-width: 0; }
+  .steps h3 { margin: 0; font: 600 1.15rem/1.3 var(--font-serif); }
   .steps p { margin: 0; color: var(--muted); font-size: .88rem; }
   .steps :global(pre) { max-height: 12.5rem; overflow: auto; }
-  .num { width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--bg); font-weight: 700; font-size: .85rem; }
-  .more { margin-top: 1.6rem; font-size: .88rem; color: var(--muted); }
+  .num { font: 600 .72rem/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .more { margin-top: 1.5rem; font-size: .88rem; color: var(--muted); }
   .more a { color: var(--accent); }
-  .more code { font-size: .78rem; background: var(--surface-2); padding: .15rem .4rem; border-radius: 5px; overflow-wrap: anywhere; }
+  .more code { font-size: .78rem; background: var(--surface-2); padding: .12rem .35rem; border-radius: 3px; overflow-wrap: anywhere; }
 
   @media (max-width: 1000px) {
     .pitfalls { grid-template-columns: repeat(2, 1fr); }
-    .split, .gap-grid, .section-head { grid-template-columns: 1fr; }
+    .pitfalls article:nth-child(3) { padding-left: 0; border-left: 0; }
+    .pitfalls article:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .cover, .split, .gap-grid, .section-head { grid-template-columns: 1fr; }
     .intro { position: static; }
     .steps { grid-template-columns: 1fr; }
   }
   @media (max-width: 640px) {
     .pitfalls, .cases { grid-template-columns: 1fr; }
-    .hero { text-align: left; }
-    .actions, .pipeline { justify-content: flex-start; }
-    .hero .display { margin-inline: 0; }
+    .pitfalls article, .pitfalls article + article { padding: 1.1rem 0; border-left: 0; }
+    .pitfalls article + article { border-top: 1px solid var(--line); }
     .install { max-width: 100%; }
     .install code { overflow-wrap: anywhere; font-size: .78rem; }
     .gap-card dl div { grid-template-columns: 1fr; gap: .1rem; }

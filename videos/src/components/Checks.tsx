@@ -32,7 +32,7 @@ export const Checks = ({ eyebrow, title, checks, interval = seconds(1.4) }: Chec
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow>{eyebrow}</Eyebrow>
-      <div style={{ fontSize: 58, fontWeight: 600, letterSpacing: -1.6, margin: "18px 0 40px", maxWidth: 1500, ...enter(frame, 0) }}>{title}</div>
+      <div style={{ fontFamily: FONT.serif, fontSize: 58, fontWeight: 600, letterSpacing: -0.5, margin: "18px 0 40px", maxWidth: 1500, ...enter(frame, 0) }}>{title}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         {checks.map((check, i) => (
           <div key={check.label} style={{ ...enter(frame, 12 + i * interval), display: "grid", gridTemplateColumns: "280px 1fr", gap: 32, alignItems: "start",

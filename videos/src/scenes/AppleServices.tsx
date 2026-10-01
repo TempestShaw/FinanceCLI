@@ -1,6 +1,6 @@
 import { Series, useCurrentFrame, useVideoConfig } from "remotion";
 import { caseBySlug } from "../data";
-import { COLOR, seconds } from "../theme";
+import { COLOR, FONT, seconds } from "../theme";
 import { enter, sceneOpacity } from "../motion";
 import { Stage, Scene, Eyebrow } from "../components/Stage";
 import { Question } from "../components/Question";
@@ -25,7 +25,7 @@ const TableScene = () => {
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow>The research artifact</Eyebrow>
-      <div style={{ ...enter(frame, 0), fontSize: 52, fontWeight: 600, letterSpacing: -1.5, margin: "16px 0 30px" }}>Every number, its fiscal year and its filing.</div>
+      <div style={{ ...enter(frame, 0), fontFamily: FONT.serif, fontSize: 52, fontWeight: 600, letterSpacing: -0.5, margin: "16px 0 30px" }}>Every number, its fiscal year and its filing.</div>
       <EvidenceTable columns={table.columns} rows={table.rows} start={8} interval={7} />
       <div style={{ ...enter(frame, 60), fontSize: 22, color: COLOR.faint, marginTop: 22 }}>{table.caption}</div>
     </Scene>
@@ -40,7 +40,7 @@ const GapScene = () => {
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", maxWidth: 1500 }}>
         <Eyebrow color={COLOR.caveat}>! What the filing doesn’t say</Eyebrow>
-        <div style={{ ...enter(frame, 4), fontSize: 60, fontWeight: 600, letterSpacing: -1.8, margin: "20px 0 48px" }}>Growth drivers are named — not sized.</div>
+        <div style={{ ...enter(frame, 4), fontFamily: FONT.serif, fontSize: 60, fontWeight: 600, letterSpacing: -0.6, margin: "20px 0 48px" }}>Growth drivers are named — not sized.</div>
         <QuoteCard text={drivers.text} source={drivers.source} start={18} accent={COLOR.caveat} />
         <div style={{ ...enter(frame, 52), fontSize: 32, color: COLOR.muted, marginTop: 48, lineHeight: 1.45 }}>
           No amount is disclosed for advertising, the App Store or cloud. The answer reports that gap instead of filling it with an estimate.

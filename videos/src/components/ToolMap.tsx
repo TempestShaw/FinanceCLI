@@ -22,7 +22,7 @@ export const ToolMap = ({ title, subtitle, chosen, start = 40, interval = 14 }: 
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow>No fixed workflow</Eyebrow>
-      <div style={{ ...enter(frame, 0), fontSize: 64, fontWeight: 600, letterSpacing: -2, lineHeight: 1.1, margin: "18px 0 10px" }}>{title}</div>
+      <div style={{ ...enter(frame, 0), fontFamily: FONT.serif, fontSize: 64, fontWeight: 600, letterSpacing: -0.7, lineHeight: 1.1, margin: "18px 0 10px" }}>{title}</div>
       <div style={{ ...enter(frame, 8), fontSize: 32, color: COLOR.muted, marginBottom: 46 }}>{subtitle}</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16 }}>
         {CATALOG.map((tool, i) => {

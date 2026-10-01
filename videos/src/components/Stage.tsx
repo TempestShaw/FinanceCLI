@@ -11,15 +11,9 @@ export const Stage = ({ kicker, children, chrome = true }: StageProps) => {
   const { durationInFrames } = useVideoConfig();
   return (
     <AbsoluteFill style={{ background: COLOR.ink, fontFamily: FONT.sans, color: COLOR.text }}>
-      <AbsoluteFill style={{
-        backgroundImage: `linear-gradient(${COLOR.line}55 1px, transparent 1px), linear-gradient(90deg, ${COLOR.line}55 1px, transparent 1px)`,
-        backgroundSize: "80px 80px",
-        maskImage: "radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%)",
-      }} />
-      <AbsoluteFill style={{ background: `radial-gradient(circle at 82% 8%, ${COLOR.accent}1f, transparent 42%)` }} />
       {chrome && (
         <div style={{ position: "absolute", top: 44, left: 96, right: 96, display: "flex", justifyContent: "space-between",
-          fontFamily: FONT.mono, fontSize: 20, letterSpacing: 2.4, color: COLOR.faint, textTransform: "uppercase" }}>
+          fontFamily: FONT.sans, fontWeight: 600, fontSize: 20, letterSpacing: 1.6, color: COLOR.muted, textTransform: "uppercase", borderBottom: `2px solid ${COLOR.text}`, paddingBottom: 14 }}>
           <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 5, background: COLOR.accent, marginRight: 14 }} />
             Recorded agent session · real CLI output · {recordedOn}</span>
           <span>{kicker}</span>
@@ -37,5 +31,5 @@ export const Scene = ({ children, opacity }: { children: ReactNode; opacity: num
 );
 
 export const Eyebrow = ({ children, color = COLOR.accent }: { children: ReactNode; color?: string }) => (
-  <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color }}>{children}</div>
+  <div style={{ fontFamily: FONT.sans, fontWeight: 600, fontSize: 22, letterSpacing: 2, textTransform: "uppercase", color: COLOR.muted, display: "flex", alignItems: "center", gap: 16 }}><span style={{ width: 36, height: 3, background: color }} />{children}</div>
 );

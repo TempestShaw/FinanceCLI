@@ -1,6 +1,6 @@
 import { Series, useCurrentFrame, useVideoConfig } from "remotion";
 import { caseBySlug } from "../data";
-import { COLOR, seconds } from "../theme";
+import { COLOR, FONT, seconds } from "../theme";
 import { enter, sceneOpacity } from "../motion";
 import { Stage, Scene, Eyebrow } from "../components/Stage";
 import { Question } from "../components/Question";
@@ -20,7 +20,7 @@ const ClaimsScene = () => {
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow>Thesis → claims → evidence</Eyebrow>
-      <div style={{ ...enter(frame, 0), fontSize: 50, fontWeight: 600, letterSpacing: -1.5, margin: "14px 0 26px" }}>Each claim gets evidence, a source and a verdict.</div>
+      <div style={{ ...enter(frame, 0), fontFamily: FONT.serif, fontSize: 50, fontWeight: 600, letterSpacing: -0.5, margin: "14px 0 26px" }}>Each claim gets evidence, a source and a verdict.</div>
       <ClaimsTable claims={data.claims!} start={6} interval={seconds(1.6)} />
     </Scene>
   );

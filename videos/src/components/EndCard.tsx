@@ -22,7 +22,7 @@ export const EndCard = ({ lines, emphasis }: EndCardProps) => {
     <Scene opacity={sceneOpacity(frame, durationInFrames, 10)}>
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
         {lines.map((line, i) => (
-          <div key={line} style={{ ...enter(frame, 12 + i * 16), fontSize: 76, fontWeight: 600, letterSpacing: -2.5, lineHeight: 1.12 }}>{line}</div>
+          <div key={line} style={{ ...enter(frame, 12 + i * 16), fontFamily: FONT.serif, fontSize: 76, fontWeight: 600, letterSpacing: -0.8, lineHeight: 1.12 }}>{line}</div>
         ))}
         {emphasis && (
           <div style={{ ...enter(frame, 12 + lines.length * 16), fontFamily: FONT.serif, fontSize: 84, color: COLOR.accent, lineHeight: 1.12, marginTop: 4 }}>{emphasis}</div>

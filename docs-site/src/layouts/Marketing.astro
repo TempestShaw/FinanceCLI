@@ -24,7 +24,7 @@ const imageUrl = new URL(image, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={imageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#0b1511" />
+    <meta name="theme-color" content="#fafaf8" />
     <script is:inline>
       // Share the docs' theme choice (Starlight stores it under this key).
       try {
@@ -55,7 +55,7 @@ const imageUrl = new URL(image, Astro.site);
       });
     </script>
     <style>
-      .skip { position: absolute; left: -999px; top: 0; padding: .6rem 1rem; background: var(--lime); color: #0b1511; z-index: 100; border-radius: 0 0 8px 0; }
+      .skip { position: absolute; left: -999px; top: 0; padding: .6rem 1rem; background: var(--accent); color: var(--accent-ink); z-index: 100; border-radius: 0 0 8px 0; }
       .skip:focus { left: 0; }
     </style>
   </body>

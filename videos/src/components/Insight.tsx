@@ -1,7 +1,7 @@
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import type { ReactNode } from "react";
 import type { Metric } from "../data";
-import { COLOR } from "../theme";
+import { COLOR, FONT } from "../theme";
 import { enter, sceneOpacity } from "../motion";
 import { Eyebrow, Scene } from "./Stage";
 
@@ -16,13 +16,13 @@ export const Insight = ({ eyebrow, title, metrics = [], children, leftWidth = 64
       <div style={{ display: "flex", gap: 80, height: "100%", alignItems: "center" }}>
         <div style={{ width: leftWidth, flexShrink: 0 }}>
           <Eyebrow>{eyebrow}</Eyebrow>
-          <div style={{ ...enter(frame, 4), fontSize: 54, fontWeight: 600, letterSpacing: -1.6, lineHeight: 1.12, margin: "22px 0 44px" }}>{title}</div>
+          <div style={{ ...enter(frame, 4), fontFamily: FONT.serif, fontSize: 54, fontWeight: 600, letterSpacing: -0.5, lineHeight: 1.12, margin: "22px 0 44px" }}>{title}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
             {metrics.map((m, i) => (
               <div key={m.label} style={{ ...enter(frame, 20 + i * 10), borderTop: `1px solid ${COLOR.lineStrong}`, paddingTop: 18 }}>
                 <div style={{ fontSize: 22, color: COLOR.muted }}>{m.label}</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 20, marginTop: 6 }}>
-                  <span style={{ fontSize: 56, fontWeight: 600, letterSpacing: -1.5, fontVariantNumeric: "tabular-nums" }}>{m.value}</span>
+                  <span style={{ fontFamily: FONT.serif, fontSize: 56, fontWeight: 600, letterSpacing: -0.5, fontVariantNumeric: "tabular-nums" }}>{m.value}</span>
                   <span style={{ fontSize: 22, color: COLOR.faint }}>{m.delta}</span>
                 </div>
               </div>

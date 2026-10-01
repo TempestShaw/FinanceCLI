@@ -28,7 +28,7 @@ export const AgentLog = ({ title, steps, interval = seconds(1.8), aside }: Agent
         <Eyebrow>Agent activity</Eyebrow>
         {aside && <div style={{ ...enter(frame, 6), fontSize: 26, color: COLOR.muted }}>{aside}</div>}
       </div>
-      <div style={{ fontSize: 54, fontWeight: 600, letterSpacing: -1.5, margin: "18px 0 34px", ...enter(frame, 0) }}>{title}</div>
+      <div style={{ fontFamily: FONT.serif, fontSize: 54, fontWeight: 600, letterSpacing: -0.5, margin: "18px 0 34px", ...enter(frame, 0) }}>{title}</div>
       <div style={{ height: VISIBLE * ROW, overflow: "hidden", maskImage: scroll > 0 ? "linear-gradient(transparent, black 90px)" : undefined }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14, transform: `translateY(${-scroll}px)` }}>
         {steps.map((step, i) => {

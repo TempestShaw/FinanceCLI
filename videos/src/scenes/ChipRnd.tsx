@@ -1,6 +1,6 @@
 import { Series, useCurrentFrame, useVideoConfig } from "remotion";
 import { caseBySlug } from "../data";
-import { COLOR, seconds } from "../theme";
+import { COLOR, FONT, seconds } from "../theme";
 import { enter, sceneOpacity } from "../motion";
 import { Stage, Scene, Eyebrow } from "../components/Stage";
 import { Question } from "../components/Question";
@@ -21,7 +21,7 @@ const AlignmentScene = () => {
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow>Align periods before comparing</Eyebrow>
-      <div style={{ ...enter(frame, 0), fontSize: 56, fontWeight: 600, letterSpacing: -1.6, margin: "18px 0 56px" }}>
+      <div style={{ ...enter(frame, 0), fontFamily: FONT.serif, fontSize: 56, fontWeight: 600, letterSpacing: -0.5, margin: "18px 0 56px" }}>
         Three companies. Three fiscal calendars.
       </div>
       <FiscalTimeline lanes={data.alignment!} colors={COLOR.series} start={10} />
@@ -40,7 +40,7 @@ const TwistScene = () => {
   return (
     <Scene opacity={sceneOpacity(frame, durationInFrames)}>
       <Eyebrow color={COLOR.caveat}>! The question has a trap</Eyebrow>
-      <div style={{ ...enter(frame, 4), fontSize: 56, fontWeight: 600, letterSpacing: -1.6, margin: "18px 0 48px", maxWidth: 1600 }}>
+      <div style={{ ...enter(frame, 4), fontFamily: FONT.serif, fontSize: 56, fontWeight: 600, letterSpacing: -0.5, margin: "18px 0 48px", maxWidth: 1600 }}>
         “Fastest” depends on what you measure — and the only rising ratio came from an acquisition.
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }}>
