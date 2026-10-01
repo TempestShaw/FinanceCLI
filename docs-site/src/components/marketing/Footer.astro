@@ -1,0 +1,25 @@
+---
+import { href } from "../../lib/showcase";
+---
+<footer class="footer">
+  <div class="wrap row">
+    <a class="brand" href={href("")}>ƒ Finance CLI</a>
+    <p>Open-source financial research tools for AI agents. For research and automation — not investment advice.</p>
+    <div class="links">
+      <a href={href("showcase/")}>Showcase</a>
+      <a href={href("quickstart/")}>Docs</a>
+      <a href={href("trust/")}>Trust</a>
+      <a href={href("data-sources/")}>Data sources</a>
+      <a href="https://github.com/TempestShaw/FinanceCLI/blob/main/README.zh-CN.md" lang="zh-CN">简体中文</a>
+    </div>
+  </div>
+</footer>
+<style>
+  .footer { border-top: 1px solid var(--line); padding: 2rem 0; font-size: .8rem; color: var(--muted); }
+  .row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+  p { margin: 0; flex: 1 1 18rem; }
+  .links { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .links a { color: var(--muted); }
+  .links a:hover { color: var(--ink); }
+</style>

@@ -1,0 +1,30 @@
+---
+import type { ShowcaseCase } from "../../lib/showcase";
+interface Props { table: NonNullable<ShowcaseCase["table"]> }
+const { table } = Astro.props;
+// Tables without a source column link their first cell to the filing instead.
+const hasSource = table.columns.some((c) => c.key === "source");
+---
+<div class="table-scroll">
+  <table class="data-table">
+    <caption class="sr-caption">{table.caption}</caption>
+    <thead><tr>{table.columns.map((c) => <th scope="col" class={c.align === "end" ? "end" : undefined}>{c.label}</th>)}</tr></thead>
+    <tbody>
+      {table.rows.map((row) => (
+        <tr>
+          {table.columns.map((c, i) => {
+            if (c.key === "source") return <td class="src"><a href={row.url} rel="noopener">{row.source}</a></td>;
+            if (!hasSource && i === 0) return <td><a class="row-link" href={row.url} rel="noopener">{row[c.key]}</a></td>;
+            return <td class={c.align === "end" ? "end" : undefined}>{row[c.key]}</td>;
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<p class="caption">{table.caption}{!hasSource && " The first column links to each row’s SEC filing."}</p>
+<style>
+  .sr-caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .caption { font-size: .78rem; color: var(--faint); margin: .9rem .9rem 0; line-height: 1.55; }
+  .row-link { color: var(--accent); }
+</style>

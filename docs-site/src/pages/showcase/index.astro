@@ -1,0 +1,57 @@
+---
+import Marketing from "../../layouts/Marketing.astro";
+import CaseCard from "../../components/marketing/CaseCard.astro";
+import { cases, recordedOn, showcaseNote } from "../../lib/showcase";
+const [featured, ...rest] = cases;
+const totalCalls = cases.reduce((n, c) => n + c.trace.length, 0);
+const totalSources = new Set(cases.flatMap((c) => c.sources.map((s) => s.accession))).size;
+---
+<Marketing title="Showcase — Finance CLI research sessions" description="Five recorded agent research sessions on SEC filings: Apple, NVIDIA, AMD, Broadcom, Meta and Costco. Every tool call, raw output and calculation is published.">
+  <section class="head night night-grid">
+    <div class="wrap">
+      <p class="eyebrow">Showcase</p>
+      <h1 class="display">Five questions.<br /><span class="serif">Real filings. Every step recorded.</span></h1>
+      <p class="lead">An agent with Finance CLI answered each question by choosing its own tools. The commands and their raw output are saved in the repository, and every number on these pages is recomputed from that output.</p>
+      <dl class="stats">
+        <div><dt>Tool calls</dt><dd>{totalCalls}</dd></div>
+        <div><dt>SEC filings cited</dt><dd>{totalSources}</dd></div>
+        <div><dt>Recorded</dt><dd>{recordedOn}</dd></div>
+      </dl>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <div class="cases">
+        <CaseCard item={featured} featured />
+        {rest.map((item) => <CaseCard item={item} />)}
+      </div>
+      <aside class="method card">
+        <h2>How these sessions were made</h2>
+        <p>{showcaseNote}</p>
+        <ol>
+          <li><code>scripts/showcase/plan.py</code> lists each question and the CLI calls the agent made, with its reason for each.</li>
+          <li><code>scripts/showcase/collect.py</code> replays those calls against SEC EDGAR and saves the JSON output under <code>showcase/evidence/</code>.</li>
+          <li><code>scripts/showcase/build.py</code> recomputes every figure with Finance CLI’s own formula functions and checks every quote against the saved text. A test fails if the published data drifts.</li>
+          <li>The videos are rendered from the same data with Remotion (<code>videos/</code>).</li>
+        </ol>
+        <a href="https://github.com/TempestShaw/FinanceCLI/tree/main/showcase/evidence">Browse the raw evidence on GitHub ↗</a>
+      </aside>
+    </div>
+  </section>
+</Marketing>
+<style>
+  .head { padding: clamp(3.5rem, 8vw, 5.5rem) 0 clamp(3rem, 6vw, 4.5rem); }
+  .display { max-width: 18ch; }
+  .stats { display: flex; flex-wrap: wrap; gap: 2.5rem; margin: 2.5rem 0 0; }
+  .stats div { border-top: 1px solid #36503f; padding-top: .8rem; min-width: 9rem; }
+  dt { font: .68rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--night-faint); }
+  dd { margin: .3rem 0 0; font-size: 1.6rem; font-weight: 650; letter-spacing: -.03em; }
+  .cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .cases :global(.featured) { grid-column: 1 / -1; }
+  .method { margin-top: 3rem; padding: clamp(1.3rem, 3vw, 2rem); }
+  .method h2 { margin: 0 0 .6rem; font-size: 1.2rem; }
+  .method p, .method li { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+  .method code { font-size: .8rem; color: var(--ink); }
+  .method a { color: var(--accent); font-weight: 600; font-size: .9rem; }
+  @media (max-width: 640px) { .cases { grid-template-columns: 1fr; } }
+</style>

@@ -1,4 +1,4 @@
-// Open the built homepage with agent-browser, then run:
+// Open the built Research Examples page (/FinanceCLI/research-examples/) with agent-browser, then run:
 // agent-browser eval --stdin < scripts/check_research_starter.js
 (() => {
   const form = document.querySelector('#research-starter');

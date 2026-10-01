@@ -14,6 +14,7 @@
   <a href="https://tempestshaw.github.io/FinanceCLI/">网站</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/ai/">AI 集成与 Skills</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/quickstart/">快速开始</a> ·
+  <a href="https://tempestshaw.github.io/FinanceCLI/showcase/">研究演示</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/research-examples/">研究案例</a>
 </p>
 
@@ -24,6 +25,12 @@
 </p>
 
 Finance CLI 为你的 agent 提供 SEC 文件检索、财务报表查询、文档读取和金融计算工具。用自然语言提出公司研究问题，再沿着来源与输入核对答案。你也可以在终端中直接运行所有命令。
+
+## 实际效果
+
+[![一次录制的 agent 研究过程：苹果 FY2020–FY2025 服务收入占净销售额和毛利的比例](docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
+
+[研究演示](https://tempestshaw.github.io/FinanceCLI/showcase/)收录了五次完整录制的研究过程，每次都配有短视频：苹果向服务业务的转变、英伟达、AMD 和博通的研发强度、Meta“效率之年”之后的变化、对 Costco 投资论点的检验，以及一个财报无法回答的问题。每一次工具调用、原始 CLI 输出和计算过程都公开在 [`showcase/`](showcase/) 中，并有测试确保每个数字仍与这些证据一致。
 
 ## 从一个问题开始
 

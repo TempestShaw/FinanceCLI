@@ -10,10 +10,6 @@ export default defineConfig({
       description: "Financial research tools for you and your AI agent, with traceable sources and reproducible calculations.",
       customCss: ["./src/styles/custom.css"],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 2 },
-      components: {
-        Header: "./src/components/SiteHeader.astro",
-        PageTitle: "./src/components/SitePageTitle.astro",
-      },
       social: [
         {
           icon: "github",
@@ -25,7 +21,8 @@ export default defineConfig({
         {
           label: "Start",
           items: [
-            { label: "Home", slug: "" },
+            { label: "Home", link: "/" },
+            { label: "Showcase", link: "/showcase/" },
             { label: "AI Integration & Skills", slug: "ai" },
             { label: "Quick Start", slug: "quickstart" },
             { label: "Research Examples", slug: "research-examples" },

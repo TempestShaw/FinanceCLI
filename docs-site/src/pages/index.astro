@@ -1,0 +1,201 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import VideoPlayer from "../components/marketing/VideoPlayer.astro";
+import ArtifactWindow from "../components/marketing/ArtifactWindow.astro";
+import CaseCard from "../components/marketing/CaseCard.astro";
+import CopyBlock from "../components/marketing/CopyBlock.astro";
+import { cases, caseBySlug, href, recordedOn } from "../lib/showcase";
+
+const apple = caseBySlug("apple-services");
+const gap = caseBySlug("data-gap");
+const [featured, ...rest] = cases;
+const pipeline = ["Question", "Agent picks tools", "SEC filings", "Extract values", "Normalize periods & units", "Calculate", "Cite every source"];
+const pitfalls = [
+  { title: "Mixed fiscal years", risk: "Apple’s year ends in September, NVIDIA’s in January. Blend them and the comparison is quietly wrong.", keep: "Every value keeps its period end date." },
+  { title: "Million vs billion", risk: "Statements, notes and websites scale numbers differently. One slip changes the answer by 1,000×.", keep: "Raw XBRL values, with the unit stated." },
+  { title: "Restated history", risk: "Later filings can revise earlier years. A copied number may no longer be the reported one.", keep: "Overlapping years cross-checked across filings." },
+  { title: "Mystery numbers", risk: "A ratio with no inputs can’t be checked, so it can’t be trusted.", keep: "Calculations return inputs and method." },
+];
+---
+<Marketing title="Finance CLI — financial research tools for AI agents" description="Give your AI agent tools to retrieve SEC filings, normalize financial data, calculate metrics and keep the source behind every number. Watch five recorded research sessions.">
+  <section class="hero night night-grid" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="pill"><span class="dot"></span>Open source · Financial research tools for AI agents</p>
+      <h1 id="hero-title" class="display">Your AI can browse financial data.<br /><span class="serif">Can you verify its answer?</span></h1>
+      <p class="lead">Finance CLI gives your agent tools to retrieve SEC filings, normalize periods and units, calculate metrics, and keep the source behind every important number. You ask the question. Your agent decides how to investigate it.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#start">Run your first research task <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href={href("showcase/")}>See all five sessions</a>
+      </div>
+      <div class="install"><span aria-hidden="true">$</span><code id="install-cmd">pip install finresearch-cli</code><button class="copy-btn" type="button" data-copy="#install-cmd">Copy</button></div>
+      <div class="demo" id="demo">
+        <VideoPlayer slug="apple-services" label="Watch a 60-second research session" eager caption={`“Has Apple become more dependent on Services?” — 7 CLI calls, 6 fiscal years, every figure linked to its 10-K. Recorded ${recordedOn}.`} />
+      </div>
+      <ol class="pipeline" aria-label="What happens between question and answer">
+        {pipeline.map((step, i) => <li><span>{String(i + 1).padStart(2, "0")}</span>{step}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="artifact-title">
+    <div class="wrap split">
+      <div class="intro">
+        <p class="eyebrow">The output</p>
+        <h2 id="artifact-title" class="h2">Not a chatbot answer. <span class="serif">A research artifact.</span></h2>
+        <p class="lead">This is what the agent produced in the video above, using real CLI output. Open each tab to see the evidence, the tool calls, the arithmetic, and what the filings don’t say.</p>
+        <a class="text-link" href={href("showcase/apple-services/")}>Read the full Apple case study →</a>
+      </div>
+      <ArtifactWindow item={apple} />
+    </div>
+  </section>
+
+  <section class="section alt" aria-labelledby="why-title">
+    <div class="wrap">
+      <p class="eyebrow">Why not just let the agent browse?</p>
+      <h2 id="why-title" class="h2">Browsing finds numbers.<br /><span class="serif">Research needs to know which number.</span></h2>
+      <div class="pitfalls">
+        {pitfalls.map((p) => (
+          <article class="card">
+            <h3>{p.title}</h3>
+            <p class="risk">{p.risk}</p>
+            <p class="keep"><span aria-hidden="true">✓</span> {p.keep}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cases-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Showcase</p>
+          <h2 id="cases-title" class="h2">Five research questions,<br /><span class="serif">start to finish.</span></h2>
+        </div>
+        <p class="lead">Each session is a real question answered from real filings. The tool calls, raw CLI output and calculations are published, so you can check every step or rerun it.</p>
+      </div>
+      <div class="cases">
+        <CaseCard item={featured} featured />
+        {rest.map((item) => <CaseCard item={item} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="gap night night-grid" aria-labelledby="gap-title">
+    <div class="wrap gap-grid">
+      <div>
+        <p class="eyebrow">Missing data, reported honestly</p>
+        <h2 id="gap-title" class="gap-quote">Sometimes the right answer is <span class="serif">“the filing doesn’t disclose that.”</span></h2>
+        <p class="lead">Finance CLI helps agents tell missing data from zero, an undisclosed figure from a failed retrieval, and reported values from calculated ones.</p>
+        <a class="btn btn-ghost" href={href("showcase/data-gap/")}>See how the agent checked <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="gap-card">
+        <p class="gq">“{gap.question}”</p>
+        <dl>
+          <div><dt class="ok">Available</dt><dd>{gap.gap!.available}</dd></div>
+          <div><dt class="no">Missing</dt><dd>{gap.gap!.missing}</dd></div>
+          <div><dt>Reason</dt><dd>{gap.gap!.reason}</dd></div>
+        </dl>
+        <p class="policy">{gap.gap!.policy}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="start" aria-labelledby="start-title">
+    <div class="wrap">
+      <p class="eyebrow">Get started</p>
+      <h2 id="start-title" class="h2">Reproduce the Apple study <span class="serif">with your own agent.</span></h2>
+      <p class="lead">You need an agent that can run terminal commands, such as Claude Code or Codex. Finance CLI runs locally; SEC research needs no paid key.</p>
+      <ol class="steps">
+        <li class="card">
+          <span class="num">1</span>
+          <h3>Install the CLI</h3>
+          <p>Python 3.10 or later. Then set a contact identity for SEC requests.</p>
+          <CopyBlock id="step-install" text={`python -m pip install -U finresearch-cli\nexport FINANCE_SEC_USER_AGENT="Your Name you@example.com"`} />
+        </li>
+        <li class="card">
+          <span class="num">2</span>
+          <h3>Add the skill</h3>
+          <p>It teaches your agent which tools to use and how to cite them. Paste this into your agent:</p>
+          <CopyBlock id="step-skill" text="Download https://tempestshaw.github.io/FinanceCLI/skills/finance-cli-skills.zip, extract it, copy the skills/finance-cli folder into my local agent skills directory, and verify it contains SKILL.md." />
+        </li>
+        <li class="card">
+          <span class="num">3</span>
+          <h3>Ask the question</h3>
+          <p>Then compare its answer with the recorded session. {apple.metrics[0].label}: <b>{apple.metrics[0].value}</b>.</p>
+          <CopyBlock id="step-ask" text={apple.prompt} />
+        </li>
+      </ol>
+      <p class="more">Detailed setup for each agent: <a href={href("ai/")}>AI integration guide</a> · <a href={href("quickstart/")}>Quick start</a> · Or run the same tools yourself: <code>finance filings.statement AAPL statement=income --output md</code></p>
+    </div>
+  </section>
+</Marketing>
+
+<style>
+  .hero { padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(3rem, 6vw, 4.5rem); text-align: center; }
+  .hero .lead { margin-inline: auto; }
+  .hero .display { max-width: 15ch; margin-inline: auto; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin: 2rem 0 1.2rem; }
+  .install { display: inline-flex; align-items: center; gap: .7rem; padding: .45rem .5rem .45rem 1rem; border: 1px solid #36503f; border-radius: 10px; background: #111f19; font-size: .85rem; position: relative; }
+  .install span { color: var(--night-faint); font-family: var(--font-mono); }
+  .install .copy-btn { position: static; }
+  .demo { margin: clamp(2.5rem, 6vw, 4rem) auto 0; max-width: 1080px; text-align: left; }
+  .pipeline { list-style: none; padding: 0; margin: 2.2rem auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; max-width: 1080px; }
+  .pipeline li { display: flex; align-items: center; gap: .5rem; padding: .45rem .8rem; border: 1px solid #24382f; border-radius: 999px; font-size: .8rem; color: var(--night-muted); background: #111f19aa; }
+  .pipeline li span { font: .66rem var(--font-mono); color: var(--lime); }
+
+  .split { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .intro { position: sticky; top: 6rem; }
+  .text-link { display: inline-block; margin-top: 1.4rem; color: var(--accent); font-weight: 600; font-size: .92rem; }
+
+  .alt { background: var(--surface-2); border-block: 1px solid var(--line); }
+  .pitfalls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2.5rem; }
+  .pitfalls article { padding: 1.4rem; display: flex; flex-direction: column; gap: .7rem; }
+  .pitfalls h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.02em; }
+  .risk { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.6; flex: 1; }
+  .keep { margin: 0; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .85rem; font-weight: 550; color: var(--good); }
+
+  .section-head { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; margin-bottom: 2.5rem; }
+  .cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .cases :global(.featured) { grid-column: 1 / -1; }
+
+  .gap { padding-block: clamp(4rem, 9vw, 7rem); }
+  .gap-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .gap-quote { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 620; margin: 1rem 0 1.2rem; text-wrap: balance; }
+  .gap .lead { margin-bottom: 1.8rem; }
+  .gap-card { background: #111f19; border: 1px solid #36503f; border-radius: 16px; padding: clamp(1.2rem, 3vw, 2rem); font-family: var(--font-mono); font-size: .82rem; line-height: 1.6; }
+  .gq { font: italic 1.3rem/1.35 var(--font-serif); margin: 0 0 1.2rem; color: var(--night-ink); }
+  .gap-card dl { margin: 0; display: grid; gap: .7rem; }
+  .gap-card dl div { display: grid; grid-template-columns: 6.5rem 1fr; gap: .8rem; }
+  .gap-card dt { color: var(--night-faint); }
+  .gap-card dt.ok { color: #4fd14f; }
+  .gap-card dt.no { color: #ec835a; }
+  .gap-card dd { margin: 0; color: var(--night-ink); }
+  .policy { margin: 1.3rem 0 0; padding-top: 1rem; border-top: 1px solid #24382f; color: var(--lime); }
+
+  .steps { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .steps li { padding: 1.5rem; display: flex; flex-direction: column; gap: .7rem; position: relative; min-width: 0; }
+  .steps h3 { margin: 0; font-size: 1.1rem; }
+  .steps p { margin: 0; color: var(--muted); font-size: .88rem; }
+  .steps :global(pre) { max-height: 12.5rem; overflow: auto; }
+  .num { width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--bg); font-weight: 700; font-size: .85rem; }
+  .more { margin-top: 1.6rem; font-size: .88rem; color: var(--muted); }
+  .more a { color: var(--accent); }
+  .more code { font-size: .78rem; background: var(--surface-2); padding: .15rem .4rem; border-radius: 5px; overflow-wrap: anywhere; }
+
+  @media (max-width: 1000px) {
+    .pitfalls { grid-template-columns: repeat(2, 1fr); }
+    .split, .gap-grid, .section-head { grid-template-columns: 1fr; }
+    .intro { position: static; }
+    .steps { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .pitfalls, .cases { grid-template-columns: 1fr; }
+    .hero { text-align: left; }
+    .actions, .pipeline { justify-content: flex-start; }
+    .hero .display { margin-inline: 0; }
+    .install { max-width: 100%; }
+    .install code { overflow-wrap: anywhere; font-size: .78rem; }
+    .gap-card dl div { grid-template-columns: 1fr; gap: .1rem; }
+  }
+</style>

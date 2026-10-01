@@ -14,6 +14,7 @@
   <a href="https://tempestshaw.github.io/FinanceCLI/">Website</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/ai/">AI Integration &amp; Skills</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/quickstart/">Quick Start</a> ·
+  <a href="https://tempestshaw.github.io/FinanceCLI/showcase/">Showcase</a> ·
   <a href="https://tempestshaw.github.io/FinanceCLI/research-examples/">Research Examples</a>
 </p>
 
@@ -24,6 +25,12 @@
 </p>
 
 Finance CLI gives your agent tools to retrieve SEC filings, inspect financial statements, read documents, and run calculations. Ask a company question in your own words, then follow the sources and inputs behind the answer. You can also run every command directly in your terminal.
+
+## See it work
+
+[![A recorded agent session: Apple's Services share of net sales and gross margin, FY2020–FY2025](docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
+
+The [Showcase](https://tempestshaw.github.io/FinanceCLI/showcase/) has five recorded research sessions, each with a short video: Apple's shift to Services, R&D intensity at NVIDIA, AMD and Broadcom, Meta after the Year of Efficiency, a Costco thesis test, and a question the filing cannot answer. Every tool call, raw CLI output and calculation is published in [`showcase/`](showcase/), and a test checks that each figure still matches that evidence.
 
 ## Start with a question
 

@@ -1,0 +1,46 @@
+---
+import { videoFor, recordedOn } from "../../lib/showcase";
+interface Props { slug: string; label: string; caption?: string; eager?: boolean }
+const { slug, label, caption, eager = false } = Astro.props;
+const { src, poster } = videoFor(slug);
+---
+<figure class="player" data-player>
+  <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>recorded agent session · {recordedOn}</span></div>
+  <div class="screen">
+    <video src={src} poster={poster} preload="none" playsinline controls aria-label={label} width="1920" height="1080"></video>
+    <button class="play" type="button" data-play aria-label={`Play: ${label}`}>
+      <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg></span>
+      <span class="text">{label}</span>
+    </button>
+    {eager && <link rel="preload" as="image" href={poster} />}
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>("[data-player]").forEach((player) => {
+    const video = player.querySelector("video")!;
+    const play = player.querySelector<HTMLButtonElement>("[data-play]")!;
+    video.controls = false;
+    play.addEventListener("click", () => {
+      video.controls = true;
+      play.hidden = true;
+      void video.play();
+    });
+    video.addEventListener("ended", () => { play.hidden = false; });
+  });
+</script>
+<style>
+  .player { margin: 0; border-radius: 18px; overflow: hidden; background: #0b1511; border: 1px solid #36503f; box-shadow: 0 40px 120px -40px #000c, 0 0 0 1px #0b1511; }
+  .chrome { display: flex; align-items: center; gap: 7px; padding: .7rem 1rem; border-bottom: 1px solid #24382f; background: #111f19; }
+  .chrome i { width: 10px; height: 10px; border-radius: 50%; background: #36503f; }
+  .chrome span { margin-left: auto; font: .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: #8a9d90; }
+  .screen { position: relative; aspect-ratio: 16 / 9; }
+  video { width: 100%; height: 100%; object-fit: cover; background: #0b1511; }
+  .play { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; gap: .9rem; padding: clamp(1rem, 3vw, 2rem);
+    border: 0; background: linear-gradient(180deg, transparent 55%, #0b1511cc); color: #f3f1e7; cursor: pointer; font: 600 clamp(.85rem, 1.5vw, 1.05rem) var(--font-sans); text-align: left; }
+  .play[hidden] { display: none; }
+  .icon { width: clamp(48px, 6vw, 64px); height: clamp(48px, 6vw, 64px); flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: #0b1511;
+    box-shadow: 0 0 0 10px #b6e6af26; transition: transform .2s ease; }
+  .play:hover .icon { transform: scale(1.06); }
+  figcaption { padding: .8rem 1rem; font-size: .8rem; color: #a9bbaf; border-top: 1px solid #24382f; background: #111f19; }
+</style>

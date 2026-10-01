@@ -1,0 +1,94 @@
+---
+import type { ShowcaseCase } from "../../lib/showcase";
+import EvidenceTable from "./EvidenceTable.astro";
+import Trace from "./Trace.astro";
+import Checks from "./Checks.astro";
+interface Props { item: ShowcaseCase }
+const { item } = Astro.props;
+const tabs = [
+  { id: "answer", label: "Answer" },
+  { id: "evidence", label: "Evidence" },
+  { id: "trace", label: "Agent trace" },
+  { id: "math", label: "Calculations" },
+  { id: "checks", label: "Checks & gaps" },
+];
+---
+<div class="window card" data-tabs>
+  <div class="bar">
+    <div role="tablist" aria-label="Research artifact views">
+      {tabs.map((t, i) => (
+        <button role="tab" type="button" id={`tab-${t.id}`} aria-controls={`panel-${t.id}`} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}>{t.label}</button>
+      ))}
+    </div>
+  </div>
+  <section role="tabpanel" id="panel-answer" aria-labelledby="tab-answer" class="panel">
+    <p class="q">“{item.question}”</p>
+    {item.answer.map((p) => <p class="a">{p}</p>)}
+    <div class="metrics">
+      {item.metrics.map((m) => <div><span class="label">{m.label}</span><span class="value">{m.value}</span><span class="delta">{m.delta}</span></div>)}
+    </div>
+  </section>
+  <section role="tabpanel" id="panel-evidence" aria-labelledby="tab-evidence" class="panel flush" hidden>
+    {item.table && <EvidenceTable table={item.table} />}
+  </section>
+  <section role="tabpanel" id="panel-trace" aria-labelledby="tab-trace" class="panel" hidden>
+    <Trace steps={item.trace} />
+  </section>
+  <section role="tabpanel" id="panel-math" aria-labelledby="tab-math" class="panel" hidden>
+    <dl class="calcs">
+      {item.calculations?.map((c) => (
+        <div><dt>{c.label}</dt><dd><code>{c.method}</code><span>{c.inputs}</span><b>= {c.result}</b></dd></div>
+      ))}
+    </dl>
+  </section>
+  <section role="tabpanel" id="panel-checks" aria-labelledby="tab-checks" class="panel" hidden>
+    <Checks checks={item.checks} />
+  </section>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>("[data-tabs]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        root.querySelector<HTMLElement>(`#${t.getAttribute("aria-controls")}`)!.hidden = !on;
+      });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (e) => {
+        const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    });
+  });
+</script>
+<style>
+  .window { overflow: hidden; }
+  .bar { border-bottom: 1px solid var(--line); background: var(--surface-2); overflow-x: auto; }
+  [role=tablist] { display: flex; gap: .25rem; padding: .5rem; min-width: max-content; }
+  [role=tab] { border: 0; background: transparent; color: var(--muted); font: 550 .84rem var(--font-sans); padding: .55rem .85rem; border-radius: 8px; cursor: pointer; }
+  [role=tab][aria-selected=true] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px #0f1f1814, 0 0 0 1px var(--line); }
+  .panel { padding: clamp(1.1rem, 3vw, 2rem); }
+  .panel.flush { padding: .4rem 0 1rem; }
+  .q { font: italic 1.35rem/1.35 var(--font-serif); margin: 0 0 1.2rem; color: var(--ink); }
+  .a { color: var(--muted); line-height: 1.7; margin: 0 0 .9rem; max-width: 62ch; }
+  .a:first-of-type { color: var(--ink); font-weight: 500; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; margin-top: 1.6rem; }
+  .metrics div { border-top: 1px solid var(--line-strong); padding-top: .8rem; display: flex; flex-direction: column; gap: .2rem; }
+  .label { font-size: .78rem; color: var(--muted); }
+  .value { font-size: 1.9rem; font-weight: 650; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .delta { font-size: .76rem; color: var(--faint); }
+  .calcs { margin: 0; display: grid; gap: 1rem; }
+  .calcs div { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; }
+  dt { font-weight: 600; margin-bottom: .45rem; }
+  dd { margin: 0; display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: baseline; font-size: .85rem; color: var(--muted); }
+  dd code { font-size: .78rem; color: var(--accent); }
+  dd span { font-family: var(--font-mono); font-size: .78rem; }
+  dd b { color: var(--ink); font-size: 1rem; }
+</style>

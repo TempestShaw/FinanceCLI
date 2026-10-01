@@ -3,6 +3,12 @@ title: Research Examples
 description: Read company disclosures, inspect an income statement, and reproduce a compound-growth calculation with Finance CLI.
 ---
 
+import ResearchStarter from '../../components/ResearchStarter.astro';
+
+:::tip[Watch complete agent research sessions]
+The [Showcase](/FinanceCLI/showcase/) has five recorded sessions from question to cited answer: Apple's shift to Services, R&D intensity at NVIDIA, AMD and Broadcom, Meta's Year of Efficiency, a Costco thesis test, and a question the filing can't answer. Each one publishes its tool calls, raw CLI output and calculations.
+:::
+
 Start with a question and keep the evidence behind your answer. These independent examples use the current repository version. Follow [Quick Start](/FinanceCLI/quickstart/) for installation and SEC contact setup.
 
 ## Understand a company
@@ -55,6 +61,10 @@ finance formula.cagr start=100 end=150 periods=3 --output md
 Method: `(end / start) ** (1 / periods) - 1`.
 
 The total increase is 50%. Annual compound growth is about 14.47%, because each year's growth builds on the preceding value. Substitute verified filing figures in the same units and the actual number of years between observations.
+
+## Build a command for your terminal
+
+<ResearchStarter />
 
 ## Ask your research agent
 

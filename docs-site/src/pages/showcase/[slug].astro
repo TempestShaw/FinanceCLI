@@ -1,0 +1,213 @@
+---
+import Marketing from "../../layouts/Marketing.astro";
+import VideoPlayer from "../../components/marketing/VideoPlayer.astro";
+import EvidenceTable from "../../components/marketing/EvidenceTable.astro";
+import Trace from "../../components/marketing/Trace.astro";
+import Checks from "../../components/marketing/Checks.astro";
+import CopyBlock from "../../components/marketing/CopyBlock.astro";
+import StatusBadge from "../../components/marketing/StatusBadge.astro";
+import { cases, href, recordedOn, videoFor, SHORT_TITLES, type ShowcaseCase } from "../../lib/showcase";
+
+export function getStaticPaths() {
+  return cases.map((item, i) => ({
+    params: { slug: item.slug },
+    props: { item, prev: cases[(i - 1 + cases.length) % cases.length], next: cases[(i + 1) % cases.length] },
+  }));
+}
+
+interface Props { item: ShowcaseCase; prev: ShowcaseCase; next: ShowcaseCase }
+const { item, prev, next } = Astro.props;
+const reproduce = item.trace.filter((s) => !s.command.includes("formula.")).map((s) => s.command).join("\n");
+---
+<Marketing title={`${item.title} — Finance CLI showcase`} description={`${item.question} ${item.headline}`} image={videoFor(item.slug).poster}>
+  <section class="head night night-grid">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href={href("showcase/")}>Showcase</a><span aria-hidden="true">/</span>{SHORT_TITLES[item.slug]}</nav>
+      <p class="eyebrow">{item.kicker}</p>
+      <h1 class="question">“{item.question}”</h1>
+      <p class="lead">{item.headline}</p>
+      <p class="meta">Recorded {recordedOn} · {item.trace.length} steps · {item.sources.length} SEC filings · real CLI output</p>
+      <div class="video"><VideoPlayer slug={item.slug} label={`Watch: ${item.title}`} eager /></div>
+    </div>
+  </section>
+
+  <div class="wrap layout">
+    <article class="main">
+      <section aria-labelledby="answer-title">
+        <p class="eyebrow">The answer</p>
+        <h2 id="answer-title" class="h2 small">What the agent concluded</h2>
+        {item.answer.map((p, i) => <p class:list={["para", { first: i === 0 }]}>{p}</p>)}
+        <div class="metrics">
+          {item.metrics.map((m) => <div><span class="label">{m.label}</span><span class="value">{m.value}</span><span class="delta">{m.delta}</span></div>)}
+        </div>
+      </section>
+
+      {item.claims && (
+        <section aria-labelledby="claims-title">
+          <p class="eyebrow">Thesis → evidence</p>
+          <h2 id="claims-title" class="h2 small">Each claim, tested</h2>
+          <div class="claims card">
+            {item.claims.map((c) => (
+              <div class="claim">
+                <div><strong>{c.claim}</strong><StatusBadge status={c.status} /></div>
+                <p>{c.kind === "quoted" ? `“${c.evidence}”` : c.evidence}</p>
+                <span class="src">{c.kind} · {c.source}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {item.gap && (
+        <section aria-labelledby="gap-title">
+          <p class="eyebrow">The gap</p>
+          <h2 id="gap-title" class="h2 small">What is — and isn’t — in the filing</h2>
+          <dl class="gap night">
+            <div><dt class="ok">Available</dt><dd>{item.gap.available}</dd></div>
+            <div><dt class="no">Missing</dt><dd>{item.gap.missing}</dd></div>
+            <div><dt>Reason</dt><dd>{item.gap.reason}</dd></div>
+            <div><dt>Policy</dt><dd>{item.gap.policy}</dd></div>
+          </dl>
+        </section>
+      )}
+
+      {item.table && (
+        <section aria-labelledby="evidence-title">
+          <p class="eyebrow">Evidence</p>
+          <h2 id="evidence-title" class="h2 small">The numbers and where they came from</h2>
+          <div class="card flush"><EvidenceTable table={item.table} /></div>
+        </section>
+      )}
+
+      {item.alignment && (
+        <section aria-labelledby="periods-title">
+          <p class="eyebrow">Period alignment</p>
+          <h2 id="periods-title" class="h2 small">Fiscal years, kept as reported</h2>
+          <ul class="periods">
+            {item.alignment.map((a) => <li><strong>{a.ticker}</strong><span>FY {a.fy_note}</span><span class="ends">{a.periods.map((p) => `${p.fy} → ${p.period_end}`).join(" · ")}</span></li>)}
+          </ul>
+        </section>
+      )}
+
+      {item.calculations && (
+        <section aria-labelledby="calc-title">
+          <p class="eyebrow">Calculations</p>
+          <h2 id="calc-title" class="h2 small">Inputs and method, not just results</h2>
+          <dl class="calcs">
+            {item.calculations.map((c) => <div><dt>{c.label}</dt><dd><code>{c.method}</code><span>{c.inputs}</span><b>= {c.result}</b></dd></div>)}
+          </dl>
+        </section>
+      )}
+
+      <section aria-labelledby="checks-title">
+        <p class="eyebrow">Checks & caveats</p>
+        <h2 id="checks-title" class="h2 small">What was verified, and what limits the answer</h2>
+        <Checks checks={item.checks} />
+      </section>
+
+      <section aria-labelledby="trace-title">
+        <p class="eyebrow">Agent trace</p>
+        <h2 id="trace-title" class="h2 small">Every tool call, in order</h2>
+        <Trace steps={item.trace} />
+      </section>
+    </article>
+
+    <aside class="side">
+      <div class="card box">
+        <h2>Try it with your agent</h2>
+        <p>Paste this prompt into an agent that has Finance CLI and its skill installed.</p>
+        <CopyBlock id="prompt" text={item.prompt} />
+        <a href={href("ai/")}>Set up your agent →</a>
+      </div>
+      <div class="card box">
+        <h2>Sources</h2>
+        <ul class="sources">
+          {item.sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a><span>Filed {s.filing_date} · {s.accession}</span></li>)}
+        </ul>
+      </div>
+      <div class="card box">
+        <h2>Reproduce the retrieval</h2>
+        <CopyBlock id="reproduce" text={reproduce} />
+      </div>
+    </aside>
+  </div>
+
+  <nav class="wrap pager" aria-label="More sessions">
+    <a href={href(`showcase/${prev.slug}/`)}><span>← Previous</span>{prev.title}</a>
+    <a class="next" href={href(`showcase/${next.slug}/`)}><span>Next →</span>{next.title}</a>
+  </nav>
+</Marketing>
+
+<style>
+  .head { padding: clamp(2.5rem, 6vw, 4rem) 0 0; }
+  .crumbs { display: flex; gap: .6rem; font-size: .82rem; color: var(--night-faint); margin-bottom: 1.6rem; flex-wrap: wrap; }
+  .crumbs a { color: var(--night-muted); }
+  .question { font-size: clamp(2rem, 4.6vw, 3.6rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 620; margin: 1rem 0 1.2rem; max-width: 24ch; text-wrap: balance; }
+  .meta { font: .74rem var(--font-mono); color: var(--night-faint); margin: 1.2rem 0 0; letter-spacing: .04em; }
+  .video { margin-top: 2.5rem; transform: translateY(3rem); margin-bottom: -1rem; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: clamp(2rem, 5vw, 4rem); padding: clamp(5rem, 9vw, 7rem) 0 3rem; align-items: start; }
+  .main { display: grid; gap: 3.5rem; min-width: 0; }
+  .h2.small { font-size: clamp(1.5rem, 2.6vw, 2rem); margin-bottom: 1.2rem; }
+  .para { color: var(--muted); line-height: 1.75; margin: 0 0 1rem; max-width: 68ch; }
+  .para.first { color: var(--ink); font-size: 1.08rem; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; margin-top: 1.8rem; }
+  .metrics div { border-top: 1px solid var(--line-strong); padding-top: .8rem; display: flex; flex-direction: column; gap: .2rem; }
+  .label { font-size: .78rem; color: var(--muted); }
+  .value { font-size: 1.9rem; font-weight: 650; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .delta { font-size: .76rem; color: var(--faint); }
+  .flush { padding: .4rem 0 1rem; overflow: hidden; }
+
+  .claims { padding: .3rem 1.3rem; }
+  .claim { padding: 1rem 0; border-top: 1px solid var(--line); }
+  .claim:first-child { border-top: 0; }
+  .claim > div { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; }
+  .claim p { margin: .45rem 0 .3rem; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+  .claim .src { font: .7rem var(--font-mono); color: var(--faint); text-transform: uppercase; letter-spacing: .04em; }
+
+  .gap { margin: 0; border-radius: 14px; padding: 1.5rem; display: grid; gap: .9rem; font: .86rem/1.6 var(--font-mono); }
+  .gap div { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; }
+  .gap dt { color: var(--night-faint); }
+  .gap dt.ok { color: #4fd14f; }
+  .gap dt.no { color: #ec835a; }
+  .gap dd { margin: 0; }
+
+  .periods { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .periods li { display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: baseline; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .periods span { color: var(--muted); font-size: .88rem; }
+  .periods .ends { font: .76rem var(--font-mono); width: 100%; }
+
+  .calcs { margin: 0; display: grid; gap: .8rem; }
+  .calcs div { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; background: var(--surface); }
+  .calcs dt { font-weight: 600; margin-bottom: .45rem; }
+  .calcs dd { margin: 0; display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: baseline; font-size: .85rem; color: var(--muted); }
+  .calcs code { font-size: .78rem; color: var(--accent); }
+  .calcs span { font-family: var(--font-mono); font-size: .78rem; overflow-wrap: anywhere; }
+  .calcs b { color: var(--ink); }
+
+  .side { position: sticky; top: 5.5rem; display: grid; gap: 1rem; min-width: 0; }
+  .box { padding: 1.3rem; }
+  .box h2 { font-size: 1rem; margin: 0 0 .5rem; }
+  .box p { font-size: .85rem; color: var(--muted); margin: 0 0 .9rem; }
+  .box > a { display: inline-block; margin-top: .9rem; font-size: .85rem; font-weight: 600; color: var(--accent); }
+  .box :global(pre) { font-size: .72rem; max-height: 16rem; overflow: auto; }
+  .sources { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; font-size: .84rem; }
+  .sources a { color: var(--accent); font-weight: 550; }
+  .sources span { display: block; font: .7rem var(--font-mono); color: var(--faint); margin-top: .15rem; overflow-wrap: anywhere; }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-bottom: 4rem; }
+  .pager a { display: flex; flex-direction: column; gap: .3rem; padding: 1.2rem 1.4rem; border: 1px solid var(--line); border-radius: 12px; text-decoration: none; font-weight: 600; background: var(--surface); }
+  .pager a:hover { border-color: var(--line-strong); }
+  .pager span { font: .72rem var(--font-mono); color: var(--faint); font-weight: 400; }
+  .pager .next { text-align: right; }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .side { position: static; }
+  }
+  @media (max-width: 560px) {
+    .gap div { grid-template-columns: 1fr; gap: .1rem; }
+    .pager { grid-template-columns: 1fr; }
+    .pager .next { text-align: left; }
+  }
+</style>

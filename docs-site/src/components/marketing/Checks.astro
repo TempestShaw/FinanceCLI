@@ -1,0 +1,18 @@
+---
+import type { Check } from "../../lib/showcase";
+import StatusBadge from "./StatusBadge.astro";
+interface Props { checks: Check[] }
+---
+<ul class="checks">
+  {Astro.props.checks.map((c) => (
+    <li><StatusBadge status={c.status} /><div><strong>{c.label}</strong><p>{c.detail}</p></div></li>
+  ))}
+</ul>
+<style>
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .1rem; }
+  li { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--line); align-items: start; }
+  li:first-child { border-top: 0; }
+  strong { font-weight: 600; font-size: .95rem; }
+  p { margin: .25rem 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6; }
+  @media (max-width: 560px) { li { grid-template-columns: 1fr; gap: .5rem; } }
+</style>
