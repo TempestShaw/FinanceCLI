@@ -12,6 +12,8 @@ site/
 docs-site/dist/
 docs-site/.astro/
 docs-site/node_modules/
+videos/node_modules/
+videos/out/
 docs-site/public/skills/*.zip
 .venv/
 venv/
