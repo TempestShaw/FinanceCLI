@@ -30,7 +30,7 @@ export const MetaEfficiency = () => {
           <ToolMap title="You ask the research question." subtitle="Your agent decides which tools to use, and in what order." chosen={data.trace.map((s) => s.tool)} start={36} interval={16} />
         </Series.Sequence>
         <Series.Sequence durationInFrames={log}>
-          <AgentLog title="Statements, then headcount, then the fine print." steps={data.trace} interval={seconds(1.75)} aside="8 tool calls · 1 gap recovered" />
+          <AgentLog title="Statements, then headcount, then the fine print." steps={data.trace} interval={seconds(1.75)} aside="8 tool calls" />
         </Series.Sequence>
         <Series.Sequence durationInFrames={chart}>
           <Insight eyebrow="Operating margin, calculated" title={<>Margin rose <span style={{ color: COLOR.accent }}>{gain} points</span> in two years — even without restructuring charges.</>} metrics={data.metrics.slice(0, 2)} leftWidth={600}>

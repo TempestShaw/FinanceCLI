@@ -3,7 +3,7 @@
  "step": "03-income-fy24",
  "command": "finance filings.statement accession=0001326801-25-000017 statement=income --output json",
  "purpose": "The 2022 baseline, before the efficiency push.",
- "retrieved_at": "2026-10-01T03:05:27+00:00",
+ "retrieved_at": "2026-10-01T03:42:03+00:00",
  "exit_code": 0,
  "output": {
   "ok": true,

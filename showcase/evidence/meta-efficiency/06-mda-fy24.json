@@ -3,7 +3,7 @@
  "step": "06-mda-fy24",
  "command": "finance filings.read accession=0001326801-25-000017 section=mda max_chars=90000 --output json",
  "purpose": "Headcount at the end of 2024.",
- "retrieved_at": "2026-10-01T03:05:34+00:00",
+ "retrieved_at": "2026-10-01T03:42:12+00:00",
  "exit_code": 0,
  "output": {
   "ok": true,

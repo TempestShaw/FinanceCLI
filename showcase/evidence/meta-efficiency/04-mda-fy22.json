@@ -3,7 +3,7 @@
  "step": "04-mda-fy22",
  "command": "finance filings.read accession=0001326801-23-000013 section=mda max_chars=90000 --output json",
  "purpose": "Headcount and restructuring charges at the end of 2022.",
- "retrieved_at": "2026-10-01T03:05:27+00:00",
+ "retrieved_at": "2026-10-01T03:42:03+00:00",
  "exit_code": 0,
  "output": {
   "ok": true,

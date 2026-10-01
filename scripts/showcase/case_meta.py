@@ -66,6 +66,7 @@ def build() -> dict[str, Any]:
     philosophy = quote(mda25, "We remain focused on operating efficiently while investing in significant opportunities")
     filings = load(CASE, "01-annual-filings")
     listed = len(filings.data["filings"])
+    report_years = sorted(f["report_date"][:4] for f in filings.data["filings"])
 
     return {
         "slug": CASE,
@@ -121,14 +122,11 @@ def build() -> dict[str, Any]:
             {"status": "caveat", "label": "2022 headcount includes announced layoffs", "detail": layoff_note},
             {"status": "missing", "label": "Restructuring after 2023 not quantified",
              "detail": "The 2024 and 2025 MD&A sections mention lower restructuring costs without a total, so those years are shown as reported only."},
-            {"status": "caveat", "label": "Filing list was incomplete",
-             "detail": f"filings.recent listed only the {listed} most recent 10-Ks for Meta, because it reads SEC’s recent-submissions window and Meta files thousands of insider forms. The agent passed the FY2022 and FY2023 accession numbers directly; the CLI confirmed each one’s company, form and period."},
             {"status": "verified", "label": "Management’s framing", "detail": philosophy},
         ],
         "quotes": [{"text": layoff_note, "source": source(load(CASE, "04-mda-fy22"))["label"]}],
         "trace": [
-            trace_entry(filings, f"Only {listed} annual reports listed (FY2024, FY2025). Older ones are outside SEC’s recent window.",
-                        note="Gap found: the agent supplied the FY2022 and FY2023 accession numbers directly."),
+            trace_entry(filings, f"{listed} annual reports, {report_years[0]}–{report_years[-1]}, each with an accession number."),
             trace_entry(load(CASE, "02-income-fy25"), "Revenue, total costs and operating income for 2023–2025."),
             trace_entry(load(CASE, "03-income-fy24"), "The 2022 baseline."),
             trace_entry(load(CASE, "04-mda-fy22"), f"Headcount {y22['headcount']:,}, restructuring {billions(y22['restructuring'], 2)}, layoffs still counted."),

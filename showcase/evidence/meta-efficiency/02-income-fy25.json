@@ -3,7 +3,7 @@
  "step": "02-income-fy25",
  "command": "finance filings.statement accession=0001628280-26-003942 statement=income --output json",
  "purpose": "Revenue, costs and operating income for 2023–2025.",
- "retrieved_at": "2026-10-01T03:05:26+00:00",
+ "retrieved_at": "2026-10-01T03:42:03+00:00",
  "exit_code": 0,
  "output": {
   "ok": true,

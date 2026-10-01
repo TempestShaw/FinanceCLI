@@ -3,7 +3,7 @@
  "step": "07-mda-fy25",
  "command": "finance filings.read accession=0001628280-26-003942 section=mda max_chars=90000 --output json",
  "purpose": "Headcount at the end of 2025 and what drove cost growth.",
- "retrieved_at": "2026-10-01T03:05:37+00:00",
+ "retrieved_at": "2026-10-01T03:42:12+00:00",
  "exit_code": 0,
  "output": {
   "ok": true,
