@@ -1,0 +1,191 @@
+{
+ "case": "costco-thesis",
+ "step": "02-income-fy22",
+ "command": "finance filings.statement accession=0000909832-22-000021 statement=income --output json",
+ "purpose": "The same rows for FY2020–FY2022, including the pandemic year.",
+ "retrieved_at": "2026-10-01T03:05:45+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "COSTCO WHOLESALE CORP /NEW",
+    "cik": "909832",
+    "form": "10-K",
+    "filing_date": "2022-10-05",
+    "period_of_report": "2022-08-28",
+    "accession_no": "0000909832-22-000021",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/cost-20220828.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/909832/0000909832-22-000021-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/0000909832-22-000021.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2022-08-28",
+    "2021-08-29",
+    "2020-08-30"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Total revenue",
+     "level": 5,
+     "abstract": false,
+     "2022-08-28": 226954000000,
+     "2021-08-29": 195929000000,
+     "2020-08-30": 166761000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Membership",
+     "level": 5,
+     "abstract": false,
+     "2022-08-28": 4224000000,
+     "2021-08-29": 3877000000,
+     "2020-08-30": 3541000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Product",
+     "level": 5,
+     "abstract": false,
+     "2022-08-28": 222730000000,
+     "2021-08-29": 192052000000,
+     "2020-08-30": 163220000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Merchandise costs",
+     "level": 5,
+     "abstract": false,
+     "2022-08-28": 199382000000,
+     "2021-08-29": 170684000000,
+     "2020-08-30": 144939000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Selling, general and administrative",
+     "level": 5,
+     "abstract": false,
+     "2022-08-28": 19779000000,
+     "2021-08-29": 18537000000,
+     "2020-08-30": 16387000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating Income",
+     "level": 4,
+     "abstract": false,
+     "2022-08-28": 7793000000,
+     "2021-08-29": 6708000000,
+     "2020-08-30": 5435000000
+    },
+    {
+     "concept": "us-gaap_InterestExpense",
+     "label": "Interest expense",
+     "level": 4,
+     "abstract": false,
+     "2022-08-28": 158000000,
+     "2021-08-29": 171000000,
+     "2020-08-30": 160000000
+    },
+    {
+     "concept": "us-gaap_InterestAndOtherIncome",
+     "label": "Interest income and other, net",
+     "level": 4,
+     "abstract": false,
+     "2022-08-28": 205000000,
+     "2021-08-29": 143000000,
+     "2020-08-30": 92000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+     "label": "INCOME BEFORE INCOME TAXES",
+     "level": 3,
+     "abstract": false,
+     "2022-08-28": 7840000000,
+     "2021-08-29": 6680000000,
+     "2020-08-30": 5367000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Provision for income taxes",
+     "level": 3,
+     "abstract": false,
+     "2022-08-28": 1925000000,
+     "2021-08-29": 1601000000,
+     "2020-08-30": 1308000000
+    },
+    {
+     "concept": "us-gaap_ProfitLoss",
+     "label": "Net income including noncontrolling interests",
+     "level": 4,
+     "abstract": false,
+     "2022-08-28": 5915000000,
+     "2021-08-29": 5079000000,
+     "2020-08-30": 4059000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLossAttributableToNoncontrollingInterest",
+     "label": "Net income attributable to noncontrolling interests",
+     "level": 4,
+     "abstract": false,
+     "2022-08-28": 71000000,
+     "2021-08-29": 72000000,
+     "2020-08-30": 57000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "NET INCOME ATTRIBUTABLE TO COSTCO",
+     "level": 3,
+     "abstract": false,
+     "2022-08-28": 5844000000,
+     "2021-08-29": 5007000000,
+     "2020-08-30": 4002000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in dollars per share)",
+     "level": 2,
+     "abstract": false,
+     "2022-08-28": 13.17,
+     "2021-08-29": 11.3,
+     "2020-08-30": 9.05
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in dollars per share)",
+     "level": 2,
+     "abstract": false,
+     "2022-08-28": 13.14,
+     "2021-08-29": 11.27,
+     "2020-08-30": 9.02
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (shares)",
+     "level": 3,
+     "abstract": false,
+     "2022-08-28": 443651000,
+     "2021-08-29": 443089000,
+     "2020-08-30": 442297000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (shares)",
+     "level": 3,
+     "abstract": false,
+     "2022-08-28": 444757000,
+     "2021-08-29": 444346000,
+     "2020-08-30": 443901000
+    }
+   ],
+   "count": 17,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

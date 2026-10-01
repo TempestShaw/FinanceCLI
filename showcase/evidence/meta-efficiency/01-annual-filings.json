@@ -1,0 +1,40 @@
+{
+ "case": "meta-efficiency",
+ "step": "01-annual-filings",
+ "command": "finance filings.recent META forms=10-K limit=6 --output json",
+ "purpose": "Find the annual reports covering 2022 through 2025.",
+ "retrieved_at": "2026-10-01T03:05:26+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "symbol": "META",
+   "company_name": "Meta Platforms, Inc.",
+   "cik": "0001326801",
+   "filings": [
+    {
+     "form": "10-K",
+     "accession_no": "0001628280-26-003942",
+     "filed_at": "2026-01-29",
+     "report_date": "2025-12-31",
+     "acceptance_datetime": "2026-01-29T00:13:46.000Z",
+     "items": [],
+     "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+    },
+    {
+     "form": "10-K",
+     "accession_no": "0001326801-25-000017",
+     "filed_at": "2025-01-30",
+     "report_date": "2024-12-31",
+     "acceptance_datetime": "2025-01-30T01:00:50.000Z",
+     "items": [],
+     "url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000017/meta-20241231.htm"
+    }
+   ],
+   "count": 2,
+   "source": "sec_edgar"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

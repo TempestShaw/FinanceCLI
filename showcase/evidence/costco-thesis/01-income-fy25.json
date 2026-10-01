@@ -1,0 +1,173 @@
+{
+ "case": "costco-thesis",
+ "step": "01-income-fy25",
+ "command": "finance filings.statement accession=0000909832-25-000101 statement=income --output json",
+ "purpose": "Membership fees and operating income for FY2023–FY2025.",
+ "retrieved_at": "2026-10-01T03:05:40+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "COSTCO WHOLESALE CORP /NEW",
+    "cik": "909832",
+    "form": "10-K",
+    "filing_date": "2025-10-08",
+    "period_of_report": "2025-08-31",
+    "accession_no": "0000909832-25-000101",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/909832/0000909832-25-000101-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/0000909832-25-000101.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2025-08-31",
+    "2024-09-01",
+    "2023-09-03"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Total revenue",
+     "level": 5,
+     "abstract": false,
+     "2025-08-31": 275235000000,
+     "2024-09-01": 254453000000,
+     "2023-09-03": 242290000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Membership",
+     "level": 5,
+     "abstract": false,
+     "2025-08-31": 5323000000,
+     "2024-09-01": 4828000000,
+     "2023-09-03": 4580000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Net Sales",
+     "level": 5,
+     "abstract": false,
+     "2025-08-31": 269912000000,
+     "2024-09-01": 249625000000,
+     "2023-09-03": 237710000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Merchandise costs",
+     "level": 5,
+     "abstract": false,
+     "2025-08-31": 239886000000,
+     "2024-09-01": 222358000000,
+     "2023-09-03": 212586000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Selling, general and administrative",
+     "level": 5,
+     "abstract": false,
+     "2025-08-31": 24966000000,
+     "2024-09-01": 22810000000,
+     "2023-09-03": 21590000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating income",
+     "level": 4,
+     "abstract": false,
+     "2025-08-31": 10383000000,
+     "2024-09-01": 9285000000,
+     "2023-09-03": 8114000000
+    },
+    {
+     "concept": "us-gaap_InterestExpense",
+     "label": "Interest expense",
+     "level": 4,
+     "abstract": false,
+     "2025-08-31": 154000000,
+     "2024-09-01": 169000000,
+     "2023-09-03": 160000000
+    },
+    {
+     "concept": "us-gaap_InterestAndOtherIncome",
+     "label": "Interest income and other, net",
+     "level": 4,
+     "abstract": false,
+     "2025-08-31": 589000000,
+     "2024-09-01": 624000000,
+     "2023-09-03": 533000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossAttributableToParent",
+     "label": "INCOME BEFORE INCOME TAXES",
+     "level": 4,
+     "abstract": false,
+     "2025-08-31": 10818000000,
+     "2024-09-01": 9740000000,
+     "2023-09-03": 8487000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Provision for income taxes",
+     "level": 4,
+     "abstract": false,
+     "2025-08-31": 2719000000,
+     "2024-09-01": 2373000000,
+     "2023-09-03": 2195000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "NET INCOME",
+     "level": 3,
+     "abstract": false,
+     "2025-08-31": 8099000000,
+     "2024-09-01": 7367000000,
+     "2023-09-03": 6292000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic",
+     "level": 2,
+     "abstract": false,
+     "2025-08-31": 18.24,
+     "2024-09-01": 16.59,
+     "2023-09-03": 14.18
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted",
+     "level": 2,
+     "abstract": false,
+     "2025-08-31": 18.21,
+     "2024-09-01": 16.56,
+     "2023-09-03": 14.16
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic",
+     "level": 3,
+     "abstract": false,
+     "2025-08-31": 443985000,
+     "2024-09-01": 443914000,
+     "2023-09-03": 443854000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted",
+     "level": 3,
+     "abstract": false,
+     "2025-08-31": 444803000,
+     "2024-09-01": 444759000,
+     "2023-09-03": 444452000
+    }
+   ],
+   "count": 15,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

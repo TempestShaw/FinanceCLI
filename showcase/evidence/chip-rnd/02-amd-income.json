@@ -1,0 +1,281 @@
+{
+ "case": "chip-rnd",
+ "step": "02-amd-income",
+ "command": "finance filings.statement accession=0000002488-26-000018 statement=income --output json",
+ "purpose": "AMD revenue and R&D. Its fiscal year ends in late December.",
+ "retrieved_at": "2026-10-01T03:05:09+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "ADVANCED MICRO DEVICES INC",
+    "cik": "2488",
+    "form": "10-K",
+    "filing_date": "2026-02-04",
+    "period_of_report": "2025-12-27",
+    "accession_no": "0000002488-26-000018",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/2488/0000002488-26-000018-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/0000002488-26-000018.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2025-12-27",
+    "2024-12-28",
+    "2023-12-30"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Net revenue",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 34639000000,
+     "2024-12-28": 25785000000,
+     "2023-12-30": 22680000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization",
+     "label": "Cost of sales",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 16456000000,
+     "2024-12-28": 12114000000,
+     "2023-12-30": 11278000000
+    },
+    {
+     "concept": "amd_AmortizationOfAcquisitionRelatedIntangiblesCOGS",
+     "label": "Amortization of acquisition-related intangibles- COGS",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 1031000000,
+     "2024-12-28": 946000000,
+     "2023-12-30": 942000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Total cost of sales",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 17487000000,
+     "2024-12-28": 13060000000,
+     "2023-12-30": 12220000000
+    },
+    {
+     "concept": "us-gaap_GrossProfit",
+     "label": "Gross profit",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 17152000000,
+     "2024-12-28": 12725000000,
+     "2023-12-30": 10460000000
+    },
+    {
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "label": "Research and development",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 8091000000,
+     "2024-12-28": 6456000000,
+     "2023-12-30": 5872000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Marketing, general and administrative",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 4144000000,
+     "2024-12-28": 2735000000,
+     "2023-12-30": 2318000000
+    },
+    {
+     "concept": "amd_AmortizationOfAcquisitionRelatedIntangibles_Opex",
+     "label": "Amortization of acquisition-related intangibles",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 1223000000,
+     "2024-12-28": 1448000000,
+     "2023-12-30": 1869000000
+    },
+    {
+     "concept": "us-gaap_RestructuringCharges",
+     "label": "Restructuring charges",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 0,
+     "2024-12-28": 186000000,
+     "2023-12-30": 0
+    },
+    {
+     "concept": "us-gaap_OperatingExpenses",
+     "label": "Total operating expenses",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 13458000000,
+     "2024-12-28": 10825000000,
+     "2023-12-30": 10059000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating income",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 3694000000,
+     "2024-12-28": 1900000000,
+     "2023-12-30": 401000000
+    },
+    {
+     "concept": "us-gaap_InterestExpense",
+     "label": "Interest expense",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 131000000,
+     "2024-12-28": 92000000,
+     "2023-12-30": 106000000
+    },
+    {
+     "concept": "us-gaap_OtherNonoperatingIncomeExpense",
+     "label": "Other income (expense), net",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 577000000,
+     "2024-12-28": 181000000,
+     "2023-12-30": 197000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+     "label": "Income from continuing operations before income taxes and equity income",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 4140000000,
+     "2024-12-28": 1989000000,
+     "2023-12-30": 492000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Income tax provision (benefit)",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": -103000000,
+     "2024-12-28": 381000000,
+     "2023-12-30": -346000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromEquityMethodInvestments",
+     "label": "Equity income in investee",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 26000000,
+     "2024-12-28": 33000000,
+     "2023-12-30": 16000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperations",
+     "label": "Income (Loss) from Continuing Operations, Net of Tax, Attributable to Parent",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 4269000000,
+     "2024-12-28": 1641000000,
+     "2023-12-30": 854000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromDiscontinuedOperationsNetOfTaxAttributableToReportingEntity",
+     "label": "Income (Loss) from Discontinued Operations, Net of Tax, Attributable to Parent",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 66000000,
+     "2024-12-28": 0,
+     "2023-12-30": 0
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "Net income",
+     "level": 1,
+     "abstract": false,
+     "2025-12-27": 4335000000,
+     "2024-12-28": 1641000000,
+     "2023-12-30": 854000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsPerBasicShare",
+     "label": "Income (Loss) from Continuing Operations, Per Basic Share",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 2.63,
+     "2024-12-28": 1.01,
+     "2023-12-30": 0.53
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromDiscontinuedOperationsNetOfTaxPerBasicShare",
+     "label": "Income (Loss) from Discontinued Operations and Disposal of Discontinued Operations, Net of Tax, Per Basic Share",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 0.04,
+     "2024-12-28": 0,
+     "2023-12-30": 0
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in usd per share)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 2.67,
+     "2024-12-28": 1.01,
+     "2023-12-30": 0.53
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsPerDilutedShare",
+     "label": "Income (Loss) from Continuing Operations, Per Diluted Share",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 2.61,
+     "2024-12-28": 1,
+     "2023-12-30": 0.53
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromDiscontinuedOperationsNetOfTaxPerDilutedShare",
+     "label": "Income (Loss) from Discontinued Operations and Disposal of Discontinued Operations, Net of Tax, Per Diluted Share",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 0.04,
+     "2024-12-28": 0,
+     "2023-12-30": 0
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in usd per share)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 2.65,
+     "2024-12-28": 1,
+     "2023-12-30": 0.53
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 1624000000,
+     "2024-12-28": 1620000000,
+     "2023-12-30": 1614000000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-27": 1636000000,
+     "2024-12-28": 1637000000,
+     "2023-12-30": 1625000000
+    }
+   ],
+   "count": 27,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

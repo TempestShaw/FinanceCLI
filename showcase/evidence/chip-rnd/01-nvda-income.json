@@ -1,0 +1,272 @@
+{
+ "case": "chip-rnd",
+ "step": "01-nvda-income",
+ "command": "finance filings.statement accession=0001045810-26-000021 statement=income --output json",
+ "purpose": "NVIDIA revenue and R&D. Its fiscal year ends in late January.",
+ "retrieved_at": "2026-10-01T03:05:09+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "NVIDIA CORP",
+    "cik": "1045810",
+    "form": "10-K",
+    "filing_date": "2026-02-25",
+    "period_of_report": "2026-01-25",
+    "accession_no": "0001045810-26-000021",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/1045810/0001045810-26-000021-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/0001045810-26-000021.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2026-01-25",
+    "2025-01-26",
+    "2024-01-28"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Revenue",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 215938000000,
+     "2025-01-26": 130497000000,
+     "2024-01-28": 60922000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Data Center",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 193737000000,
+     "2025-01-26": 115186000000,
+     "2024-01-28": 47525000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Compute",
+     "level": 3,
+     "abstract": false,
+     "2026-01-25": 162361000000,
+     "2025-01-26": 102196000000,
+     "2024-01-28": 38950000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Networking",
+     "level": 3,
+     "abstract": false,
+     "2026-01-25": 31376000000,
+     "2025-01-26": 12990000000,
+     "2024-01-28": 8575000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Gaming",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 16042000000,
+     "2025-01-26": 11350000000,
+     "2024-01-28": 10447000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Professional Visualization",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 3191000000,
+     "2025-01-26": 1878000000,
+     "2024-01-28": 1553000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "Automotive",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 2349000000,
+     "2025-01-26": 1694000000,
+     "2024-01-28": 1091000000
+    },
+    {
+     "concept": "us-gaap_Revenues",
+     "label": "OEM and Other",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 619000000,
+     "2025-01-26": 389000000,
+     "2024-01-28": 306000000
+    },
+    {
+     "concept": "us-gaap_CostOfRevenue",
+     "label": "Cost of revenue",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 62475000000,
+     "2025-01-26": 32639000000,
+     "2024-01-28": 16621000000
+    },
+    {
+     "concept": "us-gaap_CostOfRevenue",
+     "label": "Inventory purchase obligations in excess of projections",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 3200000000,
+     "2025-01-26": 2000000000,
+     "2024-01-28": null
+    },
+    {
+     "concept": "us-gaap_GrossProfit",
+     "label": "Gross profit",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 153463000000,
+     "2025-01-26": 97858000000,
+     "2024-01-28": 44301000000
+    },
+    {
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "label": "Research and development",
+     "level": 3,
+     "abstract": false,
+     "2026-01-25": 18497000000,
+     "2025-01-26": 12914000000,
+     "2024-01-28": 8675000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Sales, general and administrative",
+     "level": 3,
+     "abstract": false,
+     "2026-01-25": 4579000000,
+     "2025-01-26": 3491000000,
+     "2024-01-28": 2654000000
+    },
+    {
+     "concept": "us-gaap_OperatingExpenses",
+     "label": "Total operating expenses",
+     "level": 3,
+     "abstract": false,
+     "2026-01-25": 23076000000,
+     "2025-01-26": 16405000000,
+     "2024-01-28": 11329000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating income",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 130387000000,
+     "2025-01-26": 81453000000,
+     "2024-01-28": 32972000000
+    },
+    {
+     "concept": "us-gaap_InvestmentIncomeInterest",
+     "label": "Interest income",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 2300000000,
+     "2025-01-26": 1786000000,
+     "2024-01-28": 866000000
+    },
+    {
+     "concept": "us-gaap_InterestExpenseNonoperating",
+     "label": "Interest expense",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 259000000,
+     "2025-01-26": 247000000,
+     "2024-01-28": 257000000
+    },
+    {
+     "concept": "us-gaap_OtherNonoperatingIncomeExpense",
+     "label": "Other income, net",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 9022000000,
+     "2025-01-26": 1034000000,
+     "2024-01-28": 237000000
+    },
+    {
+     "concept": "us-gaap_NonoperatingIncomeExpense",
+     "label": "Total other income, net",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 11063000000,
+     "2025-01-26": 2573000000,
+     "2024-01-28": 846000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+     "label": "Income before income tax",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 141450000000,
+     "2025-01-26": 84026000000,
+     "2024-01-28": 33818000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Income tax expense",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 21383000000,
+     "2025-01-26": 11146000000,
+     "2024-01-28": 4058000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "Net income",
+     "level": 1,
+     "abstract": false,
+     "2026-01-25": 120067000000,
+     "2025-01-26": 72880000000,
+     "2024-01-28": 29760000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in USD per share)",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 4.93,
+     "2025-01-26": 2.97,
+     "2024-01-28": 1.21
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in USD per share)",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 4.9,
+     "2025-01-26": 2.94,
+     "2024-01-28": 1.19
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 24359000000,
+     "2025-01-26": 24555000000,
+     "2024-01-28": 24690000000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2026-01-25": 24514000000,
+     "2025-01-26": 24804000000,
+     "2024-01-28": 24940000000
+    }
+   ],
+   "count": 26,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

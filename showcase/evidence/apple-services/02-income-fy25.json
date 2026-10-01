@@ -1,0 +1,209 @@
+{
+ "case": "apple-services",
+ "step": "02-income-fy25",
+ "command": "finance filings.statement accession=0000320193-25-000079 statement=income --output json",
+ "purpose": "Read Products and Services net sales and cost of sales for FY2023–FY2025.",
+ "retrieved_at": "2026-10-01T03:04:44+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Apple Inc.",
+    "cik": "320193",
+    "form": "10-K",
+    "filing_date": "2025-10-31",
+    "period_of_report": "2025-09-27",
+    "accession_no": "0000320193-25-000079",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/320193/0000320193-25-000079-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2025-09-27",
+    "2024-09-28",
+    "2023-09-30"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Net sales",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 416161000000,
+     "2024-09-28": 391035000000,
+     "2023-09-30": 383285000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Products",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 307003000000,
+     "2024-09-28": 294866000000,
+     "2023-09-30": 298085000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Services",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 109158000000,
+     "2024-09-28": 96169000000,
+     "2023-09-30": 85200000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Cost of sales",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 220960000000,
+     "2024-09-28": 210352000000,
+     "2023-09-30": 214137000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Products",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 194116000000,
+     "2024-09-28": 185233000000,
+     "2023-09-30": 189282000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Services",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 26844000000,
+     "2024-09-28": 25119000000,
+     "2023-09-30": 24855000000
+    },
+    {
+     "concept": "us-gaap_GrossProfit",
+     "label": "Gross margin",
+     "level": 3,
+     "abstract": false,
+     "2025-09-27": 195201000000,
+     "2024-09-28": 180683000000,
+     "2023-09-30": 169148000000
+    },
+    {
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "label": "Research and development",
+     "level": 5,
+     "abstract": false,
+     "2025-09-27": 34550000000,
+     "2024-09-28": 31370000000,
+     "2023-09-30": 29915000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Selling, general and administrative",
+     "level": 5,
+     "abstract": false,
+     "2025-09-27": 27601000000,
+     "2024-09-28": 26097000000,
+     "2023-09-30": 24932000000
+    },
+    {
+     "concept": "us-gaap_OperatingExpenses",
+     "label": "Total operating expenses",
+     "level": 5,
+     "abstract": false,
+     "2025-09-27": 62151000000,
+     "2024-09-28": 57467000000,
+     "2023-09-30": 54847000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating income",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 133050000000,
+     "2024-09-28": 123216000000,
+     "2023-09-30": 114301000000
+    },
+    {
+     "concept": "us-gaap_NonoperatingIncomeExpense",
+     "label": "Other income/(expense), net",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": -321000000,
+     "2024-09-28": 269000000,
+     "2023-09-30": -565000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+     "label": "Income before provision for income taxes",
+     "level": 3,
+     "abstract": false,
+     "2025-09-27": 132729000000,
+     "2024-09-28": 123485000000,
+     "2023-09-30": 113736000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Provision for income taxes",
+     "level": 3,
+     "abstract": false,
+     "2025-09-27": 20719000000,
+     "2024-09-28": 29749000000,
+     "2023-09-30": 16741000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "Net income",
+     "level": 3,
+     "abstract": false,
+     "2025-09-27": 112010000000,
+     "2024-09-28": 93736000000,
+     "2023-09-30": 96995000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in dollars per share)",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 7.49,
+     "2024-09-28": 6.11,
+     "2023-09-30": 6.16
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in dollars per share)",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 7.46,
+     "2024-09-28": 6.08,
+     "2023-09-30": 6.13
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (in shares)",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 14948500000,
+     "2024-09-28": 15343783000,
+     "2023-09-30": 15744231000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (in shares)",
+     "level": 4,
+     "abstract": false,
+     "2025-09-27": 15004697000,
+     "2024-09-28": 15408095000,
+     "2023-09-30": 15812547000
+    }
+   ],
+   "count": 19,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

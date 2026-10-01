@@ -1,0 +1,671 @@
+{
+ "case": "data-gap",
+ "step": "03-segments",
+ "command": "finance filings.report accession=0000320193-25-000079 name=\"Segment Information and Geographic Data - Information by Reportable Segment (Details)\" --output json",
+ "purpose": "Check whether reportable segments split out the App Store.",
+ "retrieved_at": "2026-10-01T03:05:55+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Apple Inc.",
+    "cik": "320193",
+    "form": "10-K",
+    "filing_date": "2025-10-31",
+    "period_of_report": "2025-09-27",
+    "accession_no": "0000320193-25-000079",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/320193/0000320193-25-000079-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079.txt"
+   },
+   "report": {
+    "short_name": "Segment Information and Geographic Data - Information by Reportable Segment (Details)",
+    "long_name": "9955554 - Disclosure - Segment Information and Geographic Data - Information by Reportable Segment (Details)",
+    "category": "Details",
+    "file_name": "R68.htm"
+   },
+   "text": "Segment Information and Geographic \n Data - Information by Reportable \n Segment (Details) - USD ($) \n $ in Millions \n Segment Information and Geographic \n Data - Information by Reportable \n Segment (Details) - USD ($) \n $ in Millions 12 Months \n Segment Reporting Information [Line Ended Sep. 28, Sep. 30, \n Items] Sep. 27, 2025 2024 2023 \n ────────────────────────────────────────────────────────────────────────────── \n Net sales $ 416,161 $ 391,035 $ 383,285 \n Cost of sales (220,960) (210,352) (214,137) \n Research and development (34,550) (31,370) (29,915) \n Selling and marketing (19,524) (18,639) (18,260) \n General and administrative (8,077) (7,458) (6,672) \n Operating income 133,050 123,216 114,301 \n Corporate non-segment \n Segment Reporting Information [Line \n Items] \n Research and development (34,550) (31,370) (29,915) \n General and administrative (8,077) (7,458) (6,672) \n Operating income (42,627) (38,828) (36,587) \n Americas | Operating segments \n Segment Reporting Information [Line \n Items] \n Net sales 178,353 167,045 162,560 \n Cost of sales (95,699) (89,587) (92,394) \n Selling and marketing (10,174) (9,802) (9,658) \n Operating income 72,480 67,656 60,508 \n Europe | Operating segments \n Segment Reporting Information [Line \n Items] \n Net sales 111,032 101,328 94,294 \n Cost of sales (58,617) (55,197) (54,101) \n Selling and marketing (4,676) (4,341) (4,095) \n Operating income 47,739 41,790 36,098 \n Greater China | Operating segments \n Segment Reporting Information [Line \n Items] \n Net sales 64,377 66,952 72,559 \n Cost of sales (35,141) (37,519) (39,787) \n Selling and marketing (2,319) (2,351) (2,444) \n Operating income 26,917 27,082 30,328 \n Japan | Operating segments \n Segment Reporting Information [Line \n Items] \n Net sales 28,703 25,052 24,257 \n Cost of sales (13,779) (11,744) (11,542) \n Selling and marketing (969) (854) (827) \n Operating income 13,955 12,454 11,888 \n Rest of Asia Pacific | Operating \n segments \n Segment Reporting Information [Line \n Items] \n Net sales 33,696 30,658 29,615 \n Cost of sales (17,724) (16,305) (16,313) \n Selling and marketing (1,386) (1,291) (1,236) \n Operating income $ 14,586 $ 13,062 $ 12,066",
+   "rows": [
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Sep. 27, 2025",
+     "concept": null,
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "Sep. 28, 2024",
+       "number": 28
+      },
+      {
+       "column": "value_2",
+       "text": "Sep. 30, 2023",
+       "number": 30
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Segment Reporting Information [Line Items]",
+     "concept": "us-gaap_SegmentReportingInformationLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "$ 416,161",
+       "number": 416161
+      },
+      {
+       "column": "value_2",
+       "text": "$ 391,035",
+       "number": 391035
+      },
+      {
+       "column": "value_3",
+       "text": "$ 383,285",
+       "number": 383285
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Cost of sales",
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(220,960)",
+       "number": -220960
+      },
+      {
+       "column": "value_2",
+       "text": "(210,352)",
+       "number": -210352
+      },
+      {
+       "column": "value_3",
+       "text": "(214,137)",
+       "number": -214137
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Research and development",
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(34,550)",
+       "number": -34550
+      },
+      {
+       "column": "value_2",
+       "text": "(31,370)",
+       "number": -31370
+      },
+      {
+       "column": "value_3",
+       "text": "(29,915)",
+       "number": -29915
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Selling and marketing",
+     "concept": "us-gaap_SellingAndMarketingExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(19,524)",
+       "number": -19524
+      },
+      {
+       "column": "value_2",
+       "text": "(18,639)",
+       "number": -18639
+      },
+      {
+       "column": "value_3",
+       "text": "(18,260)",
+       "number": -18260
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "General and administrative",
+     "concept": "us-gaap_GeneralAndAdministrativeExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(8,077)",
+       "number": -8077
+      },
+      {
+       "column": "value_2",
+       "text": "(7,458)",
+       "number": -7458
+      },
+      {
+       "column": "value_3",
+       "text": "(6,672)",
+       "number": -6672
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Operating income",
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "133,050",
+       "number": 133050
+      },
+      {
+       "column": "value_2",
+       "text": "123,216",
+       "number": 123216
+      },
+      {
+       "column": "value_3",
+       "text": "114,301",
+       "number": 114301
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Corporate non-segment"
+     ],
+     "label": "Segment Reporting Information [Line Items]",
+     "concept": "us-gaap_SegmentReportingInformationLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Corporate non-segment"
+     ],
+     "label": "Research and development",
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(34,550)",
+       "number": -34550
+      },
+      {
+       "column": "value_2",
+       "text": "(31,370)",
+       "number": -31370
+      },
+      {
+       "column": "value_3",
+       "text": "(29,915)",
+       "number": -29915
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Corporate non-segment"
+     ],
+     "label": "General and administrative",
+     "concept": "us-gaap_GeneralAndAdministrativeExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(8,077)",
+       "number": -8077
+      },
+      {
+       "column": "value_2",
+       "text": "(7,458)",
+       "number": -7458
+      },
+      {
+       "column": "value_3",
+       "text": "(6,672)",
+       "number": -6672
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Corporate non-segment"
+     ],
+     "label": "Operating income",
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(42,627)",
+       "number": -42627
+      },
+      {
+       "column": "value_2",
+       "text": "(38,828)",
+       "number": -38828
+      },
+      {
+       "column": "value_3",
+       "text": "(36,587)",
+       "number": -36587
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Americas | Operating segments"
+     ],
+     "label": "Segment Reporting Information [Line Items]",
+     "concept": "us-gaap_SegmentReportingInformationLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Americas | Operating segments"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "178,353",
+       "number": 178353
+      },
+      {
+       "column": "value_2",
+       "text": "167,045",
+       "number": 167045
+      },
+      {
+       "column": "value_3",
+       "text": "162,560",
+       "number": 162560
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Americas | Operating segments"
+     ],
+     "label": "Cost of sales",
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(95,699)",
+       "number": -95699
+      },
+      {
+       "column": "value_2",
+       "text": "(89,587)",
+       "number": -89587
+      },
+      {
+       "column": "value_3",
+       "text": "(92,394)",
+       "number": -92394
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Americas | Operating segments"
+     ],
+     "label": "Selling and marketing",
+     "concept": "us-gaap_SellingAndMarketingExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(10,174)",
+       "number": -10174
+      },
+      {
+       "column": "value_2",
+       "text": "(9,802)",
+       "number": -9802
+      },
+      {
+       "column": "value_3",
+       "text": "(9,658)",
+       "number": -9658
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Americas | Operating segments"
+     ],
+     "label": "Operating income",
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "72,480",
+       "number": 72480
+      },
+      {
+       "column": "value_2",
+       "text": "67,656",
+       "number": 67656
+      },
+      {
+       "column": "value_3",
+       "text": "60,508",
+       "number": 60508
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Europe | Operating segments"
+     ],
+     "label": "Segment Reporting Information [Line Items]",
+     "concept": "us-gaap_SegmentReportingInformationLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Europe | Operating segments"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "111,032",
+       "number": 111032
+      },
+      {
+       "column": "value_2",
+       "text": "101,328",
+       "number": 101328
+      },
+      {
+       "column": "value_3",
+       "text": "94,294",
+       "number": 94294
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Europe | Operating segments"
+     ],
+     "label": "Cost of sales",
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(58,617)",
+       "number": -58617
+      },
+      {
+       "column": "value_2",
+       "text": "(55,197)",
+       "number": -55197
+      },
+      {
+       "column": "value_3",
+       "text": "(54,101)",
+       "number": -54101
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Europe | Operating segments"
+     ],
+     "label": "Selling and marketing",
+     "concept": "us-gaap_SellingAndMarketingExpense",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(4,676)",
+       "number": -4676
+      },
+      {
+       "column": "value_2",
+       "text": "(4,341)",
+       "number": -4341
+      },
+      {
+       "column": "value_3",
+       "text": "(4,095)",
+       "number": -4095
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Europe | Operating segments"
+     ],
+     "label": "Operating income",
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "47,739",
+       "number": 47739
+      },
+      {
+       "column": "value_2",
+       "text": "41,790",
+       "number": 41790
+      },
+      {
+       "column": "value_3",
+       "text": "36,098",
+       "number": 36098
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Greater China | Operating segments"
+     ],
+     "label": "Segment Reporting Information [Line Items]",
+     "concept": "us-gaap_SegmentReportingInformationLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Greater China | Operating segments"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "64,377",
+       "number": 64377
+      },
+      {
+       "column": "value_2",
+       "text": "66,952",
+       "number": 66952
+      },
+      {
+       "column": "value_3",
+       "text": "72,559",
+       "number": 72559
+      }
+     ]
+    },
+    {
+     "table": "Segment Information and Geographic Data - Information by Reportable Segment (Details) - USD ($) $ in Millions",
+     "context": [
+      "Greater China | Operating segments"
+     ],
+     "label": "Cost of sales",
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "(35,141)",
+       "number": -35141
+      },
+      {
+       "column": "value_2",
+       "text": "(37,519)",
+       "number": -37519
+      },
+      {
+       "column": "value_3",
+       "text": "(39,787)",
+       "number": -39787
+      }
+     ]
+    }
+   ],
+   "row_count": 25,
+   "row_query": null,
+   "rows_truncated": true,
+   "char_count": 2167,
+   "returned_chars": 2167,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

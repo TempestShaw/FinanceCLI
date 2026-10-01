@@ -1,0 +1,209 @@
+{
+ "case": "apple-services",
+ "step": "03-income-fy22",
+ "command": "finance filings.statement accession=0000320193-22-000108 statement=income --output json",
+ "purpose": "Read the same rows for FY2020–FY2022 from the earlier 10-K.",
+ "retrieved_at": "2026-10-01T03:04:44+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Apple Inc.",
+    "cik": "320193",
+    "form": "10-K",
+    "filing_date": "2022-10-28",
+    "period_of_report": "2022-09-24",
+    "accession_no": "0000320193-22-000108",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/320193/0000320193-22-000108-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/0000320193-22-000108.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2022-09-24",
+    "2021-09-25",
+    "2020-09-26"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Net sales",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 394328000000,
+     "2021-09-25": 365817000000,
+     "2020-09-26": 274515000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Products",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 316199000000,
+     "2021-09-25": 297392000000,
+     "2020-09-26": 220747000000
+    },
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Services",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 78129000000,
+     "2021-09-25": 68425000000,
+     "2020-09-26": 53768000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Cost of sales",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 223546000000,
+     "2021-09-25": 212981000000,
+     "2020-09-26": 169559000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Products",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 201471000000,
+     "2021-09-25": 192266000000,
+     "2020-09-26": 151286000000
+    },
+    {
+     "concept": "us-gaap_CostOfGoodsAndServicesSold",
+     "label": "Services",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 22075000000,
+     "2021-09-25": 20715000000,
+     "2020-09-26": 18273000000
+    },
+    {
+     "concept": "us-gaap_GrossProfit",
+     "label": "Gross margin",
+     "level": 3,
+     "abstract": false,
+     "2022-09-24": 170782000000,
+     "2021-09-25": 152836000000,
+     "2020-09-26": 104956000000
+    },
+    {
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "label": "Research and development",
+     "level": 5,
+     "abstract": false,
+     "2022-09-24": 26251000000,
+     "2021-09-25": 21914000000,
+     "2020-09-26": 18752000000
+    },
+    {
+     "concept": "us-gaap_SellingGeneralAndAdministrativeExpense",
+     "label": "Selling, general and administrative",
+     "level": 5,
+     "abstract": false,
+     "2022-09-24": 25094000000,
+     "2021-09-25": 21973000000,
+     "2020-09-26": 19916000000
+    },
+    {
+     "concept": "us-gaap_OperatingExpenses",
+     "label": "Total operating expenses",
+     "level": 5,
+     "abstract": false,
+     "2022-09-24": 51345000000,
+     "2021-09-25": 43887000000,
+     "2020-09-26": 38668000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Operating income",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 119437000000,
+     "2021-09-25": 108949000000,
+     "2020-09-26": 66288000000
+    },
+    {
+     "concept": "us-gaap_NonoperatingIncomeExpense",
+     "label": "Other income/(expense), net",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": -334000000,
+     "2021-09-25": 258000000,
+     "2020-09-26": 803000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+     "label": "Income before provision for income taxes",
+     "level": 3,
+     "abstract": false,
+     "2022-09-24": 119103000000,
+     "2021-09-25": 109207000000,
+     "2020-09-26": 67091000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Provision for income taxes",
+     "level": 3,
+     "abstract": false,
+     "2022-09-24": 19300000000,
+     "2021-09-25": 14527000000,
+     "2020-09-26": 9680000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "Net income",
+     "level": 3,
+     "abstract": false,
+     "2022-09-24": 99803000000,
+     "2021-09-25": 94680000000,
+     "2020-09-26": 57411000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in dollars per share)",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 6.15,
+     "2021-09-25": 5.67,
+     "2020-09-26": 3.31
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in dollars per share)",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 6.11,
+     "2021-09-25": 5.61,
+     "2020-09-26": 3.28
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (in shares)",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 16215963000,
+     "2021-09-25": 16701272000,
+     "2020-09-26": 17352119000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (in shares)",
+     "level": 4,
+     "abstract": false,
+     "2022-09-24": 16325819000,
+     "2021-09-25": 16864919000,
+     "2020-09-26": 17528214000
+    }
+   ],
+   "count": 19,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

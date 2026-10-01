@@ -1,0 +1,30 @@
+{
+ "case": "data-gap",
+ "step": "02-report-search",
+ "command": "finance filings.reports accession=0000320193-25-000079 query=\"App Store\" --output json",
+ "purpose": "Search every XBRL report title in the filing for App Store.",
+ "retrieved_at": "2026-10-01T03:05:51+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Apple Inc.",
+    "cik": "320193",
+    "form": "10-K",
+    "filing_date": "2025-10-31",
+    "period_of_report": "2025-09-27",
+    "accession_no": "0000320193-25-000079",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/320193/0000320193-25-000079-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079.txt"
+   },
+   "reports": [],
+   "count": 0,
+   "query": "App Store",
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

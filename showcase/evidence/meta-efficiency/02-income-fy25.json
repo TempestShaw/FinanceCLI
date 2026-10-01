@@ -1,0 +1,191 @@
+{
+ "case": "meta-efficiency",
+ "step": "02-income-fy25",
+ "command": "finance filings.statement accession=0001628280-26-003942 statement=income --output json",
+ "purpose": "Revenue, costs and operating income for 2023–2025.",
+ "retrieved_at": "2026-10-01T03:05:26+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Meta Platforms, Inc.",
+    "cik": "1326801",
+    "form": "10-K",
+    "filing_date": "2026-01-29",
+    "period_of_report": "2025-12-31",
+    "accession_no": "0001628280-26-003942",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/1326801/0001628280-26-003942-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/0001628280-26-003942.txt"
+   },
+   "statement": "income",
+   "view": "standard",
+   "periods": [
+    "2025-12-31",
+    "2024-12-31",
+    "2023-12-31"
+   ],
+   "rows": [
+    {
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "label": "Revenue",
+     "level": 1,
+     "abstract": false,
+     "2025-12-31": 200966000000,
+     "2024-12-31": 164501000000,
+     "2023-12-31": 134902000000
+    },
+    {
+     "concept": "us-gaap_CostOfRevenue",
+     "label": "Cost of revenue",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 36175000000,
+     "2024-12-31": 30161000000,
+     "2023-12-31": 25959000000
+    },
+    {
+     "concept": "us-gaap_ResearchAndDevelopmentExpense",
+     "label": "Research and development",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 57372000000,
+     "2024-12-31": 43873000000,
+     "2023-12-31": 38483000000
+    },
+    {
+     "concept": "us-gaap_SellingAndMarketingExpense",
+     "label": "Marketing and sales",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 11991000000,
+     "2024-12-31": 11347000000,
+     "2023-12-31": 12301000000
+    },
+    {
+     "concept": "us-gaap_GeneralAndAdministrativeExpense",
+     "label": "General and administrative",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 12152000000,
+     "2024-12-31": 9740000000,
+     "2023-12-31": 11408000000
+    },
+    {
+     "concept": "us-gaap_CostsAndExpenses",
+     "label": "Total costs and expenses",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 117690000000,
+     "2024-12-31": 95121000000,
+     "2023-12-31": 88151000000
+    },
+    {
+     "concept": "us-gaap_OperatingIncomeLoss",
+     "label": "Income (loss) from operations",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 83276000000,
+     "2024-12-31": 69380000000,
+     "2023-12-31": 46751000000
+    },
+    {
+     "concept": "us-gaap_NonoperatingIncomeExpense",
+     "label": "Interest and other income, net",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 2656000000,
+     "2024-12-31": 1283000000,
+     "2023-12-31": 677000000
+    },
+    {
+     "concept": "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+     "label": "Income before provision for income taxes",
+     "level": 1,
+     "abstract": false,
+     "2025-12-31": 85932000000,
+     "2024-12-31": 70663000000,
+     "2023-12-31": 47428000000
+    },
+    {
+     "concept": "us-gaap_IncomeTaxExpenseBenefit",
+     "label": "Provision for income taxes",
+     "level": 1,
+     "abstract": false,
+     "2025-12-31": 25474000000,
+     "2024-12-31": 8303000000,
+     "2023-12-31": 8330000000
+    },
+    {
+     "concept": "us-gaap_NetIncomeLoss",
+     "label": "Net income",
+     "level": 1,
+     "abstract": false,
+     "2025-12-31": 60458000000,
+     "2024-12-31": 62360000000,
+     "2023-12-31": 39098000000
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareBasic",
+     "label": "Basic (in dollars per share)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 23.98,
+     "2024-12-31": 24.61,
+     "2023-12-31": 15.19
+    },
+    {
+     "concept": "us-gaap_EarningsPerShareDiluted",
+     "label": "Diluted (in dollars per share)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 23.49,
+     "2024-12-31": 23.86,
+     "2023-12-31": 14.87
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Basic (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 2521000000,
+     "2024-12-31": 2534000000,
+     "2023-12-31": 2574000000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Class A Common Stock",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 2178000000,
+     "2024-12-31": 2189000000,
+     "2023-12-31": 2220000000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfSharesOutstandingBasic",
+     "label": "Class B Common Stock",
+     "level": 3,
+     "abstract": false,
+     "2025-12-31": 343000000,
+     "2024-12-31": 345000000,
+     "2023-12-31": 354000000
+    },
+    {
+     "concept": "us-gaap_WeightedAverageNumberOfDilutedSharesOutstanding",
+     "label": "Diluted (in shares)",
+     "level": 2,
+     "abstract": false,
+     "2025-12-31": 2574000000,
+     "2024-12-31": 2614000000,
+     "2023-12-31": 2629000000
+    }
+   ],
+   "count": 17,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}

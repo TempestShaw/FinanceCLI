@@ -1,0 +1,1423 @@
+{
+  "recorded": {
+    "first": "2026-10-01T03:04:44+00:00",
+    "last": "2026-10-01T03:05:58+00:00"
+  },
+  "note": "Recorded agent sessions. Commands and CLI outputs are real and saved in showcase/evidence; the written answers were produced by the agent from that evidence.",
+  "cases": [
+    {
+      "slug": "apple-services",
+      "title": "Apple’s shift to Services",
+      "kicker": "Financial statement analysis",
+      "question": "Has Apple become more dependent on Services over the last five years? Is growth coming from Services or hardware? Give me each year’s numbers and sources.",
+      "headline": "Services grew from 19.6% to 26.2% of net sales — and 42.2% of gross margin.",
+      "answer": [
+        "Yes. Services rose from 19.6% of net sales in FY2020 to 26.2% in FY2025. Its share of gross margin rose faster, from 33.8% to 42.2%, because Services gross margin was 75.4% in FY2025.",
+        "Where the growth came from depends on the window. Since FY2022, Products net sales changed by −$9.2B while Services added $31.0B, so Services accounts for all of the net growth. Over the full five years, Products still added more dollars ($86.3B vs $55.4B), most of it in the FY2021 rebound.",
+        "Services compounded at 15.2% a year from FY2020 to FY2025, against 6.8% for Products."
+      ],
+      "metrics": [
+        {
+          "label": "Services share of net sales, FY2025",
+          "value": "26.2%",
+          "delta": "+6.6 pts since FY2020"
+        },
+        {
+          "label": "Services share of gross margin, FY2025",
+          "value": "42.2%",
+          "delta": "+8.3 pts since FY2020"
+        },
+        {
+          "label": "Net growth from Services since FY2022",
+          "value": "$31.0B",
+          "delta": "Products −$9.2B"
+        }
+      ],
+      "table": {
+        "caption": "Apple net sales by category. Fiscal years end on the last Saturday of September. Values reported in millions of US dollars.",
+        "columns": [
+          {
+            "key": "fy",
+            "label": "Fiscal year"
+          },
+          {
+            "key": "services",
+            "label": "Services",
+            "align": "end"
+          },
+          {
+            "key": "total",
+            "label": "Net sales",
+            "align": "end"
+          },
+          {
+            "key": "share",
+            "label": "Services share",
+            "align": "end"
+          },
+          {
+            "key": "gm_share",
+            "label": "Share of gross margin",
+            "align": "end"
+          },
+          {
+            "key": "source",
+            "label": "Source"
+          }
+        ],
+        "rows": [
+          {
+            "fy": "FY2020",
+            "period_end": "2020-09-26",
+            "services": "$53.8B",
+            "total": "$274.5B",
+            "share": "19.6%",
+            "gm_share": "33.8%",
+            "source": "10-K · 0000320193-22-000108",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm"
+          },
+          {
+            "fy": "FY2021",
+            "period_end": "2021-09-25",
+            "services": "$68.4B",
+            "total": "$365.8B",
+            "share": "18.7%",
+            "gm_share": "31.2%",
+            "source": "10-K · 0000320193-22-000108",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm"
+          },
+          {
+            "fy": "FY2022",
+            "period_end": "2022-09-24",
+            "services": "$78.1B",
+            "total": "$394.3B",
+            "share": "19.8%",
+            "gm_share": "32.8%",
+            "source": "10-K · 0000320193-22-000108",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm"
+          },
+          {
+            "fy": "FY2023",
+            "period_end": "2023-09-30",
+            "services": "$85.2B",
+            "total": "$383.3B",
+            "share": "22.2%",
+            "gm_share": "35.7%",
+            "source": "10-K · 0000320193-25-000079",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+          },
+          {
+            "fy": "FY2024",
+            "period_end": "2024-09-28",
+            "services": "$96.2B",
+            "total": "$391.0B",
+            "share": "24.6%",
+            "gm_share": "39.3%",
+            "source": "10-K · 0000320193-25-000079",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+          },
+          {
+            "fy": "FY2025",
+            "period_end": "2025-09-27",
+            "services": "$109.2B",
+            "total": "$416.2B",
+            "share": "26.2%",
+            "gm_share": "42.2%",
+            "source": "10-K · 0000320193-25-000079",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+          }
+        ]
+      },
+      "chart": {
+        "kind": "bars",
+        "label": "Services share of Apple net sales",
+        "points": [
+          {
+            "x": "FY20",
+            "value": 19.6,
+            "secondary": 33.8
+          },
+          {
+            "x": "FY21",
+            "value": 18.7,
+            "secondary": 31.2
+          },
+          {
+            "x": "FY22",
+            "value": 19.8,
+            "secondary": 32.8
+          },
+          {
+            "x": "FY23",
+            "value": 22.2,
+            "secondary": 35.7
+          },
+          {
+            "x": "FY24",
+            "value": 24.6,
+            "secondary": 39.3
+          },
+          {
+            "x": "FY25",
+            "value": 26.2,
+            "secondary": 42.2
+          }
+        ]
+      },
+      "calculations": [
+        {
+          "label": "Services share of net sales",
+          "method": "Services net sales / Net sales",
+          "inputs": "FY2025: 109,158,000,000 / 416,161,000,000",
+          "result": "26.23%"
+        },
+        {
+          "label": "Services share of gross margin",
+          "method": "(Services sales − Services cost of sales) / total gross margin",
+          "inputs": "FY2025: 82,314,000,000 / 195,201,000,000",
+          "result": "42.17%"
+        },
+        {
+          "label": "Services CAGR FY2020–FY2025",
+          "method": "(end / start) ** (1 / periods) − 1",
+          "inputs": "53,768,000,000 → 109,158,000,000, 5 periods",
+          "result": "15.21%"
+        }
+      ],
+      "checks": [
+        {
+          "status": "verified",
+          "label": "No restatement in overlapping years",
+          "detail": "FY2021 and FY2022 Products and Services figures in the FY2023 10-K match the FY2022 10-K exactly."
+        },
+        {
+          "status": "verified",
+          "label": "Products + Services = Net sales",
+          "detail": "The two categories sum to reported net sales in all six years."
+        },
+        {
+          "status": "caveat",
+          "label": "Services includes bundled amortization",
+          "detail": "Services net sales include amortization of the deferred value of services bundled in the sales price of certain products."
+        },
+        {
+          "status": "caveat",
+          "label": "Drivers are named, not sized",
+          "detail": "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services. The filing gives no amount for each driver."
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+          "source": "Apple Inc. 10-K · period ended 2025-09-27"
+        }
+      ],
+      "trace": [
+        {
+          "id": "01-annual-filings",
+          "tool": "filings.recent",
+          "command": "finance filings.recent AAPL forms=10-K limit=6 --output json",
+          "purpose": "List annual reports so every fiscal year maps to one specific filing.",
+          "result": "6 annual reports, FY2020–FY2025, each with an accession number.",
+          "retrieved_at": "2026-10-01T03:04:44+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/01-annual-filings.json"
+        },
+        {
+          "id": "02-income-fy25",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000320193-25-000079 statement=income --output json",
+          "purpose": "Read Products and Services net sales and cost of sales for FY2023–FY2025.",
+          "result": "Products and Services rows for FY2023–FY2025 with XBRL concepts.",
+          "retrieved_at": "2026-10-01T03:04:44+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/02-income-fy25.json"
+        },
+        {
+          "id": "03-income-fy22",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000320193-22-000108 statement=income --output json",
+          "purpose": "Read the same rows for FY2020–FY2022 from the earlier 10-K.",
+          "result": "The same rows for FY2020–FY2022.",
+          "retrieved_at": "2026-10-01T03:04:44+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/03-income-fy22.json"
+        },
+        {
+          "id": "04-restatement-check",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000320193-23-000106 statement=income --output json",
+          "purpose": "Cross-check overlapping years: did a later filing restate FY2022 or FY2021?",
+          "result": "FY2021 and FY2022 values match the earlier filing. No restatement.",
+          "retrieved_at": "2026-10-01T03:04:44+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/04-restatement-check.json"
+        },
+        {
+          "id": "05-revenue-mix",
+          "tool": "filings.report",
+          "command": "finance filings.report accession=0000320193-25-000079 name=\"Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details)\" --output json",
+          "purpose": "Confirm units ($ in millions) and the product-category breakdown in the revenue note.",
+          "result": "Revenue note is in $ millions. Services is reported as one line.",
+          "retrieved_at": "2026-10-01T03:04:48+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/05-revenue-mix.json"
+        },
+        {
+          "id": "06-mda-drivers",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0000320193-25-000079 section=mda max_chars=60000 --output json",
+          "purpose": "Find management's explanation of what drove Services growth.",
+          "result": "Management names advertising, the App Store and cloud services as drivers.",
+          "retrieved_at": "2026-10-01T03:05:08+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/apple-services/06-mda-drivers.json"
+        },
+        {
+          "id": "07-calculate",
+          "tool": "formula.margin",
+          "command": "finance formula.margin numerator=109158 denominator=416161",
+          "purpose": "Compute shares and growth with stated inputs and method.",
+          "result": "18 ratios and 2 CAGRs, each with inputs. FY2025 Services share = 26.23%."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Apple Inc. 10-K · period ended 2025-09-27",
+          "company": "Apple Inc.",
+          "form": "10-K",
+          "filing_date": "2025-10-31",
+          "period": "2025-09-27",
+          "accession": "0000320193-25-000079",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+        },
+        {
+          "label": "Apple Inc. 10-K · period ended 2023-09-30",
+          "company": "Apple Inc.",
+          "form": "10-K",
+          "filing_date": "2023-11-03",
+          "period": "2023-09-30",
+          "accession": "0000320193-23-000106",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019323000106/aapl-20230930.htm"
+        },
+        {
+          "label": "Apple Inc. 10-K · period ended 2022-09-24",
+          "company": "Apple Inc.",
+          "form": "10-K",
+          "filing_date": "2022-10-28",
+          "period": "2022-09-24",
+          "accession": "0000320193-22-000108",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm"
+        }
+      ],
+      "prompt": "Use Finance CLI to test whether Apple has become more dependent on Services over the last five fiscal years. Use 10-K income statements, keep fiscal-year end dates and units, check overlapping years for restatements, calculate the Services share of net sales and gross margin, and cite the accession for every figure. Say what the filings do not disclose."
+    },
+    {
+      "slug": "chip-rnd",
+      "title": "R&D intensity across three chipmakers",
+      "kicker": "Cross-company comparison",
+      "question": "Compare NVDA, AMD and AVGO R&D intensity over their last three fiscal years. Who increased it fastest?",
+      "headline": "Only Broadcom’s R&D intensity rose (+2.5 pts), and an acquisition explains it. NVIDIA grew R&D fastest in dollars while its ratio fell.",
+      "answer": [
+        "Of the three, only Broadcom’s R&D intensity rose: 14.7% → 17.2%. The jump happened in FY2024, the first year after Broadcom closed the VMware acquisition on November 22, 2023. Treat it as an acquisition effect, not a change in organic spending.",
+        "NVIDIA increased R&D the most in dollars ($8.7B → $18.5B, 113%), yet its intensity fell from 14.2% to 8.6% because revenue grew 254%.",
+        "AMD remains the most R&D-intensive at 23.4%, down 2.5 points as revenue outgrew spending.",
+        "The question has no clean answer: “increased fastest” depends on whether you measure the ratio or the dollars, and the only rising ratio comes from M&A."
+      ],
+      "metrics": [
+        {
+          "label": "NVDA R&D / revenue, FY2026",
+          "value": "8.6%",
+          "delta": "-5.7 pts vs FY2024"
+        },
+        {
+          "label": "AMD R&D / revenue, FY2025",
+          "value": "23.4%",
+          "delta": "-2.5 pts vs FY2023"
+        },
+        {
+          "label": "AVGO R&D / revenue, FY2025",
+          "value": "17.2%",
+          "delta": "+2.5 pts vs FY2023"
+        }
+      ],
+      "alignment": [
+        {
+          "ticker": "NVDA",
+          "fy_note": "ends late January",
+          "periods": [
+            {
+              "fy": "FY2024",
+              "period_end": "2024-01-28"
+            },
+            {
+              "fy": "FY2025",
+              "period_end": "2025-01-26"
+            },
+            {
+              "fy": "FY2026",
+              "period_end": "2026-01-25"
+            }
+          ]
+        },
+        {
+          "ticker": "AMD",
+          "fy_note": "ends late December",
+          "periods": [
+            {
+              "fy": "FY2023",
+              "period_end": "2023-12-30"
+            },
+            {
+              "fy": "FY2024",
+              "period_end": "2024-12-28"
+            },
+            {
+              "fy": "FY2025",
+              "period_end": "2025-12-27"
+            }
+          ]
+        },
+        {
+          "ticker": "AVGO",
+          "fy_note": "ends late Oct / early Nov",
+          "periods": [
+            {
+              "fy": "FY2023",
+              "period_end": "2023-10-29"
+            },
+            {
+              "fy": "FY2024",
+              "period_end": "2024-11-03"
+            },
+            {
+              "fy": "FY2025",
+              "period_end": "2025-11-02"
+            }
+          ]
+        }
+      ],
+      "table": {
+        "caption": "R&D expense divided by total revenue, from each company’s latest 10-K. Fiscal years are kept as reported; they do not end in the same month.",
+        "columns": [
+          {
+            "key": "ticker",
+            "label": "Company"
+          },
+          {
+            "key": "fy",
+            "label": "Fiscal year"
+          },
+          {
+            "key": "period_end",
+            "label": "Period end"
+          },
+          {
+            "key": "rnd",
+            "label": "R&D",
+            "align": "end"
+          },
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "align": "end"
+          },
+          {
+            "key": "intensity",
+            "label": "R&D / revenue",
+            "align": "end"
+          }
+        ],
+        "rows": [
+          {
+            "ticker": "NVDA",
+            "fy": "FY2024",
+            "period_end": "2024-01-28",
+            "rnd": "$8.68B",
+            "revenue": "$60.9B",
+            "intensity": "14.2%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+          },
+          {
+            "ticker": "NVDA",
+            "fy": "FY2025",
+            "period_end": "2025-01-26",
+            "rnd": "$12.91B",
+            "revenue": "$130.5B",
+            "intensity": "9.9%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+          },
+          {
+            "ticker": "NVDA",
+            "fy": "FY2026",
+            "period_end": "2026-01-25",
+            "rnd": "$18.50B",
+            "revenue": "$215.9B",
+            "intensity": "8.6%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+          },
+          {
+            "ticker": "AMD",
+            "fy": "FY2023",
+            "period_end": "2023-12-30",
+            "rnd": "$5.87B",
+            "revenue": "$22.7B",
+            "intensity": "25.9%",
+            "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+          },
+          {
+            "ticker": "AMD",
+            "fy": "FY2024",
+            "period_end": "2024-12-28",
+            "rnd": "$6.46B",
+            "revenue": "$25.8B",
+            "intensity": "25.0%",
+            "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+          },
+          {
+            "ticker": "AMD",
+            "fy": "FY2025",
+            "period_end": "2025-12-27",
+            "rnd": "$8.09B",
+            "revenue": "$34.6B",
+            "intensity": "23.4%",
+            "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+          },
+          {
+            "ticker": "AVGO",
+            "fy": "FY2023",
+            "period_end": "2023-10-29",
+            "rnd": "$5.25B",
+            "revenue": "$35.8B",
+            "intensity": "14.7%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm"
+          },
+          {
+            "ticker": "AVGO",
+            "fy": "FY2024",
+            "period_end": "2024-11-03",
+            "rnd": "$9.31B",
+            "revenue": "$51.6B",
+            "intensity": "18.1%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm"
+          },
+          {
+            "ticker": "AVGO",
+            "fy": "FY2025",
+            "period_end": "2025-11-02",
+            "rnd": "$10.98B",
+            "revenue": "$63.9B",
+            "intensity": "17.2%",
+            "url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm"
+          }
+        ]
+      },
+      "chart": {
+        "kind": "lines",
+        "label": "R&D as % of revenue",
+        "series": [
+          {
+            "key": "NVDA",
+            "points": [
+              {
+                "x": "Y1",
+                "fy": "FY2024",
+                "value": 14.2
+              },
+              {
+                "x": "Y2",
+                "fy": "FY2025",
+                "value": 9.9
+              },
+              {
+                "x": "Y3",
+                "fy": "FY2026",
+                "value": 8.6
+              }
+            ]
+          },
+          {
+            "key": "AMD",
+            "points": [
+              {
+                "x": "Y1",
+                "fy": "FY2023",
+                "value": 25.9
+              },
+              {
+                "x": "Y2",
+                "fy": "FY2024",
+                "value": 25.0
+              },
+              {
+                "x": "Y3",
+                "fy": "FY2025",
+                "value": 23.4
+              }
+            ]
+          },
+          {
+            "key": "AVGO",
+            "points": [
+              {
+                "x": "Y1",
+                "fy": "FY2023",
+                "value": 14.7
+              },
+              {
+                "x": "Y2",
+                "fy": "FY2024",
+                "value": 18.1
+              },
+              {
+                "x": "Y3",
+                "fy": "FY2025",
+                "value": 17.2
+              }
+            ]
+          }
+        ]
+      },
+      "calculations": [
+        {
+          "label": "NVDA R&D intensity, FY2026",
+          "method": "R&D expense / total revenue",
+          "inputs": "18,497,000,000 / 215,938,000,000",
+          "result": "8.57%"
+        },
+        {
+          "label": "AMD R&D intensity, FY2025",
+          "method": "R&D expense / total revenue",
+          "inputs": "8,091,000,000 / 34,639,000,000",
+          "result": "23.36%"
+        },
+        {
+          "label": "AVGO R&D intensity, FY2025",
+          "method": "R&D expense / total revenue",
+          "inputs": "10,977,000,000 / 63,887,000,000",
+          "result": "17.18%"
+        }
+      ],
+      "checks": [
+        {
+          "status": "caveat",
+          "label": "Fiscal years don’t line up",
+          "detail": "NVIDIA’s FY2026 ended January 25, 2026; AMD’s FY2025 ended December 27, 2025; Broadcom’s FY2025 ended November 2, 2025. Each column compares a company with itself, not identical calendar periods."
+        },
+        {
+          "status": "caveat",
+          "label": "Acquisition changes the base",
+          "detail": "On November 22, 2023, we acquired VMware, Inc. (“VMware”) in a cash-and-stock transaction (the “VMware Merger”)."
+        },
+        {
+          "status": "verified",
+          "label": "What drove NVIDIA’s R&D",
+          "detail": "The increases in research and development expenses for fiscal year 2026 were driven by a 29% increase in compensation and benefits expense, including stock-based compensation, reflecting employee growth and compensation increases and a 79% increase in compute and infrastructure."
+        },
+        {
+          "status": "verified",
+          "label": "Rising ratios",
+          "detail": "AVGO only."
+        }
+      ],
+      "quotes": [
+        {
+          "text": "On November 22, 2023, we acquired VMware, Inc. (“VMware”) in a cash-and-stock transaction (the “VMware Merger”).",
+          "source": "Broadcom Inc. 10-K · period ended 2025-11-02"
+        }
+      ],
+      "trace": [
+        {
+          "id": "01-nvda-income",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0001045810-26-000021 statement=income --output json",
+          "purpose": "NVIDIA revenue and R&D. Its fiscal year ends in late January.",
+          "result": "Revenue and R&D for FY2024–FY2026 (periods end in January).",
+          "retrieved_at": "2026-10-01T03:05:09+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/chip-rnd/01-nvda-income.json"
+        },
+        {
+          "id": "02-amd-income",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000002488-26-000018 statement=income --output json",
+          "purpose": "AMD revenue and R&D. Its fiscal year ends in late December.",
+          "result": "Net revenue and R&D for FY2023–FY2025 (periods end in December).",
+          "retrieved_at": "2026-10-01T03:05:09+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/chip-rnd/02-amd-income.json"
+        },
+        {
+          "id": "03-avgo-income",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0001730168-25-000121 statement=income --output json",
+          "purpose": "Broadcom revenue and R&D. Its fiscal year ends in early November.",
+          "result": "Total net revenue and R&D for FY2023–FY2025 (periods end in Oct/Nov).",
+          "retrieved_at": "2026-10-01T03:05:10+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/chip-rnd/03-avgo-income.json"
+        },
+        {
+          "id": "04-avgo-mda",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001730168-25-000121 section=mda max_chars=60000 --output json",
+          "purpose": "Broadcom's R&D jumped in FY2024. Check for an acquisition before comparing.",
+          "result": "VMware acquisition closed November 22, 2023: explains the FY2024 step-up.",
+          "retrieved_at": "2026-10-01T03:05:15+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/chip-rnd/04-avgo-mda.json"
+        },
+        {
+          "id": "05-nvda-mda",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001045810-26-000021 section=mda max_chars=60000 --output json",
+          "purpose": "NVIDIA's ratio fell while R&D dollars rose. Read what drove the expense.",
+          "result": "R&D growth driven by compensation and compute/infrastructure spend.",
+          "retrieved_at": "2026-10-01T03:05:16+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/chip-rnd/05-nvda-mda.json"
+        },
+        {
+          "id": "06-calculate",
+          "tool": "formula.margin",
+          "command": "finance formula.margin numerator=18497 denominator=215938",
+          "purpose": "Compute R&D / revenue for nine company-years with inputs.",
+          "result": "NVIDIA FY2026: 8.57%."
+        }
+      ],
+      "sources": [
+        {
+          "label": "NVIDIA CORP 10-K · period ended 2026-01-25",
+          "company": "NVIDIA CORP",
+          "form": "10-K",
+          "filing_date": "2026-02-25",
+          "period": "2026-01-25",
+          "accession": "0001045810-26-000021",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+        },
+        {
+          "label": "ADVANCED MICRO DEVICES INC 10-K · period ended 2025-12-27",
+          "company": "ADVANCED MICRO DEVICES INC",
+          "form": "10-K",
+          "filing_date": "2026-02-04",
+          "period": "2025-12-27",
+          "accession": "0000002488-26-000018",
+          "url": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm"
+        },
+        {
+          "label": "Broadcom Inc. 10-K · period ended 2025-11-02",
+          "company": "Broadcom Inc.",
+          "form": "10-K",
+          "filing_date": "2025-12-18",
+          "period": "2025-11-02",
+          "accession": "0001730168-25-000121",
+          "url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm"
+        }
+      ],
+      "prompt": "Use Finance CLI to compare R&D intensity (R&D / revenue) for NVDA, AMD and AVGO over each company's last three fiscal years. Keep each fiscal-year end date, check for acquisitions or one-offs that change the comparison, and cite the 10-K accession for every figure."
+    },
+    {
+      "slug": "meta-efficiency",
+      "title": "Meta after the Year of Efficiency",
+      "kicker": "Open-ended investigation",
+      "question": "Did Meta actually become more efficient after the Year of Efficiency?",
+      "headline": "Operating margin went from 24.8% to 42.2% in two years. Excluding restructuring charges, the improvement still holds.",
+      "answer": [
+        "Yes, by the filings’ own numbers. In 2023 total costs and expenses rose 0.6% while revenue grew 15.7%. Operating margin moved from 24.8% (2022) to 34.7% (2023) and 42.2% (2024).",
+        "Restructuring charges flatter the jump, but don’t explain it. Adding back $4.61B in 2022 and $3.45B in 2023, the margin still rises from 28.8% to 37.2%.",
+        "Revenue per year-end employee rose from $1.35M to $2.55M. The 2022 headcount still counted most of the roughly 11,000 employees laid off that November, which inflates the before-and-after contrast.",
+        "2025 points the other way: costs grew 23.7% against 22.2% revenue growth and the margin slipped to 41.4%, as AI infrastructure and hiring resumed."
+      ],
+      "metrics": [
+        {
+          "label": "Operating margin, 2022 → 2024",
+          "value": "24.8% → 42.2%",
+          "delta": "2025: 41.4%"
+        },
+        {
+          "label": "Costs vs revenue growth, 2023",
+          "value": "0.6% vs 15.7%",
+          "delta": "costs held flat"
+        },
+        {
+          "label": "Headcount, year-end",
+          "value": "86,482 → 67,317",
+          "delta": "2025: 78,865"
+        }
+      ],
+      "table": {
+        "caption": "Meta consolidated results. Calendar fiscal years. Restructuring charges are taken from MD&A; 2024–2025 amounts were not separately quantified in the sections read.",
+        "columns": [
+          {
+            "key": "year",
+            "label": "Year"
+          },
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "align": "end"
+          },
+          {
+            "key": "costs",
+            "label": "Costs & expenses",
+            "align": "end"
+          },
+          {
+            "key": "margin",
+            "label": "Operating margin",
+            "align": "end"
+          },
+          {
+            "key": "margin_ex",
+            "label": "Ex-restructuring",
+            "align": "end"
+          },
+          {
+            "key": "headcount",
+            "label": "Headcount",
+            "align": "end"
+          }
+        ],
+        "rows": [
+          {
+            "year": "2022",
+            "revenue": "$116.6B",
+            "costs": "$87.7B",
+            "margin": "24.8%",
+            "margin_ex": "28.8%",
+            "headcount": "86,482",
+            "url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000017/meta-20241231.htm"
+          },
+          {
+            "year": "2023",
+            "revenue": "$134.9B",
+            "costs": "$88.2B",
+            "margin": "34.7%",
+            "margin_ex": "37.2%",
+            "headcount": "67,317",
+            "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+          },
+          {
+            "year": "2024",
+            "revenue": "$164.5B",
+            "costs": "$95.1B",
+            "margin": "42.2%",
+            "margin_ex": "n/q",
+            "headcount": "74,067",
+            "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+          },
+          {
+            "year": "2025",
+            "revenue": "$201.0B",
+            "costs": "$117.7B",
+            "margin": "41.4%",
+            "margin_ex": "n/q",
+            "headcount": "78,865",
+            "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+          }
+        ]
+      },
+      "chart": {
+        "kind": "lines",
+        "label": "Operating margin",
+        "series": [
+          {
+            "key": "Reported",
+            "points": [
+              {
+                "x": "2022",
+                "value": 24.8
+              },
+              {
+                "x": "2023",
+                "value": 34.7
+              },
+              {
+                "x": "2024",
+                "value": 42.2
+              },
+              {
+                "x": "2025",
+                "value": 41.4
+              }
+            ]
+          },
+          {
+            "key": "Ex-restructuring",
+            "points": [
+              {
+                "x": "2022",
+                "value": 28.8
+              },
+              {
+                "x": "2023",
+                "value": 37.2
+              }
+            ]
+          }
+        ],
+        "headcount": [
+          {
+            "x": "2022",
+            "value": 86482
+          },
+          {
+            "x": "2023",
+            "value": 67317
+          },
+          {
+            "x": "2024",
+            "value": 74067
+          },
+          {
+            "x": "2025",
+            "value": 78865
+          }
+        ]
+      },
+      "calculations": [
+        {
+          "label": "Operating margin, 2023",
+          "method": "Income from operations / revenue",
+          "inputs": "46,751,000,000 / 134,902,000,000",
+          "result": "34.66%"
+        },
+        {
+          "label": "Margin ex-restructuring, 2023",
+          "method": "(Income from operations + restructuring) / revenue",
+          "inputs": "(46,751,000,000 + 3,452,000,000) / 134,902,000,000",
+          "result": "37.21%"
+        },
+        {
+          "label": "Revenue per year-end employee, 2025",
+          "method": "Revenue / year-end headcount",
+          "inputs": "200,966,000,000 / 78,865",
+          "result": "$2.55M"
+        }
+      ],
+      "checks": [
+        {
+          "status": "caveat",
+          "label": "2022 headcount includes announced layoffs",
+          "detail": "Our reported headcount includes a substantial majority of the approximately 11,000 employees impacted by the layoff we announced in November 2022, who will no longer be reflected in our headcount by the end of the first quarter of 2023."
+        },
+        {
+          "status": "missing",
+          "label": "Restructuring after 2023 not quantified",
+          "detail": "The 2024 and 2025 MD&A sections mention lower restructuring costs without a total, so those years are shown as reported only."
+        },
+        {
+          "status": "caveat",
+          "label": "Filing list was incomplete",
+          "detail": "filings.recent listed only the 2 most recent 10-Ks for Meta, because it reads SEC’s recent-submissions window and Meta files thousands of insider forms. The agent passed the FY2022 and FY2023 accession numbers directly; the CLI confirmed each one’s company, form and period."
+        },
+        {
+          "status": "verified",
+          "label": "Management’s framing",
+          "detail": "We remain focused on operating efficiently while investing in significant opportunities."
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Our reported headcount includes a substantial majority of the approximately 11,000 employees impacted by the layoff we announced in November 2022, who will no longer be reflected in our headcount by the end of the first quarter of 2023.",
+          "source": "Meta Platforms, Inc. 10-K · period ended 2022-12-31"
+        }
+      ],
+      "trace": [
+        {
+          "id": "01-annual-filings",
+          "tool": "filings.recent",
+          "command": "finance filings.recent META forms=10-K limit=6 --output json",
+          "purpose": "Find the annual reports covering 2022 through 2025.",
+          "result": "Only 2 annual reports listed (FY2024, FY2025). Older ones are outside SEC’s recent window.",
+          "retrieved_at": "2026-10-01T03:05:26+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/01-annual-filings.json",
+          "note": "Gap found: the agent supplied the FY2022 and FY2023 accession numbers directly."
+        },
+        {
+          "id": "02-income-fy25",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0001628280-26-003942 statement=income --output json",
+          "purpose": "Revenue, costs and operating income for 2023–2025.",
+          "result": "Revenue, total costs and operating income for 2023–2025.",
+          "retrieved_at": "2026-10-01T03:05:26+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/02-income-fy25.json"
+        },
+        {
+          "id": "03-income-fy24",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0001326801-25-000017 statement=income --output json",
+          "purpose": "The 2022 baseline, before the efficiency push.",
+          "result": "The 2022 baseline.",
+          "retrieved_at": "2026-10-01T03:05:27+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/03-income-fy24.json"
+        },
+        {
+          "id": "04-mda-fy22",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001326801-23-000013 section=mda max_chars=90000 --output json",
+          "purpose": "Headcount and restructuring charges at the end of 2022.",
+          "result": "Headcount 86,482, restructuring $4.61B, layoffs still counted.",
+          "retrieved_at": "2026-10-01T03:05:27+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/04-mda-fy22.json"
+        },
+        {
+          "id": "05-mda-fy23",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001326801-24-000012 section=mda max_chars=90000 --output json",
+          "purpose": "Headcount and restructuring charges for 2023.",
+          "result": "Headcount 67,317 (−22%), restructuring $3.452B.",
+          "retrieved_at": "2026-10-01T03:05:33+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/05-mda-fy23.json"
+        },
+        {
+          "id": "06-mda-fy24",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001326801-25-000017 section=mda max_chars=90000 --output json",
+          "purpose": "Headcount at the end of 2024.",
+          "result": "Headcount 74,067.",
+          "retrieved_at": "2026-10-01T03:05:34+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/06-mda-fy24.json"
+        },
+        {
+          "id": "07-mda-fy25",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0001628280-26-003942 section=mda max_chars=90000 --output json",
+          "purpose": "Headcount at the end of 2025 and what drove cost growth.",
+          "result": "Headcount 78,865; R&D up on AI compensation and infrastructure.",
+          "retrieved_at": "2026-10-01T03:05:37+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/meta-efficiency/07-mda-fy25.json"
+        },
+        {
+          "id": "08-calculate",
+          "tool": "formula.margin",
+          "command": "finance formula.margin numerator=46751M denominator=134902M",
+          "purpose": "Margins, ex-restructuring margins and revenue per head, with inputs.",
+          "result": "2023 operating margin 34.66%; ex-restructuring 37.21%."
+        }
+      ],
+      "sources": [
+        {
+          "label": "Meta Platforms, Inc. 10-K · period ended 2025-12-31",
+          "company": "Meta Platforms, Inc.",
+          "form": "10-K",
+          "filing_date": "2026-01-29",
+          "period": "2025-12-31",
+          "accession": "0001628280-26-003942",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm"
+        },
+        {
+          "label": "Meta Platforms, Inc. 10-K · period ended 2024-12-31",
+          "company": "Meta Platforms, Inc.",
+          "form": "10-K",
+          "filing_date": "2025-01-30",
+          "period": "2024-12-31",
+          "accession": "0001326801-25-000017",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000017/meta-20241231.htm"
+        },
+        {
+          "label": "Meta Platforms, Inc. 10-K · period ended 2022-12-31",
+          "company": "Meta Platforms, Inc.",
+          "form": "10-K",
+          "filing_date": "2023-02-02",
+          "period": "2022-12-31",
+          "accession": "0001326801-23-000013",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680123000013/meta-20221231.htm"
+        },
+        {
+          "label": "Meta Platforms, Inc. 10-K · period ended 2023-12-31",
+          "company": "Meta Platforms, Inc.",
+          "form": "10-K",
+          "filing_date": "2024-02-02",
+          "period": "2023-12-31",
+          "accession": "0001326801-24-000012",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680124000012/meta-20231231.htm"
+        }
+      ],
+      "prompt": "Use Finance CLI to test whether Meta became more efficient after its 2023 Year of Efficiency. Choose your own tools. Use 10-K statements and MD&A, separate restructuring charges, compare operating margin and headcount from 2022 to the latest year, and cite every source. Flag anything that makes the comparison unfair."
+    },
+    {
+      "slug": "costco-thesis",
+      "title": "Testing a thesis on Costco",
+      "kicker": "Thesis → evidence",
+      "question": "I think Costco’s membership model makes its earnings more resilient. Test this thesis.",
+      "headline": "Partly supported: fees equal 51% of operating income and renewals stay near 90%, but six years of rising profit can’t test resilience.",
+      "answer": [
+        "The ingredients of the thesis hold up. Membership fees grew every year, compounding 8.5% a year from FY2020 to FY2025, and equalled 51.3% of operating income in FY2025. Renewal rates were 92.3% in the U.S. and Canada and 89.8% worldwide.",
+        "Two qualifications. FY2025 fee growth was partly a price increase, not just new members. And management reports that online sign-ups renew at a lower rate.",
+        "The conclusion itself is not yet tested. Operating income rose in every year of the window, so these filings cannot show how earnings behave when the business is under pressure. Costco also does not disclose the cost of serving members, so fees cannot be read as pure profit."
+      ],
+      "metrics": [
+        {
+          "label": "Membership fees / operating income, FY2025",
+          "value": "51.3%",
+          "delta": "FY2020: 65.2%"
+        },
+        {
+          "label": "Membership fee CAGR, FY2020–FY2025",
+          "value": "8.5%",
+          "delta": "grew every year"
+        },
+        {
+          "label": "Renewal rate, U.S. & Canada",
+          "value": "92.3%",
+          "delta": "89.8% worldwide"
+        }
+      ],
+      "claims": [
+        {
+          "claim": "Membership fees are recurring and growing",
+          "status": "supported",
+          "evidence": "Fees rose every year from $3.54B (FY2020) to $5.32B (FY2025); annual growth ranged 5.4%–10.3%.",
+          "source": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2022-08-28; COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31",
+          "kind": "reported"
+        },
+        {
+          "claim": "Fees are a large share of operating profit",
+          "status": "supported",
+          "evidence": "Membership fees equalled 51.3%–65.2% of operating income each year.",
+          "source": "Calculated from the income statements",
+          "kind": "calculated"
+        },
+        {
+          "claim": "Members keep renewing",
+          "status": "supported",
+          "evidence": "At the end of 2025, our member renewal rates were 92.3% in the U.S. and Canada and 89.8% worldwide.",
+          "source": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31",
+          "kind": "quoted"
+        },
+        {
+          "claim": "Growth reflects loyalty, not just pricing",
+          "status": "mixed",
+          "evidence": "Membership fee revenue increased 10% in 2025, driven by new member sign-ups and membership fee increases.",
+          "source": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31",
+          "kind": "quoted"
+        },
+        {
+          "claim": "Renewal quality is stable",
+          "status": "caveat",
+          "evidence": "Renewal rates were negatively impacted by a higher number of memberships sold online…",
+          "source": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31",
+          "kind": "quoted"
+        },
+        {
+          "claim": "Earnings held up in a downturn",
+          "status": "untested",
+          "evidence": "Operating income grew every year FY2020–FY2025 (4.1% to 23.4%). The window has no year of falling profit to test resilience against.",
+          "source": "Calculated from the income statements",
+          "kind": "calculated"
+        }
+      ],
+      "table": {
+        "caption": "Costco membership fees and operating income. Fiscal years end on the Sunday nearest August 31 (FY2023 was a 53-week year). Labels differ between filings (“Operating Income” vs “Operating income”); the XBRL concept is the same.",
+        "columns": [
+          {
+            "key": "fy",
+            "label": "Fiscal year"
+          },
+          {
+            "key": "fees",
+            "label": "Membership fees",
+            "align": "end"
+          },
+          {
+            "key": "operating",
+            "label": "Operating income",
+            "align": "end"
+          },
+          {
+            "key": "share",
+            "label": "Fees / op. income",
+            "align": "end"
+          },
+          {
+            "key": "source",
+            "label": "Source"
+          }
+        ],
+        "rows": [
+          {
+            "fy": "FY2020",
+            "period_end": "2020-08-30",
+            "fees": "$3.54B",
+            "operating": "$5.43B",
+            "share": "65.2%",
+            "source": "10-K · 0000909832-22-000021",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/cost-20220828.htm"
+          },
+          {
+            "fy": "FY2021",
+            "period_end": "2021-08-29",
+            "fees": "$3.88B",
+            "operating": "$6.71B",
+            "share": "57.8%",
+            "source": "10-K · 0000909832-22-000021",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/cost-20220828.htm"
+          },
+          {
+            "fy": "FY2022",
+            "period_end": "2022-08-28",
+            "fees": "$4.22B",
+            "operating": "$7.79B",
+            "share": "54.2%",
+            "source": "10-K · 0000909832-22-000021",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/cost-20220828.htm"
+          },
+          {
+            "fy": "FY2023",
+            "period_end": "2023-09-03",
+            "fees": "$4.58B",
+            "operating": "$8.11B",
+            "share": "56.4%",
+            "source": "10-K · 0000909832-25-000101",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+          },
+          {
+            "fy": "FY2024",
+            "period_end": "2024-09-01",
+            "fees": "$4.83B",
+            "operating": "$9.29B",
+            "share": "52.0%",
+            "source": "10-K · 0000909832-25-000101",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+          },
+          {
+            "fy": "FY2025",
+            "period_end": "2025-08-31",
+            "fees": "$5.32B",
+            "operating": "$10.38B",
+            "share": "51.3%",
+            "source": "10-K · 0000909832-25-000101",
+            "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+          }
+        ]
+      },
+      "chart": {
+        "kind": "bars",
+        "label": "Membership fees as % of operating income",
+        "points": [
+          {
+            "x": "FY20",
+            "value": 65.2
+          },
+          {
+            "x": "FY21",
+            "value": 57.8
+          },
+          {
+            "x": "FY22",
+            "value": 54.2
+          },
+          {
+            "x": "FY23",
+            "value": 56.4
+          },
+          {
+            "x": "FY24",
+            "value": 52.0
+          },
+          {
+            "x": "FY25",
+            "value": 51.3
+          }
+        ]
+      },
+      "calculations": [
+        {
+          "label": "Fees / operating income, FY2025",
+          "method": "Membership fees / operating income",
+          "inputs": "5,323,000,000 / 10,383,000,000",
+          "result": "51.27%"
+        },
+        {
+          "label": "Membership fee CAGR",
+          "method": "(end / start) ** (1 / periods) − 1",
+          "inputs": "3,541,000,000 → 5,323,000,000, 5 periods",
+          "result": "8.49%"
+        }
+      ],
+      "checks": [
+        {
+          "status": "missing",
+          "label": "Cost of serving members not disclosed",
+          "detail": "Fees are revenue, not profit. The filing does not allocate costs to the membership program, so a membership margin cannot be calculated."
+        },
+        {
+          "status": "caveat",
+          "label": "No downturn in the window",
+          "detail": "Operating income rose every year from FY2020 to FY2025."
+        },
+        {
+          "status": "verified",
+          "label": "Management’s stated design",
+          "detail": "This format is designed to reinforce member loyalty and provide continuing fee revenue."
+        }
+      ],
+      "quotes": [
+        {
+          "text": "At the end of 2025, our member renewal rates were 92.3% in the U.S. and Canada and 89.8% worldwide.",
+          "source": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31"
+        }
+      ],
+      "trace": [
+        {
+          "id": "01-income-fy25",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000909832-25-000101 statement=income --output json",
+          "purpose": "Membership fees and operating income for FY2023–FY2025.",
+          "result": "Membership fees and operating income for FY2023–FY2025.",
+          "retrieved_at": "2026-10-01T03:05:40+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/costco-thesis/01-income-fy25.json"
+        },
+        {
+          "id": "02-income-fy22",
+          "tool": "filings.statement",
+          "command": "finance filings.statement accession=0000909832-22-000021 statement=income --output json",
+          "purpose": "The same rows for FY2020–FY2022, including the pandemic year.",
+          "result": "FY2020–FY2022 rows. Same XBRL concept, different capitalization in the label.",
+          "retrieved_at": "2026-10-01T03:05:45+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/costco-thesis/02-income-fy22.json"
+        },
+        {
+          "id": "03-mda-fy25",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0000909832-25-000101 section=mda max_chars=60000 --output json",
+          "purpose": "Renewal rates and what management says drove membership fee growth.",
+          "result": "Renewal rates, fee growth drivers and the online sign-up caveat.",
+          "retrieved_at": "2026-10-01T03:05:47+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/costco-thesis/03-mda-fy25.json"
+        },
+        {
+          "id": "04-calculate",
+          "tool": "formula.margin",
+          "command": "finance formula.margin numerator=5323M denominator=10383M",
+          "purpose": "Fee share of operating income and fee CAGR, with inputs.",
+          "result": "FY2025: 51.27%; CAGR 8.49%."
+        }
+      ],
+      "sources": [
+        {
+          "label": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2025-08-31",
+          "company": "COSTCO WHOLESALE CORP /NEW",
+          "form": "10-K",
+          "filing_date": "2025-10-08",
+          "period": "2025-08-31",
+          "accession": "0000909832-25-000101",
+          "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm"
+        },
+        {
+          "label": "COSTCO WHOLESALE CORP /NEW 10-K · period ended 2022-08-28",
+          "company": "COSTCO WHOLESALE CORP /NEW",
+          "form": "10-K",
+          "filing_date": "2022-10-05",
+          "period": "2022-08-28",
+          "accession": "0000909832-22-000021",
+          "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983222000021/cost-20220828.htm"
+        }
+      ],
+      "prompt": "Use Finance CLI to test this thesis: Costco's membership model makes its earnings more resilient. Break it into claims, find filing evidence for each, calculate what you need, cite every source, and mark each claim supported, mixed, or untested."
+    },
+    {
+      "slug": "data-gap",
+      "title": "When the filing doesn’t say",
+      "kicker": "Missing data, reported honestly",
+      "question": "How much revenue does Apple’s App Store generate each year?",
+      "headline": "The 10-K doesn’t disclose it. The right answer says so.",
+      "answer": [
+        "Apple’s 10-K does not disclose App Store revenue. Services is reported as one line ($109,158 million in FY2025), with no amount for the App Store or any other service.",
+        "Management names the App Store as one driver of Services growth, alongside advertising and cloud services, without sizing it. Reportable segments are geographic, so they don’t help either.",
+        "Any App Store figure would have to come from a third-party estimate. That would be a different kind of evidence, and it should be labelled as such rather than presented as a reported number."
+      ],
+      "gap": {
+        "available": "FY2025 Services net sales: $109,158 million (reported)",
+        "missing": "App Store revenue, for any year",
+        "reason": "Apple reports Services as a single revenue category and names its drivers without amounts.",
+        "policy": "Finance CLI returns what the filing contains. It does not interpolate, estimate or substitute a missing value."
+      },
+      "metrics": [
+        {
+          "label": "Places checked",
+          "value": "4",
+          "delta": "revenue note, report index, segments, MD&A"
+        },
+        {
+          "label": "App Store amounts found",
+          "value": "0",
+          "delta": "named once, never sized"
+        },
+        {
+          "label": "Services, FY2025",
+          "value": "$109,158M",
+          "delta": "the closest reported figure"
+        }
+      ],
+      "checks": [
+        {
+          "status": "missing",
+          "label": "Revenue note",
+          "detail": "Disaggregation lists iPhone, Mac, iPad, Wearables, Home and Accessories, and Services ($109,158M). No App Store line."
+        },
+        {
+          "status": "missing",
+          "label": "XBRL report index",
+          "detail": "A search of every report title in the filing for “App Store” returned 0 reports."
+        },
+        {
+          "status": "missing",
+          "label": "Reportable segments",
+          "detail": "Segments are geographic: Americas, Europe, Greater China, Japan, Rest of Asia Pacific."
+        },
+        {
+          "status": "caveat",
+          "label": "MD&A names, doesn’t size",
+          "detail": "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services."
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services.",
+          "source": "Apple Inc. 10-K · period ended 2025-09-27"
+        }
+      ],
+      "trace": [
+        {
+          "id": "01-revenue-mix",
+          "tool": "filings.report",
+          "command": "finance filings.report accession=0000320193-25-000079 name=\"Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details)\" --output json",
+          "purpose": "Look for an App Store line in the revenue disaggregation note.",
+          "result": "Five categories. Services $109,158M as a single line.",
+          "retrieved_at": "2026-10-01T03:05:47+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/data-gap/01-revenue-mix.json"
+        },
+        {
+          "id": "02-report-search",
+          "tool": "filings.reports",
+          "command": "finance filings.reports accession=0000320193-25-000079 query=\"App Store\" --output json",
+          "purpose": "Search every XBRL report title in the filing for App Store.",
+          "result": "0 matching reports.",
+          "retrieved_at": "2026-10-01T03:05:51+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/data-gap/02-report-search.json"
+        },
+        {
+          "id": "03-segments",
+          "tool": "filings.report",
+          "command": "finance filings.report accession=0000320193-25-000079 name=\"Segment Information and Geographic Data - Information by Reportable Segment (Details)\" --output json",
+          "purpose": "Check whether reportable segments split out the App Store.",
+          "result": "Segments: Americas, Europe, Greater China, Japan, Rest of Asia Pacific.",
+          "retrieved_at": "2026-10-01T03:05:55+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/data-gap/03-segments.json"
+        },
+        {
+          "id": "04-mda",
+          "tool": "filings.read",
+          "command": "finance filings.read accession=0000320193-25-000079 section=mda max_chars=60000 --output json",
+          "purpose": "Check how management's discussion describes the App Store.",
+          "result": "App Store named as a growth driver. No amount.",
+          "retrieved_at": "2026-10-01T03:05:58+00:00",
+          "evidence": "https://github.com/TempestShaw/FinanceCLI/blob/main/showcase/evidence/data-gap/04-mda.json"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Apple Inc. 10-K · period ended 2025-09-27",
+          "company": "Apple Inc.",
+          "form": "10-K",
+          "filing_date": "2025-10-31",
+          "period": "2025-09-27",
+          "accession": "0000320193-25-000079",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm"
+        }
+      ],
+      "prompt": "Use Finance CLI to find how much revenue Apple's App Store generates. Search the 10-K's revenue note, report index, segments and MD&A. If the filing does not disclose it, say so, show where you looked, and do not substitute an estimate."
+    }
+  ]
+}

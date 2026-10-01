@@ -1,0 +1,393 @@
+{
+ "case": "data-gap",
+ "step": "01-revenue-mix",
+ "command": "finance filings.report accession=0000320193-25-000079 name=\"Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details)\" --output json",
+ "purpose": "Look for an App Store line in the revenue disaggregation note.",
+ "retrieved_at": "2026-10-01T03:05:47+00:00",
+ "exit_code": 0,
+ "output": {
+  "ok": true,
+  "data": {
+   "filing": {
+    "company": "Apple Inc.",
+    "cik": "320193",
+    "form": "10-K",
+    "filing_date": "2025-10-31",
+    "period_of_report": "2025-09-27",
+    "accession_no": "0000320193-25-000079",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+    "homepage_url": "https://www.sec.gov/Archives/edgar/data/320193/0000320193-25-000079-index.html",
+    "text_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079.txt"
+   },
+   "report": {
+    "short_name": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details)",
+    "long_name": "9955524 - Disclosure - Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details)",
+    "category": "Details",
+    "file_name": "R38.htm"
+   },
+   "text": "Revenue - Disaggregated Net Sales \n and Portion of Net Sales That Was \n Previously Deferred (Details) - USD \n ($) \n $ in Millions \n Revenue - Disaggregated Net Sales \n and Portion of Net Sales That Was \n Previously Deferred (Details) - USD \n ($) \n $ in Millions 12 Months \n Disaggregation of Revenue [Line Ended Sep. 28, Sep. 30, \n Items] Sep. 27, 2025 2024 2023 \n ────────────────────────────────────────────────────────────────────────────── \n Net sales $ 416,161 $ 391,035 $ 383,285 \n Portion of total net sales that was \n included in deferred revenue as of 8,229 7,728 8,169 \n the beginning of the period \n iPhone \n Disaggregation of Revenue [Line \n Items] \n Net sales 209,586 201,183 200,583 \n Mac \n Disaggregation of Revenue [Line \n Items] \n Net sales 33,708 29,984 29,357 \n iPad \n Disaggregation of Revenue [Line \n Items] \n Net sales 28,023 26,694 28,300 \n Wearables, Home and Accessories \n Disaggregation of Revenue [Line \n Items] \n Net sales 35,686 37,005 39,845 \n Services \n Disaggregation of Revenue [Line \n Items] \n Net sales $ 109,158 $ 96,169 $ 85,200",
+   "rows": [
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Sep. 27, 2025",
+     "concept": null,
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "Sep. 28, 2024",
+       "number": 28
+      },
+      {
+       "column": "value_2",
+       "text": "Sep. 30, 2023",
+       "number": 30
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "$ 416,161",
+       "number": 416161
+      },
+      {
+       "column": "value_2",
+       "text": "$ 391,035",
+       "number": 391035
+      },
+      {
+       "column": "value_3",
+       "text": "$ 383,285",
+       "number": 383285
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [],
+     "label": "Portion of total net sales that was included in deferred revenue as of the beginning of the period",
+     "concept": "us-gaap_ContractWithCustomerLiabilityRevenueRecognized",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "8,229",
+       "number": 8229
+      },
+      {
+       "column": "value_2",
+       "text": "7,728",
+       "number": 7728
+      },
+      {
+       "column": "value_3",
+       "text": "8,169",
+       "number": 8169
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "iPhone"
+     ],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "iPhone"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "209,586",
+       "number": 209586
+      },
+      {
+       "column": "value_2",
+       "text": "201,183",
+       "number": 201183
+      },
+      {
+       "column": "value_3",
+       "text": "200,583",
+       "number": 200583
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Mac"
+     ],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Mac"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "33,708",
+       "number": 33708
+      },
+      {
+       "column": "value_2",
+       "text": "29,984",
+       "number": 29984
+      },
+      {
+       "column": "value_3",
+       "text": "29,357",
+       "number": 29357
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "iPad"
+     ],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "iPad"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "28,023",
+       "number": 28023
+      },
+      {
+       "column": "value_2",
+       "text": "26,694",
+       "number": 26694
+      },
+      {
+       "column": "value_3",
+       "text": "28,300",
+       "number": 28300
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Wearables, Home and Accessories"
+     ],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Wearables, Home and Accessories"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "35,686",
+       "number": 35686
+      },
+      {
+       "column": "value_2",
+       "text": "37,005",
+       "number": 37005
+      },
+      {
+       "column": "value_3",
+       "text": "39,845",
+       "number": 39845
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Services"
+     ],
+     "label": "Disaggregation of Revenue [Line Items]",
+     "concept": "us-gaap_DisaggregationOfRevenueLineItems",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_2",
+       "text": "",
+       "number": null
+      },
+      {
+       "column": "value_3",
+       "text": "",
+       "number": null
+      }
+     ]
+    },
+    {
+     "table": "Revenue - Disaggregated Net Sales and Portion of Net Sales That Was Previously Deferred (Details) - USD ($) $ in Millions",
+     "context": [
+      "Services"
+     ],
+     "label": "Net sales",
+     "concept": "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax",
+     "abstract": false,
+     "values": [
+      {
+       "column": "12 Months Ended",
+       "text": "$ 109,158",
+       "number": 109158
+      },
+      {
+       "column": "value_2",
+       "text": "$ 96,169",
+       "number": 96169
+      },
+      {
+       "column": "value_3",
+       "text": "$ 85,200",
+       "number": 85200
+      }
+     ]
+    }
+   ],
+   "row_count": 14,
+   "row_query": null,
+   "rows_truncated": false,
+   "char_count": 1065,
+   "returned_chars": 1065,
+   "truncated": false,
+   "source": "edgartools"
+  },
+  "error": null,
+  "warnings": []
+ }
+}
