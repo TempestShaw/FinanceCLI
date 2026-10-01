@@ -19,6 +19,7 @@ from finance_cli.providers.sec_edgar import exhibits as _exhibits
 from finance_cli.providers.sec_edgar import reports as _reports
 from finance_cli.providers.sec_edgar import sections as _sections
 from finance_cli.providers.sec_edgar import statements as _statements
+from finance_cli.providers.sec_edgar import submissions as _submissions
 
 class SecEdgarProvider:
     """Direct SEC JSON API client for filings and event classification."""
@@ -40,19 +41,21 @@ class SecEdgarProvider:
         forms: list[str] | None = None,
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Fetch recent filings for a ticker from SEC company submissions JSON."""
+        """Fetch the newest filings for a ticker from SEC company submissions JSON.
+
+        Reads older submission pages when the recent window holds fewer than
+        ``limit`` matching filings.
+        """
         symbol = symbol.strip().upper()
         if not symbol:
             raise ProviderError("symbol is required")
         company = self.get_company(symbol)
         cik = f"{int(company['cik_str']):010d}"
         payload = self._get_json(self.SUBMISSIONS_URL.format(cik=cik))
-        recent = payload.get("filings", {}).get("recent", {})
-        rows = _events._zip_recent_filings(recent)
         wanted = {form.upper() for form in forms} if forms else set(_events.SUPPORTED_FORMS)
-        filtered = [row for row in rows if str(row.get("form", "")).upper() in wanted]
+        rows = _submissions.matching_filing_rows(payload, wanted_forms=wanted, limit=limit, fetch_json=self._get_json)
         result = []
-        for row in filtered[:limit]:
+        for row in rows:
             accession = str(row.get("accessionNumber") or "")
             primary_doc = str(row.get("primaryDocument") or "")
             accession_path = accession.replace("-", "")

@@ -2,6 +2,10 @@
 
 All notable changes to Finance CLI will be documented here.
 
+## Unreleased
+
+- `filings.recent` now finds older filings for companies with many SEC submissions. It reads SEC's paginated submission files when the recent window has fewer matches than `limit`; previously `filings.recent META forms=10-K limit=6` returned only two 10-Ks.
+
 ## 0.1.0b2 - Beta
 
 - Constrained the optional backtesting stack to Plotly below 7, whose removed `scattermapbox` template field prevents VectorBT from initializing. Base research installations are unaffected.
