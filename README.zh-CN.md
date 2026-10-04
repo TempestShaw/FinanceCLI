@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/financecli_logo.svg" alt="Finance CLI logo" width="200">
+  <img src="https://raw.githubusercontent.com/TempestShaw/FinanceCLI/main/docs/assets/financecli_logo.svg" alt="Finance CLI logo" width="200">
 </p>
 
 <h1 align="center">Finance CLI</h1>
@@ -28,9 +28,9 @@ Finance CLI 为你的 agent 提供 SEC 文件检索、财务报表查询、文�
 
 ## 实际效果
 
-[![一次录制的 agent 研究过程：苹果 FY2020–FY2025 服务收入占净销售额和毛利的比例](docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
+[![一次录制的 agent 研究过程：苹果 FY2020–FY2025 服务收入占净销售额和毛利的比例](https://raw.githubusercontent.com/TempestShaw/FinanceCLI/main/docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
 
-[研究演示](https://tempestshaw.github.io/FinanceCLI/showcase/)收录了五次完整录制的研究过程，每次都配有短视频：苹果向服务业务的转变、英伟达、AMD 和博通的研发强度、Meta“效率之年”之后的变化、对 Costco 投资论点的检验，以及一个财报无法回答的问题。每一次工具调用、原始 CLI 输出和计算过程都公开在 [`showcase/`](showcase/) 中，并有测试确保每个数字仍与这些证据一致。
+[研究演示](https://tempestshaw.github.io/FinanceCLI/showcase/)收录了五次完整录制的研究过程，每次都配有短视频：苹果向服务业务的转变、英伟达、AMD 和博通的研发强度、Meta“效率之年”之后的变化、对 Costco 投资论点的检验，以及一个财报无法回答的问题。每一次工具调用、原始 CLI 输出和计算过程都公开在 [`showcase/`](https://github.com/TempestShaw/FinanceCLI/tree/main/showcase) 中，并有测试确保每个数字仍与这些证据一致。
 
 ## 从一个问题开始
 

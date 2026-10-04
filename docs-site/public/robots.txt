@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tempestshaw.github.io/FinanceCLI/sitemap-index.xml

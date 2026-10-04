@@ -61,6 +61,9 @@ jobs:
 
       - name: Build docs site
         working-directory: docs-site
+        env:
+          # Optional, cookie-free page views. Set the repository variable to enable.
+          PUBLIC_GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
         run: npm run build
 
       - name: Upload Pages artifact

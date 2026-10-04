@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts" / "showcase"
 DATASET = ROOT / "docs-site" / "src" / "data" / "showcase.json"
 
+# The source distribution ships tests but not the website or its evidence.
+pytestmark = pytest.mark.skipif(
+    not (ROOT / "showcase" / "evidence").is_dir() or not DATASET.exists(),
+    reason="showcase evidence is only present in a repository checkout",
+)
+
 
 def _load_module(name: str):
     sys.path[:0] = [str(SCRIPTS)]

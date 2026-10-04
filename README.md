@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/financecli_logo.svg" alt="Finance CLI logo" width="200">
+  <img src="https://raw.githubusercontent.com/TempestShaw/FinanceCLI/main/docs/assets/financecli_logo.svg" alt="Finance CLI logo" width="200">
 </p>
 
 <h1 align="center">Finance CLI</h1>
@@ -28,9 +28,9 @@ Finance CLI gives your agent tools to retrieve SEC filings, inspect financial st
 
 ## See it work
 
-[![A recorded agent session: Apple's Services share of net sales and gross margin, FY2020–FY2025](docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
+[![A recorded agent session: Apple's Services share of net sales and gross margin, FY2020–FY2025](https://raw.githubusercontent.com/TempestShaw/FinanceCLI/main/docs-site/public/videos/apple-services.jpg)](https://tempestshaw.github.io/FinanceCLI/showcase/apple-services/)
 
-The [Showcase](https://tempestshaw.github.io/FinanceCLI/showcase/) has five recorded research sessions, each with a short video: Apple's shift to Services, R&D intensity at NVIDIA, AMD and Broadcom, Meta after the Year of Efficiency, a Costco thesis test, and a question the filing cannot answer. Every tool call, raw CLI output and calculation is published in [`showcase/`](showcase/), and a test checks that each figure still matches that evidence.
+The [Showcase](https://tempestshaw.github.io/FinanceCLI/showcase/) has five recorded research sessions, each with a short video: Apple's shift to Services, R&D intensity at NVIDIA, AMD and Broadcom, Meta after the Year of Efficiency, a Costco thesis test, and a question the filing cannot answer. Every tool call, raw CLI output and calculation is published in [`showcase/`](https://github.com/TempestShaw/FinanceCLI/tree/main/showcase), and a test checks that each figure still matches that evidence.
 
 ## Start with a question
 

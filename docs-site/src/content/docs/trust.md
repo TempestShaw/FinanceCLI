@@ -10,6 +10,7 @@ Finance research needs traceable inputs. Finance CLI is built around a few pract
 - Scriptable results: commands return predictable JSON with `ok`, `data`, `error`, and `warnings` fields.
 - Local credentials: API keys are read from environment variables at runtime and are not written by the CLI.
 - No telemetry: the CLI does not track commands, symbols, queries, or usage.
+- Website analytics: this documentation site may count page views with [GoatCounter](https://www.goatcounter.com/), which sets no cookies and stores no personal data. It never sees what you run in the CLI.
 - Freshness: provider-backed commands reflect the source response at runtime; there is no general stale-cache layer.
 
 ## Citation Policy

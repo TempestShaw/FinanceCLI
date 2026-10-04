@@ -2,9 +2,12 @@
 
 All notable changes to Finance CLI will be documented here.
 
-## Unreleased
+## 0.1.0b3 - Beta
 
-- `filings.recent` now finds older filings for companies with many SEC submissions. It reads SEC's paginated submission files when the recent window has fewer matches than `limit`; previously `filings.recent META forms=10-K limit=6` returned only two 10-Ks.
+- Fixed `filings.recent` missing older filings for companies with many SEC submissions. It now reads SEC's paginated submission files when the recent window has fewer matches than `limit`; previously `filings.recent META forms=10-K limit=6` returned only two 10-Ks. If an older page cannot be read, the command reports an error instead of returning a shorter list.
+- Added a research showcase: five recorded agent sessions on SEC filings (Apple, NVIDIA/AMD/Broadcom, Meta, Costco, and a question the filing cannot answer), each with a video, the raw CLI output and every calculation.
+- Redesigned the website around verifiable research, with a three-step path to reproduce the Apple study on macOS, Linux or Windows.
+- README images now use absolute URLs so they render on PyPI.
 
 ## 0.1.0b2 - Beta
 
