@@ -2,6 +2,11 @@
 
 All notable changes to Finance CLI will be documented here.
 
+## 0.1.0b4 - Beta
+
+- Fixed standard SEC financial statements treating edgartools `standard_concept` metadata as a reporting period. Date columns and financial values are preserved.
+- Included the thread-local provider-output suppression fix, so quiet provider calls no longer suppress output from unrelated threads.
+
 ## 0.1.0b3 - Beta
 
 - Fixed `filings.recent` missing older filings for companies with many SEC submissions. It now reads SEC's paginated submission files when the recent window has fewer matches than `limit`; previously `filings.recent META forms=10-K limit=6` returned only two 10-Ks. If an older page cannot be read, the command reports an error instead of returning a shorter list.
