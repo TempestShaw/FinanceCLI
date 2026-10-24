@@ -84,7 +84,7 @@ def _shape_standard_statement_rows(
     return rows, periods
 
 
-_STANDARD_METADATA_COLUMNS = {"concept", "label", "level", "abstract", "dimension", "is_breakdown"}
+_STANDARD_METADATA_COLUMNS = {"concept", "label", "level", "abstract", "dimension", "is_breakdown", "standard_concept"}
 
 
 def _shape_standard_statement_row(item: dict[str, Any]) -> dict[str, Any]:
