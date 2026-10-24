@@ -117,12 +117,12 @@ const reproduce = item.trace.filter((s) => !s.command.includes("formula.")).map(
         <h2>Try it with your agent</h2>
         <p>Paste this prompt into an agent that has Finance CLI and its skill installed.</p>
         <CopyBlock id="prompt" text={item.prompt} />
-        <a href={href("ai/")}>Set up your agent →</a>
+        <a href={href("ai/")} data-goatcounter-click={`showcase-${item.slug}-setup`} data-goatcounter-title={`${item.title}: open agent setup`}>Set up your agent →</a>
       </div>
       <div class="card box">
         <h2>Sources</h2>
         <ul class="sources">
-          {item.sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a><span>Filed {s.filing_date} · {s.accession}</span></li>)}
+          {item.sources.map((s) => <li><a href={s.url} rel="noopener" data-goatcounter-click={`showcase-${item.slug}-source`} data-goatcounter-title={`${item.title}: open filing source`}>{s.label}</a><span>Filed {s.filing_date} · {s.accession}</span></li>)}
         </ul>
       </div>
       <div class="card box">
