@@ -5,6 +5,8 @@ description: Install Finance CLI, read your first company filing, and save a rea
 
 You need Python 3.10 or later and a terminal. Commands run on your computer. See the [worked examples](/FinanceCLI/research-examples/) before installing.
 
+For one complete, version-pinned path from installation to a source-linked note, follow [the filing-backed walkthrough](/FinanceCLI/research-examples/#reproduce-a-complete-filing-backed-note).
+
 ## Install
 
 Create an isolated environment:

@@ -1,0 +1,26 @@
+name: Notify IndexNow
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Canonical docs URL recently added, updated or deleted
+        required: true
+        default: https://tempestshaw.github.io/FinanceCLI/research-examples/
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify published key and notify one URL
+        env:
+          INDEXNOW_URL: ${{ inputs.url }}
+        run: python scripts/notify_indexnow.py "$INDEXNOW_URL" --submit
