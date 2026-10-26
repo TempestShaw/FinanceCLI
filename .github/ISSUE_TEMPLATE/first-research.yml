@@ -1,0 +1,52 @@
+name: First research feedback
+description: Tell us where your first installation or filing-backed research worked or got stuck.
+title: "[First research] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying FinanceCLI. Partial attempts are useful too; you do not need a finished note or a positive review.
+        This issue and your GitHub username are public. Do not include API keys, your SEC contact string, private files, or unedited logs. If you prefer not to post publicly, send non-sensitive feedback to the person who invited you.
+  - type: input
+    id: environment
+    attributes:
+      label: Your setup
+      description: Operating system, Python version and FinanceCLI version or install method. No personal paths needed.
+      placeholder: macOS 15, Python 3.12, finresearch-cli 0.1.0b4 from PyPI
+    validations:
+      required: true
+  - type: dropdown
+    id: progress
+    attributes:
+      label: How far did you get?
+      options:
+        - Stopped before installation
+        - Installed; no command result yet
+        - Ran the offline CAGR example
+        - Opened a filing and checked its source
+        - Checked statement units and a calculation
+        - Saved a source-linked research note
+    validations:
+      required: true
+  - type: dropdown
+    id: help
+    attributes:
+      label: Did you need help from another person?
+      description: Reading the documentation does not count as help from a person.
+      options:
+        - No
+        - Yes
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: What happened, and what would make the next step clearer?
+      description: Include the command and a short redacted error if something failed. If you finished, describe which source and calculation you checked. Full notes and screenshots are optional.
+    validations:
+      required: true
+  - type: textarea
+    id: next-use
+    attributes:
+      label: Would you use it for another question?
+      description: Optional. What would bring you back, or what is missing?
