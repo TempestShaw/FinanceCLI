@@ -1,6 +1,6 @@
 ---
 title: Research Examples
-description: Read company disclosures, inspect an income statement, and reproduce a compound-growth calculation with Finance CLI.
+description: Reproduce a complete SEC-backed research note from installation to filing evidence, raw financial statements and checked calculations.
 ---
 
 import ResearchStarter from '../../components/ResearchStarter.astro';
@@ -61,6 +61,68 @@ finance formula.cagr start=100 end=150 periods=3 --output md
 Method: `(end / start) ** (1 / periods) - 1`.
 
 The total increase is 50%. Annual compound growth is about 14.47%, because each year's growth builds on the preceding value. Substitute verified filing figures in the same units and the actual number of years between observations.
+
+## Reproduce a complete filing-backed note
+
+This worked path keeps one historical filing fixed across every step. It was verified with the published `finresearch-cli==0.1.0b4` on macOS arm64 / Python 3.12 on October 24, 2026. It is a reproducible baseline, not a claim about the latest filing or every operating system.
+
+### Start in a new folder
+
+These setup commands use a macOS/Linux shell. For Windows activation and SEC contact setup, follow [Quick Start](/FinanceCLI/quickstart/).
+
+```bash
+mkdir financecli-first-research
+cd financecli-first-research
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --index-url https://pypi.org/simple 'finresearch-cli==0.1.0b4'
+python -m pip check
+export FINANCE_SEC_USER_AGENT='Your Name your.real.email@example.com'
+finance sources.test sec symbol=AAPL --output json
+```
+
+Replace the contact string with your own real name and email before making SEC requests. If the folder already exists, choose a new name so the files below do not overwrite earlier research.
+
+### Keep the source and complete sections
+
+Use Apple's FY2025 10-K, accession `0000320193-25-000079`, for the question **How does Apple earn revenue, and what risks does it disclose?** [Open the original SEC filing](https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm).
+
+```bash
+finance filings.read AAPL accession=0000320193-25-000079 section=business max_chars=30000 --output json > business.json
+finance filings.read AAPL accession=0000320193-25-000079 section=risk_factors max_chars=100000 --output json > risks.json
+finance filings.statement AAPL accession=0000320193-25-000079 statement=income view=raw --output json > income.json
+```
+
+Before writing conclusions, open the files and check `ok`, source/accession, filing period, and truncation information. In the verified run, the business and risk sections were complete (`truncated=false`); a 4,000-character excerpt was incomplete. If your result is still truncated, retrieve more text or read the original section. Preserve errors and missing data rather than treating them as zero.
+
+### Match units before calculating
+
+The filing's statement reports figures in **USD millions**. The CLI raw statement in this verified run returned **USD**. Check the units in your own output before copying inputs.
+
+| Figure | FY2025 | FY2023 |
+| --- | ---: | ---: |
+| Total net sales, USD millions | 416,161 | 383,285 |
+| Services net sales, USD millions | 109,158 | 85,200 |
+
+These values come from the filing's Consolidated Statements of Operations. Use the raw USD inputs below only after reconciling them with your returned statement:
+
+```bash
+finance formula.margin numerator=109158000000 denominator=416161000000 --output json > services-share.json
+finance formula.cagr start=383285000000 end=416161000000 periods=2 --output json > revenue-cagr.json
+```
+
+The results are about **26.23% Services revenue share** and **4.20% annual compound growth in total net sales**. Here `formula.margin` performs the ratio calculation: the numerator is revenue, so 26.23% is a revenue share, not a gross margin. FY2023 to FY2025 spans two annual intervals, not three.
+
+### Finish with a source-linked note
+
+Your first result should include:
+
+- A business summary tied to Item 1 and three disclosed risks tied to Item 1A.
+- The filing accession and report period, source link, statement units and calculation inputs.
+- The two calculated results, with the revenue-share / gross-margin distinction kept explicit.
+- Any missing rows, truncated sections, source failures or limits that affect the answer.
+
+The five saved JSON files are the evidence behind the note. This example uses historical disclosures; it does not predict future returns. Continue to the [recorded Apple Services case](/FinanceCLI/showcase/apple-services/) to inspect a separate agent research session.
 
 ## Build a command for your terminal
 
