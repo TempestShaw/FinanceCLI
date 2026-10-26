@@ -90,4 +90,4 @@ For scripts and agents, use `--output json` to preserve the result envelope, inc
 - **SEC request fails:** check your contact string and run `finance sources.test sec symbol=AAPL --output json`. Keep the reported error; availability depends on the source.
 - **Need options:** run `finance filings.read --help`.
 
-See [Data Sources](/FinanceCLI/data-sources/) or [report a problem](https://github.com/TempestShaw/FinanceCLI/issues/new) with the command and error, excluding credentials.
+See [Data Sources](/FinanceCLI/data-sources/) or [share first-research feedback](https://github.com/TempestShaw/FinanceCLI/issues/new?template=first-research.yml), including a partial attempt. GitHub sign-in is required and responses are public; exclude your SEC contact string, credentials, private paths and unedited logs. If you prefer not to post publicly, send non-sensitive feedback to the person who invited you.
