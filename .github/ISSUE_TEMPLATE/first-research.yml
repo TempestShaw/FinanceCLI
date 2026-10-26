@@ -34,8 +34,8 @@ body:
       label: Did you need help from another person?
       description: Reading the documentation does not count as help from a person.
       options:
-        - No
-        - Yes
+        - "No"
+        - "Yes"
     validations:
       required: true
   - type: textarea
