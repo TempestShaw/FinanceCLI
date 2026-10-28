@@ -9,3 +9,26 @@ if (code && !/^[a-z0-9-]+$/.test(code)) {
 }
 
 export const goatcounterEndpoint = code ? `https://${code}.goatcounter.com/count` : null;
+
+// Shared by the marketing pages and Starlight documentation.
+export const googleAnalyticsId = "G-DTS3DTSHXC";
+export const googleAnalyticsHead = [
+  {
+    tag: "script",
+    content: `
+const financeCliAnalyticsDebug = new URLSearchParams(location.search).get("analytics_debug") === "1";
+const financeCliAnalyticsLive = location.hostname === "tempestshaw.github.io" && location.pathname.startsWith("/FinanceCLI/");
+window["ga-disable-${googleAnalyticsId}"] = !financeCliAnalyticsLive && !financeCliAnalyticsDebug;
+`,
+  },
+  { tag: "script", attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}` } },
+  {
+    tag: "script",
+    content: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "${googleAnalyticsId}", financeCliAnalyticsDebug ? { debug_mode: true } : {});
+`,
+  },
+];
