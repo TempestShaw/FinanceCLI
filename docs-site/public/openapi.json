@@ -1386,6 +1386,141 @@
         }
       }
     },
+    "/commands/disclosures.recent": {
+      "post": {
+        "operationId": "finance_disclosures_recent",
+        "summary": "Read Taiwan listed-company material disclosures from the daily snapshot",
+        "description": "Use for official TWSE listed-company material-announcement snapshots.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "twse",
+                    "enum": [
+                      "twse"
+                    ],
+                    "description": "Official daily material-announcement snapshot source."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum records to return.",
+                    "default": 20
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "disclosures.recent",
+          "usage": "finance disclosures.recent SYMBOL [source=twse limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": [
+            "symbol",
+            "date",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
     "/commands/document.ocr": {
       "post": {
         "operationId": "finance_document_ocr",
@@ -2007,6 +2142,286 @@
             "start_char",
             "end_char",
             "match_id"
+          ]
+        }
+      }
+    },
+    "/commands/energy.electricity": {
+      "post": {
+        "operationId": "finance_energy_electricity",
+        "summary": "Read EIA electricity retail sales and average price by state",
+        "description": "Use for EIA energy inventories and state retail electricity sales and prices with explicit units.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "region": {
+                    "type": "string",
+                    "description": "Value supplied for `region`."
+                  },
+                  "frequency": {
+                    "type": "string",
+                    "default": "monthly",
+                    "enum": [
+                      "monthly",
+                      "annual"
+                    ],
+                    "description": "Retail electricity sales and average price reporting frequency."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "description": "Maximum latest electricity observations."
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "energy.electricity",
+          "usage": "finance energy.electricity [region=TX frequency=monthly|annual limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "EIA_API_KEY",
+          "citation_fields": [
+            "series_id",
+            "period",
+            "units",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
+    "/commands/energy.inventory": {
+      "post": {
+        "operationId": "finance_energy_inventory",
+        "summary": "Read weekly EIA US petroleum or natural-gas inventories",
+        "description": "Use for EIA energy inventories and state retail electricity sales and prices with explicit units.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "product": {
+                    "type": "string",
+                    "default": "crude",
+                    "enum": [
+                      "crude",
+                      "gasoline",
+                      "distillate",
+                      "natural_gas"
+                    ],
+                    "description": "Weekly inventory series; crude excludes SPR and natural gas covers Lower 48."
+                  },
+                  "country": {
+                    "type": "string",
+                    "default": "US",
+                    "enum": [
+                      "US"
+                    ],
+                    "description": "Country scope; only US inventory series are supported."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "description": "Maximum latest inventory observations."
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "energy.inventory",
+          "usage": "finance energy.inventory [product=crude|gasoline|distillate|natural_gas country=US limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "EIA_API_KEY",
+          "citation_fields": [
+            "series_id",
+            "period",
+            "units",
+            "source_url",
+            "retrieved_at"
           ]
         }
       }
@@ -4670,6 +5085,145 @@
         }
       }
     },
+    "/commands/fundamentals.revenue": {
+      "post": {
+        "operationId": "finance_fundamentals_revenue",
+        "summary": "Read Taiwan listed-company monthly revenue from the official snapshot",
+        "description": "Use for TWSE listed-company monthly revenue snapshots. Monetary amounts retain the reported TWD-thousands unit.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "period": {
+                    "type": "string",
+                    "default": "monthly",
+                    "enum": [
+                      "monthly"
+                    ],
+                    "description": "TWSE monthly issuer revenue period."
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "twse",
+                    "enum": [
+                      "twse"
+                    ],
+                    "description": "Official listed-company snapshot source."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "fundamentals.revenue",
+          "usage": "finance fundamentals.revenue SYMBOL [period=monthly source=twse]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "symbol",
+            "period",
+            "unit",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
     "/commands/fundamentals.statement": {
       "post": {
         "operationId": "finance_fundamentals_statement",
@@ -5047,6 +5601,139 @@
         }
       }
     },
+    "/commands/ir.events": {
+      "post": {
+        "operationId": "finance_ir_events",
+        "summary": "Discover company events from public RSS/Atom feeds and IR pages",
+        "description": "Use to find dated company investor events from official feeds or IR pages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Remote URL."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum records to return.",
+                    "default": 20
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "ir.events",
+          "usage": "finance ir.events SYMBOL [url=PAGE_OR_FEED limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "symbol",
+            "url",
+            "timestamp",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
     "/commands/ir.presentations": {
       "post": {
         "operationId": "finance_ir_presentations",
@@ -5253,6 +5940,553 @@
             "filing_url",
             "accession_no",
             "source"
+          ]
+        }
+      }
+    },
+    "/commands/ir.releases": {
+      "post": {
+        "operationId": "finance_ir_releases",
+        "summary": "Discover company releases from public RSS/Atom feeds and IR pages",
+        "description": "Use to find dated official company press releases from RSS/Atom or IR pages; pass url to select a known official page or feed.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Remote URL."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum records to return.",
+                    "default": 20
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "ir.releases",
+          "usage": "finance ir.releases SYMBOL [url=PAGE_OR_FEED limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "symbol",
+            "url",
+            "timestamp",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
+    "/commands/macro.search": {
+      "post": {
+        "operationId": "finance_macro_search",
+        "summary": "Search FRED economic series",
+        "description": "Use to discover FRED series and retrieve observations, optionally pinned to an ALFRED historical vintage.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search query."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 1000,
+                    "description": "Maximum matching economic series."
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "macro.search",
+          "usage": "finance macro.search QUERY [limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "FRED_API_KEY",
+          "citation_fields": [
+            "series_id",
+            "period",
+            "as_of",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
+    "/commands/macro.series": {
+      "post": {
+        "operationId": "finance_macro_series",
+        "summary": "Read economic observations with an optional ALFRED vintage",
+        "description": "Use to discover FRED series and retrieve observations, optionally pinned to an ALFRED historical vintage.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "series_id": {
+                    "type": "string",
+                    "description": "Value supplied for `series_id`."
+                  },
+                  "start": {
+                    "type": "string",
+                    "format": "date",
+                    "default": "YYYY-MM-DD",
+                    "description": "Value supplied for `start`."
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date",
+                    "default": "YYYY-MM-DD",
+                    "description": "Value supplied for `end`."
+                  },
+                  "as_of": {
+                    "type": "string",
+                    "format": "date",
+                    "default": "YYYY-MM-DD",
+                    "description": "Value supplied for `as_of`."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 1000,
+                    "minimum": 1,
+                    "maximum": 100000,
+                    "description": "Maximum latest observations; omitted history is disclosed."
+                  }
+                },
+                "required": [
+                  "series_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "macro.series",
+          "usage": "finance macro.series SERIES_ID [start=YYYY-MM-DD end=YYYY-MM-DD as_of=YYYY-MM-DD limit=1000]",
+          "side_effects": "network_read_only",
+          "auth_required": "FRED_API_KEY",
+          "citation_fields": [
+            "series_id",
+            "period",
+            "as_of",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
+    "/commands/market.breadth": {
+      "post": {
+        "operationId": "finance_market_breadth",
+        "summary": "Fetch actual Nasdaq advancing, declining, and unchanged issue counts",
+        "description": "Use for actual Nasdaq advancing, declining and unchanged issue counts with explicit data dates.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "market": {
+                    "type": "string",
+                    "default": "NASDAQ",
+                    "enum": [
+                      "NASDAQ"
+                    ],
+                    "description": "Exchange issue universe; Nasdaq only."
+                  },
+                  "year": {
+                    "type": "integer",
+                    "minimum": 2006,
+                    "description": "Annual source-file year; defaults to the current UTC year."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 366,
+                    "description": "Maximum daily observations, newest first."
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "market.breadth",
+          "usage": "finance market.breadth [MARKET=NASDAQ] [year=YYYY limit=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_environment_or_public_provider",
+          "citation_fields": [
+            "market",
+            "date",
+            "source_url",
+            "retrieved_at"
           ]
         }
       }
@@ -5916,6 +7150,145 @@
             "date_reported",
             "start_date",
             "latest_transaction_date"
+          ]
+        }
+      }
+    },
+    "/commands/positioning.cot": {
+      "post": {
+        "operationId": "finance_positioning_cot",
+        "summary": "Read CFTC futures-only trader positioning by category",
+        "description": "Use for CFTC futures positions by report and trader category.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "market": {
+                    "type": "string",
+                    "default": "gold",
+                    "description": "gold, sp500, or an exact six-character CFTC contract-market code."
+                  },
+                  "report": {
+                    "type": "string",
+                    "default": "disaggregated",
+                    "enum": [
+                      "disaggregated",
+                      "tff",
+                      "legacy"
+                    ],
+                    "description": "Futures-only report family with its own trader taxonomy."
+                  },
+                  "weeks": {
+                    "type": "integer",
+                    "default": 52,
+                    "minimum": 1,
+                    "maximum": 1000,
+                    "description": "Maximum report weeks, each producing trader-category rows."
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "positioning.cot",
+          "usage": "finance positioning.cot [market=gold report=disaggregated|tff|legacy weeks=52]",
+          "side_effects": "network_read_only",
+          "auth_required": "none",
+          "citation_fields": [
+            "market",
+            "report",
+            "as_of_date",
+            "source_url",
+            "retrieved_at"
           ]
         }
       }
@@ -6987,6 +8360,266 @@
           "side_effects": "network_read_only",
           "auth_required": "optional_environment_or_public_provider",
           "citation_fields": []
+        }
+      }
+    },
+    "/commands/short.interest": {
+      "post": {
+        "operationId": "finance_short_interest",
+        "summary": "Fetch FINRA settlement-date short positions and changes",
+        "description": "Use for FINRA equity short positions or reported off-exchange daily short-sale volume.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "periods": {
+                    "type": "integer",
+                    "default": 6,
+                    "minimum": 1,
+                    "maximum": 500,
+                    "description": "Maximum settlement-date position snapshots."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "short.interest",
+          "usage": "finance short.interest SYMBOL [periods=6]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_FINRA_ACCESS_TOKEN",
+          "citation_fields": [
+            "symbol",
+            "settlement_date",
+            "date",
+            "source_url",
+            "retrieved_at"
+          ]
+        }
+      }
+    },
+    "/commands/short.volume": {
+      "post": {
+        "operationId": "finance_short_volume",
+        "summary": "Fetch FINRA daily off-exchange NMS short-sale volume",
+        "description": "Use for FINRA equity short positions or reported off-exchange daily short-sale volume.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "description": "Ticker symbol."
+                  },
+                  "days": {
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 60,
+                    "description": "Maximum prior weekday files to request, excluding today in New York."
+                  }
+                },
+                "required": [
+                  "symbol"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Finance CLI result envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data",
+                    "error",
+                    "warnings"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "True when the command completed successfully."
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "rows",
+                            "count",
+                            "source",
+                            "retrieved_at",
+                            "warnings"
+                          ],
+                          "properties": {
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "count": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "source_url": {
+                              "type": "string"
+                            },
+                            "retrieved_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Human-readable error when ok is false."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-fatal issues."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-finance-cli": {
+          "command": "short.volume",
+          "usage": "finance short.volume SYMBOL [days=20]",
+          "side_effects": "network_read_only",
+          "auth_required": "optional_FINRA_ACCESS_TOKEN",
+          "citation_fields": [
+            "symbol",
+            "settlement_date",
+            "date",
+            "source_url",
+            "retrieved_at"
+          ]
         }
       }
     },

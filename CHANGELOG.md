@@ -2,6 +2,12 @@
 
 All notable changes to Finance CLI will be documented here.
 
+## Unreleased
+
+- Added official company release/event discovery, FRED/ALFRED economic series, TWSE monthly revenue and material disclosures, Nasdaq issue breadth, FINRA short data, CFTC positioning, and EIA energy statistics through twelve composable commands.
+- Expanded source readiness and probes, distinguished empty results and data warnings, and retained warnings on standard error for non-JSON CLI output.
+- Synchronized live diagnostic command coverage with the registry and checked that coverage in the offline test suite.
+
 ## 0.1.0b4 - Beta
 
 - Fixed standard SEC financial statements treating edgartools `standard_concept` metadata as a reporting period. Date columns and financial values are preserved.

@@ -53,7 +53,7 @@ Use when: The user asks what happened around a dated price move.
 Steps:
 - price.moves
 - price.context
-- news.search
+- ir.releases
 - filings.recent
 - transcripts.search
 Failure modes:
@@ -190,6 +190,13 @@ Side effects: network_read_only
 Args: key:string required
 Usage: `finance config.unset KEY`
 
+### disclosures.recent
+Use when: Use for official TWSE listed-company material-announcement snapshots.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string required, source:string, limit:integer
+Usage: `finance disclosures.recent SYMBOL [source=twse limit=20]`
+
 ### document.ocr
 Use when: Use as fallback for scanned or image-heavy PDFs after document.read/scan cannot extract text.
 Avoid when: Use the standard trust rules for this command.
@@ -224,6 +231,20 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: local_or_network_read
 Args: source:string required, format:string, start_char:integer, match_id:string, chars:integer, direction:string
 Usage: `finance document.window SOURCE|source=PATH_OR_URL [format=pdf|html start_char=0|match_id=char_START_END chars=4000 direction=around|next|previous]`
+
+### energy.electricity
+Use when: Use for EIA energy inventories and state retail electricity sales and prices with explicit units.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: region:string, frequency:string, limit:integer
+Usage: `finance energy.electricity [region=TX frequency=monthly|annual limit=20]`
+
+### energy.inventory
+Use when: Use for EIA energy inventories and state retail electricity sales and prices with explicit units.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: product:string, country:string, limit:integer
+Usage: `finance energy.inventory [product=crude|gasoline|distillate|natural_gas country=US limit=20]`
 
 ### estimates.compare
 Use when: Use for explicit estimate comparison math and structured consensus result shaping.
@@ -407,6 +428,13 @@ Side effects: network_read_only
 Args: symbol:string required, period:string, metrics:string
 Usage: `finance fundamentals.metrics SYMBOL [period=annual|quarterly metrics=revenue,eps,net_income,operating_income]`
 
+### fundamentals.revenue
+Use when: Use for TWSE listed-company monthly revenue snapshots. Monetary amounts retain the reported TWD-thousands unit.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string required, period:string, source:string
+Usage: `finance fundamentals.revenue SYMBOL [period=monthly source=twse]`
+
 ### fundamentals.statement
 Use when: Use for standard SEC/edgartools income, balance, or cashflow statement rows for a symbol, or Yahoo Finance statement tables when requested.
 Avoid when: Use the standard trust rules for this command.
@@ -435,6 +463,13 @@ Side effects: network_read_only
 Args: key:string required, table:string, limit:integer
 Usage: `finance industry.table KEY [table=top_companies|top_growth_companies|top_performing_companies|research_reports limit=25]`
 
+### ir.events
+Use when: Use to find dated company investor events from official feeds or IR pages.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string required, url:string, limit:integer
+Usage: `finance ir.events SYMBOL [url=PAGE_OR_FEED limit=20]`
+
 ### ir.presentations
 Use when: Use to discover or read investor presentations from SEC exhibits and company IR pages.
 Avoid when: Use the standard trust rules for this command.
@@ -448,6 +483,34 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
 Args: url:string required, max_chars:integer, ocr:string
 Usage: `finance ir.read url=URL [max_chars=12000 ocr=off|auto|force]`
+
+### ir.releases
+Use when: Use to find dated official company press releases from RSS/Atom or IR pages; pass url to select a known official page or feed.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: symbol:string required, url:string, limit:integer
+Usage: `finance ir.releases SYMBOL [url=PAGE_OR_FEED limit=20]`
+
+### macro.search
+Use when: Use to discover FRED series and retrieve observations, optionally pinned to an ALFRED historical vintage.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: query:string required, limit:integer
+Usage: `finance macro.search QUERY [limit=20]`
+
+### macro.series
+Use when: Use to discover FRED series and retrieve observations, optionally pinned to an ALFRED historical vintage.
+Avoid when: Use the standard trust rules for this command.
+Side effects: network_read_only
+Args: series_id:string required, start:string, end:string, as_of:string, limit:integer
+Usage: `finance macro.series SERIES_ID [start=YYYY-MM-DD end=YYYY-MM-DD as_of=YYYY-MM-DD limit=1000]`
+
+### market.breadth
+Use when: Use for actual Nasdaq advancing, declining and unchanged issue counts with explicit data dates.
+Avoid when: Do not describe this as NYSE, all-market or 50/200 DMA breadth.
+Side effects: network_read_only
+Args: market:string, year:integer, limit:integer
+Usage: `finance market.breadth [MARKET=NASDAQ] [year=YYYY limit=20]`
 
 ### market.ohlcv
 Use when: Use for historical bars needed by backtests, event windows, and price context.
@@ -497,6 +560,13 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
 Args: symbol:string required, limit:integer
 Usage: `finance ownership.holders SYMBOL [limit=10]`
+
+### positioning.cot
+Use when: Use for CFTC futures positions by report and trader category.
+Avoid when: Do not treat a position date as the date the public could know it, or mix report taxonomies.
+Side effects: network_read_only
+Args: market:string, report:string, weeks:integer
+Usage: `finance positioning.cot [market=gold report=disaggregated|tff|legacy weeks=52]`
 
 ### price.context
 Use when: Use when the user asks what filings, news, or transcripts were near a dated price move.
@@ -574,6 +644,20 @@ Avoid when: Use the standard trust rules for this command.
 Side effects: network_read_only
 Args: key:string required, table:string, limit:integer
 Usage: `finance sector.table KEY [table=top_companies|top_etfs|top_mutual_funds|research_reports limit=25]`
+
+### short.interest
+Use when: Use for FINRA equity short positions or reported off-exchange daily short-sale volume.
+Avoid when: Do not equate daily short-sale volume with outstanding short positions or market-wide volume.
+Side effects: network_read_only
+Args: symbol:string required, periods:integer
+Usage: `finance short.interest SYMBOL [periods=6]`
+
+### short.volume
+Use when: Use for FINRA equity short positions or reported off-exchange daily short-sale volume.
+Avoid when: Do not equate daily short-sale volume with outstanding short positions or market-wide volume.
+Side effects: network_read_only
+Args: symbol:string required, days:integer
+Usage: `finance short.volume SYMBOL [days=20]`
 
 ### sources.list
 Use when: Use to inspect configured data sources and run provider health probes.

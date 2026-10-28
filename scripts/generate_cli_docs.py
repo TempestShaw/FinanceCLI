@@ -132,6 +132,17 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
         "agent_use": "Use for PDF/HTML reading, phrase discovery, bounded windows, tables, and OCR fallback.",
         "citation_fields": ["source", "url", "path", "page", "start_char", "end_char", "match_id"],
     },
+    "disclosures": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use for official TWSE listed-company material-announcement snapshots.",
+        "citation_fields": ["symbol", "date", "source_url", "retrieved_at"],
+    },
+    "energy": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use for EIA energy inventories and state retail electricity sales and prices with explicit units.",
+        "citation_fields": ["series_id", "period", "units", "source_url", "retrieved_at"],
+        "rate_limit_notes": "Requires EIA_API_KEY. Bounded responses expose truncation.",
+    },
     "estimates": {
         "side_effects": "pure_calculation",
         "agent_use": "Use for explicit estimate comparison math and structured consensus result shaping.",
@@ -167,6 +178,12 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
         "agent_use": "Use for quotes, OHLCV, market status, broad regime, and sector heat context.",
         "rate_limit_notes": "Market data is time-sensitive and provider-specific.",
     },
+    "macro": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use to discover FRED series and retrieve observations, optionally pinned to an ALFRED historical vintage.",
+        "citation_fields": ["series_id", "period", "as_of", "source_url", "retrieved_at"],
+        "rate_limit_notes": "Requires the user's own FRED_API_KEY. Series frequency, units and vintage must be preserved.",
+    },
     "ownership": {
         "side_effects": "network_read_only",
         "agent_use": "Use for Yahoo major holder, institutional holder, fund holder, and insider tables.",
@@ -182,6 +199,19 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
     "research": {
         "side_effects": "pure_calculation",
         "agent_use": "Use for deterministic research checklists before executing commands.",
+    },
+    "positioning": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use for CFTC futures positions by report and trader category.",
+        "avoid_when": "Do not treat a position date as the date the public could know it, or mix report taxonomies.",
+        "citation_fields": ["market", "report", "as_of_date", "source_url", "retrieved_at"],
+    },
+    "short": {
+        "side_effects": "network_read_only",
+        "agent_use": "Use for FINRA equity short positions or reported off-exchange daily short-sale volume.",
+        "avoid_when": "Do not equate daily short-sale volume with outstanding short positions or market-wide volume.",
+        "citation_fields": ["symbol", "settlement_date", "date", "source_url", "retrieved_at"],
+        "rate_limit_notes": "FINRA credential and use terms apply; optional FINRA_ACCESS_TOKEN is supported.",
     },
     "screen": {
         "side_effects": "network_read_only",
@@ -215,6 +245,23 @@ NAMESPACE_DEFAULTS: dict[str, dict[str, Any]] = {
 }
 
 COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
+    "ir.releases": {
+        "agent_use": "Use to find dated official company press releases from RSS/Atom or IR pages; pass url to select a known official page or feed.",
+        "citation_fields": ["symbol", "url", "timestamp", "source_url", "retrieved_at"],
+    },
+    "ir.events": {
+        "agent_use": "Use to find dated company investor events from official feeds or IR pages.",
+        "citation_fields": ["symbol", "url", "timestamp", "source_url", "retrieved_at"],
+    },
+    "fundamentals.revenue": {
+        "agent_use": "Use for TWSE listed-company monthly revenue snapshots. Monetary amounts retain the reported TWD-thousands unit.",
+        "citation_fields": ["symbol", "period", "unit", "source_url", "retrieved_at"],
+    },
+    "market.breadth": {
+        "agent_use": "Use for actual Nasdaq advancing, declining and unchanged issue counts with explicit data dates.",
+        "avoid_when": "Do not describe this as NYSE, all-market or 50/200 DMA breadth.",
+        "citation_fields": ["market", "date", "source_url", "retrieved_at"],
+    },
     "completion": {
         "side_effects": "pure_calculation",
         "agent_use": "Use to install local shell completion scripts for FinanceCLI.",
@@ -317,6 +364,44 @@ COMMAND_OVERRIDES: dict[str, dict[str, Any]] = {
 }
 
 PARAM_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
+    "market.breadth": {
+        "market": {"type": "string", "required": False, "default": "NASDAQ", "enum": ["NASDAQ"], "description": "Exchange issue universe; Nasdaq only."},
+        "year": {"type": "integer", "required": False, "minimum": 2006, "description": "Annual source-file year; defaults to the current UTC year."},
+        "limit": {"type": "integer", "required": False, "default": 20, "minimum": 1, "maximum": 366, "description": "Maximum daily observations, newest first."},
+    },
+    "macro.search": {
+        "limit": {"type": "integer", "required": False, "default": 20, "minimum": 1, "maximum": 1000, "description": "Maximum matching economic series."},
+    },
+    "macro.series": {
+        "limit": {"type": "integer", "required": False, "default": 1000, "minimum": 1, "maximum": 100000, "description": "Maximum latest observations; omitted history is disclosed."},
+    },
+    "fundamentals.revenue": {
+        "period": {"type": "string", "required": False, "default": "monthly", "enum": ["monthly"], "description": "TWSE monthly issuer revenue period."},
+        "source": {"type": "string", "required": False, "default": "twse", "enum": ["twse"], "description": "Official listed-company snapshot source."},
+    },
+    "disclosures.recent": {
+        "source": {"type": "string", "required": False, "default": "twse", "enum": ["twse"], "description": "Official daily material-announcement snapshot source."},
+    },
+    "short.interest": {
+        "periods": {"type": "integer", "required": False, "default": 6, "minimum": 1, "maximum": 500, "description": "Maximum settlement-date position snapshots."},
+    },
+    "short.volume": {
+        "days": {"type": "integer", "required": False, "default": 20, "minimum": 1, "maximum": 60, "description": "Maximum prior weekday files to request, excluding today in New York."},
+    },
+    "positioning.cot": {
+        "market": {"type": "string", "required": False, "default": "gold", "description": "gold, sp500, or an exact six-character CFTC contract-market code."},
+        "report": {"type": "string", "required": False, "default": "disaggregated", "enum": ["disaggregated", "tff", "legacy"], "description": "Futures-only report family with its own trader taxonomy."},
+        "weeks": {"type": "integer", "required": False, "default": 52, "minimum": 1, "maximum": 1000, "description": "Maximum report weeks, each producing trader-category rows."},
+    },
+    "energy.inventory": {
+        "product": {"type": "string", "required": False, "default": "crude", "enum": ["crude", "gasoline", "distillate", "natural_gas"], "description": "Weekly inventory series; crude excludes SPR and natural gas covers Lower 48."},
+        "country": {"type": "string", "required": False, "default": "US", "enum": ["US"], "description": "Country scope; only US inventory series are supported."},
+        "limit": {"type": "integer", "required": False, "default": 20, "minimum": 1, "maximum": 5000, "description": "Maximum latest inventory observations."},
+    },
+    "energy.electricity": {
+        "frequency": {"type": "string", "required": False, "default": "monthly", "enum": ["monthly", "annual"], "description": "Retail electricity sales and average price reporting frequency."},
+        "limit": {"type": "integer", "required": False, "default": 20, "minimum": 1, "maximum": 5000, "description": "Maximum latest electricity observations."},
+    },
     "filings.statement": {
         "symbol": {"type": "string", "required": False, "description": "Ticker used to locate a recent filing."},
         "accession": {"type": "string", "required": False, "aliases": ["accession_no"], "description": "SEC accession number."},
@@ -559,6 +644,26 @@ NAMESPACE_DATA_SCHEMAS: dict[str, dict[str, Any]] = {
     "valuation": {"type": "object", "description": "Valuation calculation result and assumptions.", "additionalProperties": True},
 }
 
+PUBLIC_DATA_COMMANDS = (
+    "ir.releases", "ir.events", "macro.search", "macro.series", "fundamentals.revenue",
+    "disclosures.recent", "market.breadth", "short.interest", "short.volume",
+    "positioning.cot", "energy.inventory", "energy.electricity",
+)
+for _name in PUBLIC_DATA_COMMANDS:
+    COMMAND_DATA_SCHEMAS[_name] = {
+        "type": "object",
+        "required": ["rows", "count", "source", "retrieved_at", "warnings"],
+        "properties": {
+            "rows": {"type": "array", "items": {"type": "object"}},
+            "count": {"type": "integer"},
+            "source": {"type": "string"},
+            "source_url": {"type": "string"},
+            "retrieved_at": {"type": "string", "format": "date-time"},
+            "warnings": {"type": "array", "items": {"type": "string"}},
+        },
+        "additionalProperties": True,
+    }
+
 PLAYBOOKS: list[dict[str, Any]] = [
     {
         "task": "extract_metric_from_10k",
@@ -572,7 +677,7 @@ PLAYBOOKS: list[dict[str, Any]] = [
     {
         "task": "explain_price_move",
         "when": "The user asks what happened around a dated price move.",
-        "steps": ["price.moves", "price.context", "news.search", "filings.recent", "transcripts.search"],
+        "steps": ["price.moves", "price.context", "ir.releases", "filings.recent", "transcripts.search"],
         "failure_modes": [
             "If no dated evidence appears, say the CLI found no direct evidence rather than inferring causality.",
             "Always cite provider, date, and URL/accession when available.",
@@ -1035,6 +1140,12 @@ def _input_schema(params: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
 
 def _auth_required(namespace: str, command_name: str) -> str:
+    if namespace == "macro":
+        return "FRED_API_KEY"
+    if namespace == "energy":
+        return "EIA_API_KEY"
+    if namespace == "short":
+        return "optional_FINRA_ACCESS_TOKEN"
     if command_name.startswith("sources."):
         return "optional_environment"
     if namespace in {"news", "market", "price", "symbol", "fundamentals", "calendar", "sector", "industry", "screen", "filings", "transcripts", "ir"}:

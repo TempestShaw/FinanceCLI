@@ -10,6 +10,13 @@ from finance_cli.providers.alphavantage import AlphaVantageProvider
 from finance_cli.providers.alpaca import AlpacaMarketDataProvider
 from finance_cli.providers.base import ProviderHealth, ProviderMetadata
 from finance_cli.providers.company_ir import CompanyIRProvider
+from finance_cli.providers.ir_feed import IRFeedProvider
+from finance_cli.providers.fred import FREDProvider
+from finance_cli.providers.twse import TWSEProvider
+from finance_cli.providers.nasdaq_breadth import fetch_breadth
+from finance_cli.providers.finra import fetch_short_interest
+from finance_cli.providers.cftc import CFTCProvider
+from finance_cli.providers.eia import EIAProvider
 from finance_cli.providers.fmp import FMPProvider
 from finance_cli.providers.sec_edgar import SecEdgarProvider
 from finance_cli.providers.transcripts import MotleyFoolTranscriptProvider
@@ -43,8 +50,53 @@ PROVIDERS: tuple[ProviderMetadata, ...] = (
     ProviderMetadata(
         name="company_ir",
         label="Company investor relations websites",
-        capabilities=("ir_presentations", "ir_events"),
+        capabilities=("ir_presentations",),
         notes="Conservative crawl of public company and investor-relations domains.",
+    ),
+    ProviderMetadata(
+        name="ir_feed",
+        label="Official company releases and events",
+        capabilities=("ir_releases", "ir_events"),
+        notes="RSS/Atom feeds and links discovered on official company IR pages; explicit URLs are supported.",
+    ),
+    ProviderMetadata(
+        name="fred",
+        label="FRED and ALFRED economic data",
+        capabilities=("macro_search", "macro_series", "historical_vintages"),
+        required_env=("FRED_API_KEY",),
+        notes="Each user supplies their own FRED API key. Historical as_of pins the real-time data vintage.",
+    ),
+    ProviderMetadata(
+        name="twse",
+        label="Taiwan Stock Exchange OpenAPI",
+        capabilities=("monthly_revenue", "material_disclosures"),
+        notes="Official listed-company snapshots; no historical-range coverage is implied. Probe defaults to 2330.TW.",
+    ),
+    ProviderMetadata(
+        name="nasdaq_breadth",
+        label="Nasdaq Trader daily market statistics",
+        capabilities=("advances_declines",),
+        notes="Nasdaq-only advances/declines/unchanged; data dates and publication lag remain visible.",
+    ),
+    ProviderMetadata(
+        name="finra",
+        label="FINRA equity short data",
+        capabilities=("short_interest", "short_sale_volume"),
+        optional_env=("FINRA_ACCESS_TOKEN",),
+        notes="Public data access can change; follow FINRA credential and usage terms. Short-sale volume is not short interest.",
+    ),
+    ProviderMetadata(
+        name="cftc",
+        label="CFTC Commitments of Traders",
+        capabilities=("futures_positioning",),
+        notes="Official disaggregated, financial-futures and legacy reports. Positions are dated before public release.",
+    ),
+    ProviderMetadata(
+        name="eia",
+        label="U.S. Energy Information Administration",
+        capabilities=("energy_inventory", "electricity_sales_prices"),
+        required_env=("EIA_API_KEY",),
+        notes="Free registered API key; series retain product, geography, frequency, period and units.",
     ),
     ProviderMetadata(
         name="fmp",
@@ -165,12 +217,17 @@ def _test_one(metadata: ProviderMetadata, *, symbol: str, timeout: float) -> Pro
     probe = _probe_for(metadata.name, symbol=symbol, timeout=timeout)
     started = perf_counter()
     try:
-        probe()
+        payload = probe()
+        count = payload.get("count") if isinstance(payload, dict) else len(payload) if isinstance(payload, list) else None
+        empty = payload is None or count == 0
+        warnings = list(payload.get("warnings") or []) if isinstance(payload, dict) else []
         return ProviderHealth(
             name=metadata.name,
             configured=True,
-            ok=True,
-            status="ok",
+            ok=not empty,
+            status="empty" if empty else "partial" if warnings else "ok",
+            error="Source returned no records for the probe." if empty else None,
+            warnings=warnings,
             latency_ms=round((perf_counter() - started) * 1000, 2),
             required_env=status["required_env"],
             optional_env=status["optional_env"],
@@ -209,6 +266,21 @@ def _probe_for(name: str, *, symbol: str, timeout: float) -> Probe:
                 limit=1,
             )
         return probe_company_ir
+    if name == "ir_feed":
+        return lambda: IRFeedProvider(timeout=timeout).list_releases(normalized, limit=1)
+    if name == "fred":
+        return lambda: FREDProvider(timeout=timeout).series("CPIAUCSL", limit=1)
+    if name == "twse":
+        sample = normalized if normalized.removesuffix(".TW").isdigit() else "2330.TW"
+        return lambda: TWSEProvider(timeout=timeout).monthly_revenue(sample)
+    if name == "nasdaq_breadth":
+        return lambda: fetch_breadth(limit=1, timeout=timeout)
+    if name == "finra":
+        return lambda: fetch_short_interest(normalized, periods=1, timeout=timeout)
+    if name == "cftc":
+        return lambda: CFTCProvider(timeout=timeout).cot("gold", weeks=1)
+    if name == "eia":
+        return lambda: EIAProvider(timeout=timeout).inventory(limit=1)
     if name == "fmp":
         return lambda: FMPProvider(timeout=timeout).analyst_estimates(normalized, limit=1)
     if name == "paddleocr":
@@ -278,4 +350,6 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, int]:
         "ok": ok,
         "failed": failed,
         "missing_config": sum(1 for row in rows if row.get("status") == "missing_config"),
+        "empty": sum(1 for row in rows if row.get("status") == "empty"),
+        "partial": sum(1 for row in rows if row.get("status") == "partial"),
     }

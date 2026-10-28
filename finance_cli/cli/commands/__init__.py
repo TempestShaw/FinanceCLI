@@ -2,28 +2,35 @@
 from __future__ import annotations
 
 from finance_cli.cli.commands.backtest import register_backtest_commands
+from finance_cli.cli.commands.breadth import register_breadth_commands
 from finance_cli.cli.commands.calendar import register_calendar_commands
 from finance_cli.cli.commands.compare import register_compare_commands
 from finance_cli.cli.commands.completion import register_completion_commands
 from finance_cli.cli.commands.config import register_config_commands
 from finance_cli.cli.commands.document import register_document_commands
 from finance_cli.cli.commands.estimates import register_estimates_commands
+from finance_cli.cli.commands.energy import register_energy_commands
 from finance_cli.cli.commands.filings import register_filings_commands
 from finance_cli.cli.commands.formula import register_formula_commands
 from finance_cli.cli.commands.ir import register_ir_commands
+from finance_cli.cli.commands.ir_feed import register_ir_feed_commands
+from finance_cli.cli.commands.macro import register_macro_commands
 from finance_cli.cli.commands.fundamentals import register_fundamentals_commands
 from finance_cli.cli.commands.industry import register_industry_commands
 from finance_cli.cli.commands.market import register_market_commands
 from finance_cli.cli.commands.market_data import register_market_data_commands
 from finance_cli.cli.commands.ownership import register_ownership_commands
 from finance_cli.cli.commands.price import register_price_commands
+from finance_cli.cli.commands.positioning import register_positioning_commands
 from finance_cli.cli.commands.research import register_research_commands
 from finance_cli.cli.commands.screen import register_screen_commands
 from finance_cli.cli.commands.sector import register_sector_commands
 from finance_cli.cli.commands.sources import register_sources_commands
+from finance_cli.cli.commands.short import register_short_commands
 from finance_cli.cli.commands.symbol import register_symbol_commands
 from finance_cli.cli.commands.transcripts import register_transcript_commands
 from finance_cli.cli.commands.valuation import register_valuation_commands
+from finance_cli.cli.commands.twse import register_twse_commands
 
 
 def register_builtin_commands() -> None:
@@ -50,3 +57,10 @@ def register_builtin_commands() -> None:
     register_backtest_commands()
     register_ir_commands()
     register_document_commands()
+    register_ir_feed_commands()
+    register_macro_commands()
+    register_twse_commands()
+    register_breadth_commands()
+    register_short_commands()
+    register_positioning_commands()
+    register_energy_commands()

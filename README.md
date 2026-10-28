@@ -105,9 +105,12 @@ This returns a filing excerpt. Check its date, source, and truncation informatio
 | Find and read company disclosures | SEC filings, sections, XBRL financial statements, filing reports |
 | Read research documents | Native PDF/HTML text, text search, bounded reading windows |
 | Add company and market context | Quotes, price history, fundamentals, public transcripts, IR presentation discovery |
+| Read official public data | Company releases/events, FRED/ALFRED, TWSE revenue/disclosures, Nasdaq breadth, FINRA short data, CFTC positioning, EIA energy statistics |
 | Check assumptions and calculations | Finance formulas, valuation scenarios, DCF/NPV/IRR |
 
 SEC research and basic calculators need no paid data key. Provider-backed results depend on availability and coverage; consensus estimates require an FMP key. See [Data Sources](https://tempestshaw.github.io/FinanceCLI/data-sources/) for details.
+
+The [Public Data guide](https://tempestshaw.github.io/FinanceCLI/public-data/) includes examples and coverage limits for the official sources. FRED and EIA require your own API keys; FINRA access and data-use terms apply. Every dataset preserves its own period, unit, provenance and availability limits.
 
 Install advanced capabilities only when needed:
 

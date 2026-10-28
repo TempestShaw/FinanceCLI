@@ -105,8 +105,11 @@ finance filings.read AAPL section=business max_chars=4000 --output md
 | 阅读研究文档 | 原生 PDF/HTML 文本、文本搜索、指定范围读取 |
 | 补充公司与市场背景 | 报价、历史价格、基本面、公开电话会议记录、投资者关系演示文稿发现 |
 | 检查假设与计算 | 金融公式、估值情景、DCF/NPV/IRR |
+| 读取官方公开数据 | 公司新闻稿／活动、FRED/ALFRED、TWSE 月营收／重大讯息、Nasdaq 市场广度、FINRA 放空数据、CFTC 持仓、EIA 能源统计 |
 
 SEC 研究和基础计算不需要付费数据密钥。依赖外部数据源的结果受可用性和覆盖范围影响；分析师一致预期需要 FMP 密钥。详见[数据源说明](https://tempestshaw.github.io/FinanceCLI/data-sources/)。
+
+[公开数据指南](https://tempestshaw.github.io/FinanceCLI/public-data/)包含官方来源的命令示例与覆盖范围。FRED 和 EIA 需要使用你自己的 API 密钥；FINRA 的访问和数据使用条款同样适用。各数据集保留自己的期间、单位、来源及可用性限制。
 
 按需安装高级能力：
 

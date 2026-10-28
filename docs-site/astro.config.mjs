@@ -48,6 +48,7 @@ export default defineConfig({
             { label: "JSON Results", slug: "json-results" },
             { label: "MCP And Plugins", slug: "mcp" },
             { label: "Data Sources", slug: "data-sources" },
+            { label: "Public Data", slug: "public-data" },
             { label: "Trust", slug: "trust" },
             { label: "Disclaimer", slug: "disclaimer" },
           ],

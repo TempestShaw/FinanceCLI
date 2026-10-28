@@ -37,6 +37,7 @@ class ProviderHealth:
     required_env: list[dict[str, Any]] = field(default_factory=list)
     optional_env: list[dict[str, Any]] = field(default_factory=list)
     capabilities: tuple[str, ...] = ()
+    warnings: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
