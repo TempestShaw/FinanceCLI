@@ -44,6 +44,10 @@ jobs:
       - name: Generate command reference
         run: python scripts/generate_cli_docs.py
 
+      - name: Check analytics scope
+        working-directory: docs-site
+        run: npm test
+
       - name: Check generated agent docs
         run: |
           git diff --exit-code -- \

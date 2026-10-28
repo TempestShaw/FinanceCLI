@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import { goatcounterEndpoint } from "./analytics.mjs";
+import { goatcounterEndpoint, googleAnalyticsHead } from "./analytics.mjs";
 
 export default defineConfig({
   site: "https://tempestshaw.github.io",
@@ -11,6 +11,7 @@ export default defineConfig({
       description: "Financial research tools for you and your AI agent, with traceable sources and reproducible calculations.",
       customCss: ["./src/styles/custom.css"],
       head: [
+        ...googleAnalyticsHead,
         { tag: "meta", attrs: { property: "og:image", content: "https://tempestshaw.github.io/FinanceCLI/videos/apple-services.jpg" } },
         { tag: "meta", attrs: { name: "twitter:card", content: "summary_large_image" } },
         ...(goatcounterEndpoint
