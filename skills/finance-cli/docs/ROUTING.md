@@ -25,5 +25,12 @@ Most company workflows are symbol-based. Extract the ticker before running symbo
 | News or dated event context | `price.context`, `filings.recent` | Do not infer causality from proximity alone. |
 | Transcript evidence | `transcripts.*` | Preserve URLs, quarters, prepared remarks, and Q&A turns. |
 | Investor presentation discovery | `ir.*` | Preserve company IR and SEC exhibit URLs. |
+| Official company releases or investor events | `ir.releases`, `ir.events` | Pass `url=` for a known official feed or page when automatic discovery is incomplete. Feed publication time can differ from event time. |
+| Macro data or historically known observations | `macro.search`, `macro.series` | Requires FRED_API_KEY. Use `as_of` for historical vintages; retain units and frequency. |
+| Taiwan company monthly revenue or material announcements | `fundamentals.revenue`, `disclosures.recent` | TWSE-listed companies only, current snapshots. Revenue is thousands of TWD; do not infer full history. |
+| Actual exchange issue breadth | `market.breadth NASDAQ` | Nasdaq-only A/D counts; preserve source dates, age and missing dates. |
+| Short positions or daily short-sale activity | `short.interest`, `short.volume` | Settlement snapshots and off-exchange daily volume are different measures; observe FINRA usage terms. |
+| Futures positions by trader category | `positioning.cot` | Preserve contract code, futures-only report family and position date; it is not a publication timestamp. |
+| Energy inventories or state electricity retail sales/prices | `energy.inventory`, `energy.electricity` | Requires EIA_API_KEY. Preserve geography, frequency, periods and units. |
 | Reproducible strategy checks | `backtest.*` | Use explicit symbols, dates, strategy names, and parameters. |
 | Provider setup/debugging | `sources.*` | Use `sources.status` for local setup and `sources.test SOURCE symbol=SYMBOL` before relying on a live provider. |

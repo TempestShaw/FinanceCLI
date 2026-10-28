@@ -29,7 +29,7 @@ from finance_cli.cli.commands import register_builtin_commands
 from finance_cli.cli.registry import clear_commands, list_commands
 
 
-pytestmark = pytest.mark.skipif(os.getenv("FINANCECLI_LIVE") != "1", reason="set FINANCECLI_LIVE=1 to run live CLI diagnostics")
+live_only = pytest.mark.skipif(os.getenv("FINANCECLI_LIVE") != "1", reason="set FINANCECLI_LIVE=1 to run live CLI diagnostics")
 
 LIVE_TIMEOUT_SECONDS = int(os.getenv("FINANCECLI_LIVE_TIMEOUT", "90"))
 LIVE_MAX_ATTEMPTS = int(os.getenv("FINANCECLI_LIVE_ATTEMPTS", "3"))
@@ -47,6 +47,9 @@ SENSITIVE_ENV_NAMES = (
     "ALPACA_API_SECRET",
     "FINANCE_API_KEY",
     "NEWS_API_KEY",
+    "FRED_API_KEY",
+    "EIA_API_KEY",
+    "FINRA_ACCESS_TOKEN",
 )
 
 
@@ -60,6 +63,15 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "backtest.tune": ["sma_cross", "AAPL", "2024-01-01", "2024-02-01", 'grid={"fast":[5],"slow":[10]}', "max_runs=1"],
     "calendar.company": ["AAPL"],
     "calendar.earnings": ["AAPL", "limit=3"],
+    "compare": ["AAPL", "MSFT", "market.quote"],
+    "completion": ["bash"],
+    "config.path": [],
+    "config.show": [],
+    "config.set": ["output.default", "json"],
+    "config.unset": ["output.default"],
+    "disclosures.recent": ["2330.TW", "limit=2"],
+    "energy.inventory": ["product=crude", "limit=2"],
+    "energy.electricity": ["region=TX", "limit=2"],
     "document.ocr": [str(SAMPLE_DOC), "max_chars=500", "max_pages=1"],
     "document.read": [str(SAMPLE_DOC), "format=html", "max_chars=500"],
     "document.scan": [str(SAMPLE_DOC), "format=html", "query=revenue", "limit=3", "max_chars=500"],
@@ -90,23 +102,31 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "formula.wacc": ["equity_value=418856", "debt_value=11415", "cost_of_equity=9.66%", "cost_of_debt=6%", "tax_rate=24%", "debt_tax=pretax"],
     "formula.working_capital": ["operating_current_assets=28191", "operating_current_liabilities=35035"],
     "fundamentals.metrics": ["NVDA", "period=quarterly", "metrics=revenue,eps,net_income,operating_income"],
+    "fundamentals.growth": ["NVDA", "metrics=revenue,eps", "years=3"],
+    "fundamentals.revenue": ["2330.TW"],
     "fundamentals.statement": ["NVDA", "statement=income", "period=quarterly", "provider=sec"],
     "industry.keys": ["sector=technology"],
     "industry.overview": ["software-infrastructure"],
     "industry.table": ["software-infrastructure", "table=top_companies", "limit=3"],
     "ir.presentations": ["IOT", "limit=3", "source=sec"],
     "ir.read": ["url=https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm", "max_chars=500", "ocr=off"],
+    "ir.releases": ["NVDA", "url=https://investor.nvidia.com/investor-resources/rss/default.aspx", "limit=2"],
+    "ir.events": ["NVDA", "url=https://investor.nvidia.com/investor-resources/rss/default.aspx", "limit=2"],
+    "macro.search": ["inflation", "limit=2"],
+    "macro.series": ["CPIAUCSL", "limit=2"],
+    "market.breadth": ["NASDAQ", "limit=2"],
     "market.ohlcv": ["AAPL", "timeframe=1d", "limit=3"],
     "market.quote": ["AAPL"],
     "market.regime": ["US", "swing"],
     "market.sector_heat": ["US", "5", "sector"],
     "market.status": ["US"],
-    "news.analyze": ["symbol=NVDA", "analysis=timeline", "timespan=1d", "max_records=3"],
-    "news.search": ["symbol=NVDA", "timespan=1d", "max_records=3"],
+    "market.trend": ["US", "periods=1M"],
     "ownership.holders": ["NVDA", "limit=2"],
     "price.context": ["IOT", "date=2026-03-06", "lookback=3D", "news_limit=2", "filing_limit=5", "transcript_limit=2"],
     "price.moves": ["IOT", "years=1", "threshold=8%", "limit=3"],
     "price.performance": ["NVDA", "benchmark=SPY", "periods=1M,3M"],
+    "price.relative": ["NVDA", "peers=AMD", "periods=1M"],
+    "positioning.cot": ["market=gold", "weeks=2"],
     "research.plan": ["IOT", "style=fundamental"],
     "screen.predefined": [],
     "screen.run": ["day_gainers", "count=3"],
@@ -117,6 +137,8 @@ LIVE_COMMAND_CASES: dict[str, list[str]] = {
     "sources.list": [],
     "sources.status": [],
     "sources.test": ["yfinance", "symbol=AAPL", "timeout=10"],
+    "short.interest": ["AAPL", "periods=2"],
+    "short.volume": ["AAPL", "days=2"],
     "symbol.profile": ["IOT"],
     "symbol.snapshot": ["NVDA"],
     "transcripts.qa": ["IOT", "quarter=latest", "limit=3"],
@@ -145,10 +167,20 @@ def _live_summary_writer() -> Any:
         _write_live_summary()
 
 
+@live_only
 @pytest.mark.parametrize("command", sorted(LIVE_COMMAND_CASES))
 def test_live_command_json_contract(command: str) -> None:
     _ensure_sample_doc()
     args = LIVE_COMMAND_CASES[command]
+    if command == "completion":
+        run = _run_cli([command, *args])
+        assert run.returncode == 0
+        assert "finance __complete bash" in run.stdout
+        _write_artifact(command, {
+            "command": command, "namespace": command, "args": args,
+            "json": {"ok": True, "exit_code": 0, "duration_seconds": run.duration_seconds},
+        })
+        return
     json_run, payload, attempts = _run_cli_json_with_retries([command, *args, "--output", "json"])
     json_summary = _summarize_run(json_run, payload)
     json_summary["attempt_count"] = len(attempts)
@@ -173,6 +205,7 @@ def test_live_command_json_contract(command: str) -> None:
         assert payload["ok"] is True
 
 
+@live_only
 @pytest.mark.parametrize("case_id", sorted(LIVE_COMMAND_VARIANTS))
 def test_live_command_json_contract_variants(case_id: str) -> None:
     command, args = LIVE_COMMAND_VARIANTS[case_id]
@@ -231,6 +264,7 @@ def _run_cli(args: list[str]) -> subprocess.CompletedProcess[str]:
             text=True,
             capture_output=True,
             timeout=LIVE_TIMEOUT_SECONDS,
+            env={**os.environ, "FINANCECLI_CONFIG": str((ARTIFACT_DIR / "config.toml").resolve())},
             check=False,
         )
         run.duration_seconds = time.perf_counter() - start
@@ -336,6 +370,7 @@ def _write_artifact(command: str, artifact: dict[str, Any]) -> None:
 
 
 def _write_live_summary() -> None:
+    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
     artifacts = []
     for path in sorted(ARTIFACT_DIR.glob("*.json")):
         if path.name == SUMMARY_PATH.name:

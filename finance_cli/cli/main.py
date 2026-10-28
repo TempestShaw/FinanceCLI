@@ -25,20 +25,25 @@ MODULE_DESCRIPTIONS = {
     "compare": "Run one command across several symbols and align the results.",
     "completion": "Shell autocomplete scripts and installation support.",
     "document": "Read, scan, window, table, and OCR document workflows.",
+    "disclosures": "Official company material announcements.",
+    "energy": "EIA energy inventories and state electricity sales and prices.",
     "estimates": "Consensus estimates and explicit estimate comparisons.",
     "filings": "SEC filing discovery, sections, statements, reports, and exhibits.",
     "formula": "Pure finance calculations from explicit numeric inputs.",
-    "fundamentals": "Financial statements, metrics, and growth calculations.",
+    "fundamentals": "Financial statements, metrics, growth, and monthly revenue.",
     "industry": "Industry keys, overviews, and company tables.",
-    "ir": "Investor-relations presentation discovery and reads.",
-    "market": "Market data, status, trend, regime, and sector heat.",
+    "ir": "Investor presentations, official releases, events, and reads.",
+    "macro": "FRED economic series, search, and historical data vintages.",
+    "market": "Market data, status, trend, regime, breadth, and sector heat.",
     "news": "News search, timeline, tone, and geographic signals.",
     "ownership": "Major, institutional, fund, and insider holders.",
     "price": "Price performance, relative strength, moves, and event timelines.",
+    "positioning": "CFTC futures positions by trader category.",
     "research": "Deterministic research checklists and command plans.",
     "screen": "Predefined equity screens and screen results.",
     "sector": "Sector keys, overviews, industries, funds, and company tables.",
     "sources": "Provider inventory, configuration, and health checks.",
+    "short": "FINRA short positions and reported short-sale volume.",
     "symbol": "Company profile and compact symbol snapshot.",
     "transcripts": "Earnings-call transcript search, read, and Q&A.",
     "valuation": "Valuation math, multiples, scenarios, DCF, NPV, IRR, and WACC.",
@@ -116,6 +121,9 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         result = FinanceCommandResult(ok=False, error=str(exc))
 
+    if output not in {"json", "pretty-json"}:
+        for warning in result.warnings:
+            print(f"Warning: {warning}", file=sys.stderr)
     print(render_result(result, output, command=ns.command, record_options=record_options))
     return 0 if result.ok else 1
 

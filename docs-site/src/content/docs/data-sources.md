@@ -50,8 +50,15 @@ Some provider-backed commands use environment variables:
 | `ALPHAVANTAGE_API_KEY` or `ALPHA_VANTAGE_API_KEY` | Alpha Vantage market data fallback. |
 | `ALPACA_API_KEY` and `ALPACA_API_SECRET` | Alpaca market-data fallback. |
 | `FINANCE_SEC_USER_AGENT` | SEC request identity string for EDGAR access. Set this to a real contact string in CI or production. |
+| `FRED_API_KEY` | FRED series search and ALFRED historical-vintage observations. Each user supplies their own key. |
+| `EIA_API_KEY` | EIA energy inventory and electricity retail-sales/price queries. |
+| `FINRA_ACCESS_TOKEN` | Optional existing Bearer token for FINRA short-interest API access when required. |
 
 Finance CLI reads these variables at runtime. It does not write API keys into project files or persistent config.
+
+## Official Public Data
+
+The [Public Data guide](/FinanceCLI/public-data/) covers company IR releases/events, FRED/ALFRED, TWSE monthly revenue and material disclosures, Nasdaq issue breadth, FINRA short data, CFTC positioning, and EIA energy data. Source coverage, publication lag, units and required credentials differ; preserve the returned warnings and dates.
 
 ## Common Source Areas
 

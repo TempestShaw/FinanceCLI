@@ -185,7 +185,11 @@ def test_finance_cli_without_args_shows_module_overview(capsys):
     assert "Finance modules" in output
     assert "market" in output
     assert "config" in output
-    assert "Market data, status, trend, regime, and sector heat." in output
+    assert "breadth" in output
+    assert "macro" in output
+    assert "energy" in output
+    assert "positioning" in output
+    assert "short" in output
     assert "formula.margin" not in output
     assert "sources.status" not in output
 

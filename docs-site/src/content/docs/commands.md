@@ -278,6 +278,28 @@ finance config.unset KEY
 finance config.unset output.default
 ```
 
+## `disclosures.*`
+
+### `disclosures.recent`
+
+Read Taiwan listed-company material disclosures from the daily snapshot
+
+**Usage**
+
+```bash
+finance disclosures.recent SYMBOL [source=twse limit=20]
+```
+
+**Examples**
+
+```bash
+finance disclosures.recent 2330.TW source=twse limit=5
+```
+
+**Details**
+
+- Daily snapshot only; empty output does not establish that no earlier announcements exist.
+
 ## `document.*`
 
 ### `document.ocr`
@@ -399,6 +421,51 @@ finance document.window ./filing.html format=html match_id=char_52000_52200 dire
 
 - Designed for follow-up reading after document.scan.
 - Use direction=next or direction=previous to move through a table or section without re-scanning.
+
+## `energy.*`
+
+### `energy.electricity`
+
+Read EIA electricity retail sales and average price by state
+
+**Usage**
+
+```bash
+finance energy.electricity [region=TX frequency=monthly|annual limit=20]
+```
+
+**Examples**
+
+```bash
+finance energy.electricity region=TX frequency=monthly limit=12
+```
+
+**Details**
+
+- Requires EIA_API_KEY. region is a US state code or US; returns all-sector retail sales and prices.
+- Retains sales/price source units. Periods describe consumption months or years, not publication dates.
+
+### `energy.inventory`
+
+Read weekly EIA US petroleum or natural-gas inventories
+
+**Usage**
+
+```bash
+finance energy.inventory [product=crude|gasoline|distillate|natural_gas country=US limit=20]
+```
+
+**Examples**
+
+```bash
+finance energy.inventory product=crude limit=12
+finance energy.inventory product=natural_gas limit=12
+```
+
+**Details**
+
+- Requires EIA_API_KEY. Crude excludes SPR; natural_gas covers the Lower 48 states.
+- Values retain the source units; petroleum is thousand barrels and natural gas is billion cubic feet.
 
 ## `estimates.*`
 
@@ -859,6 +926,26 @@ finance fundamentals.metrics NVDA period=quarterly metrics=revenue,eps,net_incom
 
 - Uses edgartools financial getters for standard metrics; EPS is net_income / diluted_shares.
 
+### `fundamentals.revenue`
+
+Read Taiwan listed-company monthly revenue from the official snapshot
+
+**Usage**
+
+```bash
+finance fundamentals.revenue SYMBOL [period=monthly source=twse]
+```
+
+**Examples**
+
+```bash
+finance fundamentals.revenue 2330.TW period=monthly source=twse
+```
+
+**Details**
+
+- TWSE-listed issuers only; latest snapshot, not historical monthly data. Amounts are thousands of TWD.
+
 ### `fundamentals.statement`
 
 Fetch income/balance/cashflow statement data
@@ -933,6 +1020,27 @@ finance industry.table software-infrastructure table=top_growth_companies limit=
 
 ## `ir.*`
 
+### `ir.events`
+
+Discover company events from public RSS/Atom feeds and IR pages
+
+**Usage**
+
+```bash
+finance ir.events SYMBOL [url=PAGE_OR_FEED limit=20]
+```
+
+**Examples**
+
+```bash
+finance ir.events NVDA url=https://investor.nvidia.com/investor-resources/rss/default.aspx limit=5
+```
+
+**Details**
+
+- Best-effort discovery from the company's website; pass an explicit page/feed URL when auto-discovery is incomplete.
+- Returns source links and feed dates; event feed publication dates may differ from scheduled event times.
+
 ### `ir.presentations`
 
 Discover IR and investor day presentations from SEC 8-K Exhibit 99 filings
@@ -985,7 +1093,94 @@ finance ir.read url=https://www.sec.gov/Archives/edgar/data/320193/0000320193260
 - ocr=auto or ocr=force uses the default PaddleOCR/PP-StructureV3 stack.
 - Pass the url from ir.presentations output.
 
+### `ir.releases`
+
+Discover company releases from public RSS/Atom feeds and IR pages
+
+**Usage**
+
+```bash
+finance ir.releases SYMBOL [url=PAGE_OR_FEED limit=20]
+```
+
+**Examples**
+
+```bash
+finance ir.releases NVDA url=https://investor.nvidia.com/investor-resources/rss/default.aspx limit=5
+```
+
+**Details**
+
+- Best-effort discovery from the company's website; pass an explicit page/feed URL when auto-discovery is incomplete.
+- Returns source links and feed dates; event feed publication dates may differ from scheduled event times.
+
+## `macro.*`
+
+### `macro.search`
+
+Search FRED economic series
+
+**Usage**
+
+```bash
+finance macro.search QUERY [limit=20]
+```
+
+**Examples**
+
+```bash
+finance macro.search "consumer price index" limit=5
+```
+
+**Details**
+
+- Requires FRED_API_KEY. Returns matching series metadata with units and frequency.
+
+### `macro.series`
+
+Read economic observations with an optional ALFRED vintage
+
+**Usage**
+
+```bash
+finance macro.series SERIES_ID [start=YYYY-MM-DD end=YYYY-MM-DD as_of=YYYY-MM-DD limit=1000]
+```
+
+**Examples**
+
+```bash
+finance macro.series CPIAUCSL start=2020-01-01 limit=1000
+finance macro.series GDP as_of=2024-01-01 limit=8
+```
+
+**Details**
+
+- Requires FRED_API_KEY. as_of pins both real-time boundaries; missing values stay null.
+- Returns the latest bounded observations in chronological order; truncated reports omitted history.
+
 ## `market.*`
+
+### `market.breadth`
+
+Fetch actual Nasdaq advancing, declining, and unchanged issue counts
+
+**Usage**
+
+```bash
+finance market.breadth [MARKET=NASDAQ] [year=YYYY limit=20]
+```
+
+**Examples**
+
+```bash
+finance market.breadth NASDAQ limit=20
+```
+
+**Details**
+
+- Supports Nasdaq-listed issues only, from the official annual file; newest observations first.
+- Year defaults to the current UTC year. Source dates and retrieval age are explicit; this is not live breadth.
+- Does not supply NYSE, 50/200 DMA, new-high/new-low, or up/down volume breadth.
 
 ### `market.ohlcv`
 
@@ -1117,6 +1312,32 @@ finance ownership.holders NVDA limit=5
 **Details**
 
 - Uses yfinance holder tables; field availability can vary by ticker.
+
+## `positioning.*`
+
+### `positioning.cot`
+
+Read CFTC futures-only trader positioning by category
+
+**Usage**
+
+```bash
+finance positioning.cot [market=gold report=disaggregated|tff|legacy weeks=52]
+```
+
+**Examples**
+
+```bash
+finance positioning.cot market=gold weeks=8
+finance positioning.cot market=sp500 report=tff weeks=8
+finance positioning.cot market=088691 report=legacy weeks=8
+```
+
+**Details**
+
+- No API key required. market accepts gold, sp500 or an exact six-character CFTC contract code.
+- as_of_date is the position date, not the publication date. Futures-only reports; report categories differ.
+- weeks bounds the number of latest weekly reports; each produces one row per trader category.
 
 ## `price.*`
 
@@ -1339,6 +1560,53 @@ finance sector.table KEY [table=top_companies|top_etfs|top_mutual_funds|research
 finance sector.table technology table=top_companies limit=10
 finance sector.table technology table=top_etfs limit=5
 ```
+
+## `short.*`
+
+### `short.interest`
+
+Fetch FINRA settlement-date short positions and changes
+
+**Usage**
+
+```bash
+finance short.interest SYMBOL [periods=6]
+```
+
+**Examples**
+
+```bash
+finance short.interest AAPL periods=6
+```
+
+**Details**
+
+- Twice-monthly position snapshots, not daily short-sale volume. Settlement dates are not publication dates.
+- Uses the official consolidatedShortInterest API; optional FINRA_ACCESS_TOKEN supplies a Bearer token.
+- FINRA access and reuse terms apply; anonymous access may change.
+
+### `short.volume`
+
+Fetch FINRA daily off-exchange NMS short-sale volume
+
+**Usage**
+
+```bash
+finance short.volume SYMBOL [days=20]
+```
+
+**Examples**
+
+```bash
+finance short.volume AAPL days=5
+```
+
+**Details**
+
+- Requests at most days prior weekday files, excluding today in New York; days must be 1–60.
+- Holidays and HTTP 403/404 files remain explicit gaps; no older replacement files are requested.
+- CNMS off-exchange activity excludes exchange trades and is not outstanding short interest.
+- Source data is free for non-commercial use under FINRA's terms.
 
 ## `sources.*`
 
